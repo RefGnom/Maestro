@@ -1,6 +1,6 @@
 ﻿using Core.IO;
-using Core.Models;
-using Core.Repositories;
+using Data;
+using Data.Models;
 
 namespace Client;
 
@@ -12,5 +12,6 @@ internal class Program
         new Writer().WriteLine(dataContext.Users.Count.ToString());
         dataContext.Users.Add(new User { Id = dataContext.Users.Last().Id + 1 });
         new Writer().WriteLine(dataContext.Users.Count.ToString());
+        await using var dataContext2 = await DataContext.GetAsync();
     }
 }
