@@ -1,4 +1,6 @@
-﻿using Core.IO;
+﻿using Core.DateTime;
+using Core.IO;
+using Core.Logging;
 using Data;
 using Data.Models;
 
@@ -9,9 +11,9 @@ internal class Program
     private static async Task Main(string[] args)
     {
         await using var dataContext = await DataContext.GetAsync();
-        new Writer().WriteLine(dataContext.Users.Count.ToString());
-        dataContext.Users.Add(new User { Id = dataContext.Users.Last().Id + 1 });
-        new Writer().WriteLine(dataContext.Users.Count.ToString());
-        await using var dataContext2 = await DataContext.GetAsync();
+        string botToken = "7841520460:AAFu3SqPIx8T7leJAym5wVKVom2yn9_JTv4";
+        var bot = new MaestroBot(botToken, dataContext);
+        bot.Start();
+        Console.ReadKey();
     }
 }
