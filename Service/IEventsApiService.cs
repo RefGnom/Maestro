@@ -1,6 +1,6 @@
 ﻿using Data.Models;
 
-namespace Client;
+namespace Service;
 
 public interface IEventsApiService
 {

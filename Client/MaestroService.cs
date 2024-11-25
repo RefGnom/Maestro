@@ -1,24 +1,22 @@
 ﻿using Core.Logging;
-using Data.Models;
+using Core.Providers;
+using Data.Factories;
+using Service;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace Client;
 
-public class MaestroService : IMaestroService
+public class MaestroService(
+    ILogFactory loggerFactory,
+    IEventsApiService eventsApiService,
+    IMessageParser messageParser,
+    IDateTimeProvider dateTimeProvider,
+    IEventFactory eventFactory)
+    : IMaestroService
 {
-    private readonly IEventsApiService _eventsApiService;
-    private readonly IMessageParser<Event> _messageParser;
-    private readonly ILog _logger;
-
-    public MaestroService(ILogFactory loggerFactory, IEventsApiService eventsApiService,
-        IMessageParser<Event> messageParser)
-    {
-        _logger = loggerFactory.ForContext<MaestroService>();
-        _eventsApiService = eventsApiService;
-        _messageParser = messageParser;
-    }
+    private readonly ILog _logger = loggerFactory.ForContext<MaestroService>();
 
     public async Task UpdateHandler(ITelegramBotClient bot, Update update, CancellationToken cancellationToken)
     {
@@ -27,22 +25,34 @@ public class MaestroService : IMaestroService
             return;
         }
 
-        var parseResult = _messageParser.ParseMessage(update.Message.Text);
-        if (!parseResult.IsSuccess)
+        var parseResult = messageParser.ParseMessage(update.Message.Text);
+        if (!parseResult.IsSuccessful)
         {
             _logger.Warn(parseResult.Message);
-            await bot.SendTextMessageAsync(
+            await bot.SendMessage(
                 update.Message.Chat.Id,
-                "Чтобы создать новое напоминание используйте команду /create {время напоминания} {описание}.");
+                "Чтобы создать новое напоминание используйте команду /create {время напоминания} {описание}.",
+                cancellationToken: cancellationToken);
             return;
         }
 
-        _eventsApiService.CreateEventAsync(parseResult.Value);
+        if (parseResult.Value.ReminderTime < dateTimeProvider.GetCurrentDateTime())
+        {
+            var errorMessage = "Время напоминания меньше чем текущее время";
+            _logger.Warn(errorMessage);
+            await bot.SendMessage(
+                update.Message.Chat.Id,
+                errorMessage, cancellationToken: cancellationToken);
+        }
+
+        var message = parseResult.Value;
+        await eventsApiService.CreateEventAsync(eventFactory.Create(update.Message.Chat.Id, message.Description,
+            message.ReminderTime));
         _logger.Info("Event created");
-        await bot.SendTextMessageAsync(
+        await bot.SendMessage(
             update.Message.Chat.Id,
             $"Напоминание \"{parseResult.Value.Description}\" создано на время {parseResult.Value
-                .ReminderTime: yyyy-MM-dd HH:mm}");
+                .ReminderTime: yyyy-MM-dd HH:mm}", cancellationToken: cancellationToken);
     }
 
     public async Task ErrorHandler(ITelegramBotClient botClient, Exception exception,

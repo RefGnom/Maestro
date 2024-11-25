@@ -1,8 +1,3 @@
 ﻿namespace Data.Models;
 
-public class Event
-{
-    public long Id { get; set; }
-    public string Description { get; set; }
-    public DateTime ReminderTime { get; set; }
-}
+public record Event(Guid Id, long UserId, string Description, DateTime ReminderTime);

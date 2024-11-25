@@ -1,9 +1,8 @@
-﻿using Core;
-using Core.DateTime;
-using Core.IO;
+﻿using Core.IO;
 using Core.Logging;
-using Data.Models;
+using Core.Providers;
 using Microsoft.Extensions.Configuration;
+using Service;
 using SimpleInjector;
 
 namespace Client;
@@ -18,7 +17,7 @@ public static class Configurator
         container.RegisterSingleton<IEventsApiService, EventsApiService>();
         container.RegisterSingleton<ILogFactory, LogFactory>();
         container.RegisterSingleton<MaestroBotRunner>();
-        container.RegisterSingleton<IMessageParser<Event>, MessagesParser>();
+        container.RegisterSingleton<IMessageParser, MessagesParser>();
         return container;
     }
 

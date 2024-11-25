@@ -1,8 +1,9 @@
-﻿using Core;
+﻿using Client.Models;
+using Core;
 
 namespace Client;
 
-public interface IMessageParser<T>
+public interface IMessageParser
 {
-    Result<T> ParseMessage(string input);
+    Result<Message> ParseMessage(string input);
 }

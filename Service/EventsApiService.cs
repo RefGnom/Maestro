@@ -1,8 +1,8 @@
 ﻿using Data.Models;
 
-namespace Client;
+namespace Service;
 
-public class EventsApiService: IEventsApiService
+public class EventsApiService : IEventsApiService
 {
     public Task CreateEventAsync(Event eventToCreate)
     {

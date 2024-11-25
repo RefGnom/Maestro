@@ -1,40 +1,39 @@
-﻿using Core;
-using Core.DateTime;
-using Data.Models;
+﻿using Client.Models;
+using Core;
+using Core.Providers;
 
 namespace Client;
 
-public class MessagesParser : IMessageParser<Event>
+public class MessagesParser(IDateTimeProvider dateTimeProvider) : IMessageParser
 {
-    private readonly IDateTimeProvider _dateTimeProvider;
-
-    public MessagesParser(IDateTimeProvider dateTimeProvider)
+    public Result<Message> ParseMessage(string message)
     {
-        _dateTimeProvider = dateTimeProvider;
-    }
-
-    public Result<Event> ParseMessage(string message)
-    {
-        if (message.StartsWith("/create"))
+        if (!message.StartsWith("/create"))
         {
-            var parts = message.Split(" ", 4);
-            if (parts.Length == 3)
-            {
-                if (_dateTimeProvider.TryParseDateTime(parts[1], parts[2], out var dateTime))
-                {
-                    return Result.CreateSuccess(new Event() { ReminderTime = dateTime, Description = parts[2] });
-                }
-            }
+            return Result.CreateFailure<Message>("Incorrect message entered");
+        }
 
-            if (parts.Length == 4)
+        var parts = message.Split(" ");
+        var hasDate = parts[2].All(c => !char.IsLetter(c));
+        if (hasDate)
+        {
+            var parseDateTimeResult = dateTimeProvider.TryParse(parts[2], parts[1]);
+            if (parseDateTimeResult.IsSuccessful)
             {
-                if (_dateTimeProvider.TryParseDateTime(parts[1], parts[2], out var dateTime))
-                {
-                    return Result.CreateSuccess(new Event() { ReminderTime = dateTime, Description = parts[3] });
-                }
+                return Result.CreateSuccess(new Message(parts[0], parseDateTimeResult.Value,
+                    string.Join(" ", parts.Skip(3))));
+            }
+        }
+        else
+        {
+            var parseTimeResult = dateTimeProvider.TryParse(parts[1]);
+            if (parseTimeResult.IsSuccessful)
+            {
+                return Result.CreateSuccess(new Message(parts[0], parseTimeResult.Value,
+                    string.Join(" ", parts.Skip(2))));
             }
         }
 
-        return Result.CreateFailure<Event>("Incorrect message entered");
+        return Result.CreateFailure<Message>("Incorrect message entered");
     }
 }

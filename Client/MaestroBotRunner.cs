@@ -1,4 +1,5 @@
 ﻿using Core.Logging;
+using Core.Providers;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types.Enums;
@@ -19,10 +20,10 @@ internal class MaestroBotRunner
         _maestroService = maestroService;
         _receiverOptions = new ReceiverOptions
         {
-            AllowedUpdates = new[]
-            {
+            AllowedUpdates =
+            [
                 UpdateType.Message
-            },
+            ],
             DropPendingUpdates = true
         };
         _logger.Info("MaestroBot is created");
