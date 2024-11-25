@@ -4,5 +4,5 @@ namespace Client;
 
 public interface IEventsApiService
 {
-    public void CreateEvent(Event eventToCreate);
+    public Task CreateEventAsync(Event eventToCreate);
 }

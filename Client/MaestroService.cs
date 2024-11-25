@@ -1,50 +1,54 @@
 ﻿using Core.Logging;
+using Data.Models;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace Client;
 
-public class MaestroService
+public class MaestroService : IMaestroService
 {
-    private readonly ILog _logger;
     private readonly IEventsApiService _eventsApiService;
-    public MaestroService(ILog logger)
+    private readonly IMessageParser<Event> _messageParser;
+    private readonly ILog _logger;
+
+    public MaestroService(ILogFactory loggerFactory, IEventsApiService eventsApiService,
+        IMessageParser<Event> messageParser)
     {
-        _logger = logger;
+        _logger = loggerFactory.ForContext<MaestroService>();
+        _eventsApiService = eventsApiService;
+        _messageParser = messageParser;
     }
-    
+
     public async Task UpdateHandler(ITelegramBotClient bot, Update update, CancellationToken cancellationToken)
     {
         if (update.Type != UpdateType.Message || update.Message == null)
         {
             return;
         }
-        if (update.Message.Text.StartsWith("/create"))
+
+        var parseResult = _messageParser.ParseMessage(update.Message.Text);
+        if (!parseResult.IsSuccess)
         {
-            var parseResult = MessagesParser.ParseMessage(update.Message.Text);
-            if (parseResult.IsSuccess)
-            {
-                _eventsApiService.CreateEvent(parseResult.Value);
-                _logger.Info("Event created");
-                await bot.SendTextMessageAsync(
-                    update.Message.Chat.Id,
-                    $"Напоминание \"{parseResult.Value.Description}\" создано на время " +
-                    $"{parseResult.Value.ReminderTime: yyyy-MM-dd HH:mm}"
-                );
-                return;
-            }
             _logger.Warn(parseResult.Message);
-            await bot.SendTextMessageAsync(update.Message.Chat.Id, "");
+            await bot.SendTextMessageAsync(
+                update.Message.Chat.Id,
+                "Чтобы создать новое напоминание используйте команду /create {время напоминания} {описание}.");
+            return;
         }
+
+        _eventsApiService.CreateEventAsync(parseResult.Value);
+        _logger.Info("Event created");
         await bot.SendTextMessageAsync(
-            update.Message.Chat.Id, 
-            "Чтобы создать новое напоминание используйте команду /create {время напоминания} {описание}.");
+            update.Message.Chat.Id,
+            $"Напоминание \"{parseResult.Value.Description}\" создано на время {parseResult.Value
+                .ReminderTime: yyyy-MM-dd HH:mm}");
     }
-    
-    public async Task ErrorHandler(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+
+    public async Task ErrorHandler(ITelegramBotClient botClient, Exception exception,
+        CancellationToken cancellationToken)
     {
-        _logger.Error($"{exception.Message}");
+        _logger.Error(exception.Message);
         await Task.CompletedTask;
     }
 }
