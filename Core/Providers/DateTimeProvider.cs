@@ -31,6 +31,6 @@ public class DateTimeProvider : IDateTimeProvider
             return Result.CreateSuccess(timeResult > GetCurrentDateTime() ? timeResult : timeResult.AddDays(1));
         }
 
-        return Result.CreateFailure<DateTime>($"Не удалось распарсить дату time: {time} date: {date}");
+        return Result.CreateFailure<DateTime>($"Failed to parse DateTime (Time: {time}, Date: {date})");
     }
 }

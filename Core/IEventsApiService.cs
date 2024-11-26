@@ -4,5 +4,5 @@ namespace Service;
 
 public interface IEventsApiService
 {
-    public Task CreateEventAsync(Event eventToCreate);
+    public Task CreateAsync(Event eventToCreate);
 }

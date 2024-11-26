@@ -14,22 +14,25 @@ public class MessagesParser(IDateTimeProvider dateTimeProvider) : IMessageParser
         }
 
         var parts = message.Split(" ");
-        var hasDate = parts[2].All(c => !char.IsLetter(c));
+        var command = parts[0];
+        var date = parts[1];
+        var time = parts[2];
+        var hasDate = time.All(c => !char.IsLetter(c));
         if (hasDate)
         {
-            var parseDateTimeResult = dateTimeProvider.TryParse(parts[2], parts[1]);
-            if (parseDateTimeResult.IsSuccessful)
+            var dateTimeParseResult = dateTimeProvider.TryParse(time, date);
+            if (dateTimeParseResult.IsSuccessful)
             {
-                return Result.CreateSuccess(new Message(parts[0], parseDateTimeResult.Value,
+                return Result.CreateSuccess(new Message(command, dateTimeParseResult.Value,
                     string.Join(" ", parts.Skip(3))));
             }
         }
         else
         {
-            var parseTimeResult = dateTimeProvider.TryParse(parts[1]);
-            if (parseTimeResult.IsSuccessful)
+            var timeParseResult = dateTimeProvider.TryParse(date);
+            if (timeParseResult.IsSuccessful)
             {
-                return Result.CreateSuccess(new Message(parts[0], parseTimeResult.Value,
+                return Result.CreateSuccess(new Message(command, timeParseResult.Value,
                     string.Join(" ", parts.Skip(2))));
             }
         }

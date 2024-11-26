@@ -1,6 +1,7 @@
 ﻿using Core.IO;
 using Core.Logging;
 using Core.Providers;
+using Data.Factories;
 using Microsoft.Extensions.Configuration;
 using Service;
 using SimpleInjector;
@@ -13,6 +14,8 @@ public static class Configurator
     {
         container.RegisterSingleton<IWriter, Writer>();
         container.RegisterSingleton<IDateTimeProvider, DateTimeProvider>();
+        container.RegisterSingleton<IGuidFactory, GuidFactory>();
+        container.RegisterSingleton<IEventFactory, EventFactory>();
         container.RegisterSingleton<MaestroService>();
         container.RegisterSingleton<IEventsApiService, EventsApiService>();
         container.RegisterSingleton<ILogFactory, LogFactory>();

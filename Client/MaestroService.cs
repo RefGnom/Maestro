@@ -20,7 +20,7 @@ public class MaestroService(
 
     public async Task UpdateHandler(ITelegramBotClient bot, Update update, CancellationToken cancellationToken)
     {
-        if (update.Type != UpdateType.Message || update.Message == null)
+        if (update.Type != UpdateType.Message || update.Message is null)
         {
             return;
         }
@@ -38,7 +38,7 @@ public class MaestroService(
 
         if (parseResult.Value.ReminderTime < dateTimeProvider.GetCurrentDateTime())
         {
-            var errorMessage = "Время напоминания меньше чем текущее время";
+            var errorMessage = "Reminder time is less than current time";
             _logger.Warn(errorMessage);
             await bot.SendMessage(
                 update.Message.Chat.Id,
@@ -46,7 +46,7 @@ public class MaestroService(
         }
 
         var message = parseResult.Value;
-        await eventsApiService.CreateEventAsync(eventFactory.Create(update.Message.Chat.Id, message.Description,
+        await eventsApiService.CreateAsync(eventFactory.Create(update.Message.Chat.Id, message.Description,
             message.ReminderTime));
         _logger.Info("Event created");
         await bot.SendMessage(

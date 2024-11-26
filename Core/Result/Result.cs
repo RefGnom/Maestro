@@ -2,7 +2,7 @@
 
 public class Result<T>
 {
-    public T? Value;
+    public T? Value { get; init; }
     public bool IsSuccessful { get; init; }
     public string Message { get; init; }
 }

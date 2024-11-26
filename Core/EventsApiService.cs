@@ -4,7 +4,7 @@ namespace Service;
 
 public class EventsApiService : IEventsApiService
 {
-    public Task CreateEventAsync(Event eventToCreate)
+    public Task CreateAsync(Event eventToCreate)
     {
         throw new NotImplementedException();
     }
