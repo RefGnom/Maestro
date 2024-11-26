@@ -1,5 +1,5 @@
 ﻿using Client.Models;
-using Core;
+using Core.Result;
 
 namespace Client;
 

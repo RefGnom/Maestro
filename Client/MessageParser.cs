@@ -1,6 +1,6 @@
 ﻿using Client.Models;
-using Core;
 using Core.Providers;
+using Core.Result;
 
 namespace Client;
 

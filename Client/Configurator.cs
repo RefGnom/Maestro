@@ -1,9 +1,9 @@
-﻿using Core.IO;
+﻿using Core;
+using Core.IO;
 using Core.Logging;
 using Core.Providers;
 using Data.Factories;
 using Microsoft.Extensions.Configuration;
-using Service;
 using SimpleInjector;
 
 namespace Client;

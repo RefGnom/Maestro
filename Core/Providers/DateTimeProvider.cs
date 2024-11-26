@@ -1,11 +1,12 @@
 using System.Globalization;
+using Core.Result;
 
 namespace Core.Providers;
 
 public class DateTimeProvider : IDateTimeProvider
 {
-    private const string TimeFormat = "HH:mm";
-    private const string DateTimeFormat = $"yyyy.MM.dd {TimeFormat}";
+    private const string timeFormat = "HH:mm";
+    private const string dateTimeFormat = $"yyyy.MM.dd {timeFormat}";
 
     public DateTime GetCurrentDateTime()
     {
@@ -16,21 +17,17 @@ public class DateTimeProvider : IDateTimeProvider
     {
         if (date is not null && DateTime.TryParseExact(
                 $"{date} {time}",
-                DateTimeFormat,
+                dateTimeFormat,
                 CultureInfo.InvariantCulture,
                 DateTimeStyles.None,
                 out var result)
            )
         {
-            return Result.CreateSuccess(result);
+            return Result.Result.CreateSuccess(result);
         }
 
-        if (DateTime.TryParseExact(time, TimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None,
-                out var timeResult))
-        {
-            return Result.CreateSuccess(timeResult > GetCurrentDateTime() ? timeResult : timeResult.AddDays(1));
-        }
-
-        return Result.CreateFailure<DateTime>($"Failed to parse DateTime (Time: {time}, Date: {date})");
+        return DateTime.TryParseExact(time, timeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var timeResult)
+            ? Result.Result.CreateSuccess(timeResult > GetCurrentDateTime() ? timeResult : timeResult.AddDays(1))
+            : Result.Result.CreateFailure<DateTime>($"Failed to parse DateTime (Time: {time}, Date: {date})");
     }
 }

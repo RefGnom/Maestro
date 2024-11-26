@@ -3,7 +3,6 @@ using Data.Models;
 
 namespace Data;
 
-// ReSharper disable once ClassNeverInstantiated.Global
 public class DataContext : IAsyncDisposable
 {
     private static DataContext? _instance;
@@ -25,7 +24,7 @@ public class DataContext : IAsyncDisposable
         }
         init => _users = value;
     }
-    
+
     public List<Event> Events
     {
         get
@@ -40,7 +39,9 @@ public class DataContext : IAsyncDisposable
         ObjectDisposedException.ThrowIf(_isDisposed, _instance!);
 
         if (_instance is null)
+        {
             await LoadAsync();
+        }
 
         return _instance!;
     }
@@ -48,7 +49,9 @@ public class DataContext : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         if (_isDisposed)
+        {
             throw new InvalidOperationException($"{nameof(DataContext)} is already disposed.");
+        }
 
         await using var fileStream = FileInfo.Open(FileMode.Create, FileAccess.Write, FileShare.None);
         await JsonSerializer.SerializeAsync(fileStream, _instance);

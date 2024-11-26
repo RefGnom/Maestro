@@ -1,10 +1,11 @@
-﻿namespace Core;
+﻿namespace Core.Result;
 
 public class Result<T>
 {
     public T? Value { get; init; }
     public bool IsSuccessful { get; init; }
-    public string Message { get; init; }
+    public bool IsFailure => !IsSuccessful;
+    public string Message { get; init; } = "";
 }
 
 public static class Result
