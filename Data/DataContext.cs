@@ -14,6 +14,7 @@ public class DataContext : IAsyncDisposable
         .GetFiles("data.json").Single();
 
     private readonly List<User> _users = null!;
+    private readonly List<Event> _events = null!;
 
     public List<User> Users
     {
@@ -24,7 +25,16 @@ public class DataContext : IAsyncDisposable
         }
         init => _users = value;
     }
-
+    
+    public List<Event> Events
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_isDisposed, _instance!);
+            return _events;
+        }
+        init => _events = value;
+    }
     public static async Task<DataContext> GetAsync()
     {
         ObjectDisposedException.ThrowIf(_isDisposed, _instance!);
