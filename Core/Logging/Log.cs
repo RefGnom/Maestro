@@ -6,9 +6,6 @@ namespace Core.Logging;
 
 public class Log(IDateTimeProvider dateTimeProvider, IWriter writer, string context = "Program.Main") : ILog
 {
-    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
-    private readonly IWriter _writer = writer;
-
     public void Info(string message)
     {
         LogEvent("Info", message, ConsoleColor.Gray);
@@ -26,8 +23,12 @@ public class Log(IDateTimeProvider dateTimeProvider, IWriter writer, string cont
 
     private void LogEvent(string level, string message, ConsoleColor color)
     {
-        _writer.WriteLine($"[{_dateTimeProvider.GetCurrentDateTime().ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture)}] " +
-                          $"[{level}] " +
-                          $"{message}", color);
+        writer.WriteLine(
+            $"[{dateTimeProvider.GetCurrentDateTime().ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture)}] " +
+            $"[{context}] " +
+            $"[{level}] " +
+            $"{message}",
+            color
+        );
     }
 }
