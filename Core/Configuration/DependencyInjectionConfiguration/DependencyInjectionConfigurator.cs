@@ -26,16 +26,12 @@ public static class DependencyInjectionConfigurator
             )
             .Where(x => x.Resolve())
             .Select(x => x.GetGenericDefinitionTypeIfNeed())
+            .GroupBy(x => x.InterfaceType)
             .ToArray();
 
-        foreach (var registration in registrations)
+        foreach (var registrationGroup in registrations)
         {
-            var scopeAttribute = registration.GetScopeAttribute();
-            container.Register(
-                registration.InterfaceType,
-                registration.ImplementationType,
-                scopeAttribute?.Lifestyle ?? registration.Lifestyle
-            );
+            container.RegisterGroup(registrationGroup);
         }
 
         return container;
@@ -75,5 +71,27 @@ public static class DependencyInjectionConfigurator
 
         container.RegisterSingleton(applicationType, applicationType);
         return container;
+    }
+
+    private static void RegisterGroup(this Container container, IEnumerable<Registration> registrationGroup)
+    {
+        var registrations = registrationGroup.ToArray();
+        var registrationMaster = registrations.DistinctBy(x => x.InterfaceType).Single();
+        var scopeAttribute = registrationMaster.GetScopeAttribute();
+
+        if (registrations.Length == 1)
+        {
+            container.Register(
+                registrationMaster.InterfaceType,
+                registrationMaster.ImplementationType,
+                scopeAttribute?.Lifestyle ?? registrationMaster.Lifestyle
+            );
+        }
+
+        container.Collection.Register(
+            registrationMaster.InterfaceType,
+            registrations.Select(x => x.ImplementationType),
+            scopeAttribute?.Lifestyle ?? registrationMaster.Lifestyle
+        );
     }
 }
