@@ -25,17 +25,14 @@ public class ClientApplication(ISettingsProvider settingsProvider, IMaestroServi
     {
     }
 
-    public async Task RunAsync()
+    public Task RunAsync()
     {
-        var tcs = new TaskCompletionSource();
-
         _botClient.StartReceiving(
             maestroService.UpdateHandler,
             maestroService.ErrorHandler,
             _receiverOptions
         );
         log.Info("Telegram client started");
-
-        await tcs.Task;
+        return Task.CompletedTask;
     }
 }
