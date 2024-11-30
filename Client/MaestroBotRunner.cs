@@ -9,14 +9,14 @@ namespace Client;
 internal class MaestroBotRunner
 {
     private readonly ITelegramBotClient _botClient;
-    private readonly ILog _logger;
+    private readonly ILog<MaestroBotRunner> _logger;
     private readonly ReceiverOptions _receiverOptions;
     private readonly MaestroService _maestroService;
 
-    public MaestroBotRunner(ISettingsProvider settingsProvider, ILogFactory logFactory, MaestroService maestroService)
+    public MaestroBotRunner(ISettingsProvider settingsProvider, ILog<MaestroBotRunner> logger, MaestroService maestroService)
     {
         _botClient = new TelegramBotClient(settingsProvider.Get("TelegramBotToken"));
-        _logger = logFactory.ForContext<MaestroBotRunner>();
+        _logger = logger;
         _maestroService = maestroService;
         _receiverOptions = new ReceiverOptions
         {
