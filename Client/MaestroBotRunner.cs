@@ -11,9 +11,9 @@ internal class MaestroBotRunner
     private readonly ITelegramBotClient _botClient;
     private readonly ILog<MaestroBotRunner> _logger;
     private readonly ReceiverOptions _receiverOptions;
-    private readonly MaestroService _maestroService;
+    private readonly IMaestroService _maestroService;
 
-    public MaestroBotRunner(ISettingsProvider settingsProvider, ILog<MaestroBotRunner> logger, MaestroService maestroService)
+    public MaestroBotRunner(ISettingsProvider settingsProvider, ILog<MaestroBotRunner> logger, IMaestroService maestroService)
     {
         _botClient = new TelegramBotClient(settingsProvider.Get("TelegramBotToken"));
         _logger = logger;

@@ -13,7 +13,8 @@ public class MaestroService(
     IEventsApiService eventsApiService,
     IMessageParser messageParser,
     IDateTimeProvider dateTimeProvider,
-    IEventFactory eventFactory)
+    IEventFactory eventFactory
+)
     : IMaestroService
 {
     public async Task UpdateHandler(ITelegramBotClient bot, Update update, CancellationToken cancellationToken)
@@ -30,7 +31,8 @@ public class MaestroService(
             await bot.SendMessage(
                 update.Message.Chat.Id,
                 "Чтобы создать новое напоминание используйте команду /create {время напоминания} {описание}.",
-                cancellationToken: cancellationToken);
+                cancellationToken: cancellationToken
+            );
             return;
         }
 
@@ -40,21 +42,29 @@ public class MaestroService(
             logger.Warn(errorMessage);
             await bot.SendMessage(
                 update.Message.Chat.Id,
-                errorMessage, cancellationToken: cancellationToken);
+                errorMessage,
+                cancellationToken: cancellationToken
+            );
         }
 
         var message = parseResult.Value;
-        await eventsApiService.CreateAsync(eventFactory.Create(update.Message.Chat.Id, message.Description,
-            message.ReminderTime));
+        await eventsApiService.CreateAsync(
+            eventFactory.Create(
+                update.Message.Chat.Id,
+                message.Description,
+                message.ReminderTime
+            )
+        );
         logger.Info("Event created");
         await bot.SendMessage(
             update.Message.Chat.Id,
             $"Напоминание \"{parseResult.Value.Description}\" создано на время {parseResult.Value
-                .ReminderTime: yyyy-MM-dd HH:mm}", cancellationToken: cancellationToken);
+                .ReminderTime: yyyy-MM-dd HH:mm}",
+            cancellationToken: cancellationToken
+        );
     }
 
-    public async Task ErrorHandler(ITelegramBotClient botClient, Exception exception,
-        CancellationToken cancellationToken)
+    public async Task ErrorHandler(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
         logger.Error(exception.Message);
         await Task.CompletedTask;
