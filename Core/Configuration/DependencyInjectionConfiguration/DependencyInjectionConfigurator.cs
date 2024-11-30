@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Maestro.Core.Linq;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
 using Microsoft.Extensions.Configuration;
@@ -15,8 +16,7 @@ public static class DependencyInjectionConfigurator
     {
         var assemblies = AssemblyHelper.GetServiceAssemblies();
 
-        var registrations = assemblies
-            .SelectMany(x => x.GetExportedTypes())
+        assemblies.SelectMany(x => x.GetExportedTypes())
             .Where(x => !x.IsInterface)
             .Where(x => !x.IsAbstract)
             .SelectMany(
@@ -27,12 +27,7 @@ public static class DependencyInjectionConfigurator
             .Where(x => x.Resolve())
             .Select(x => x.GetGenericDefinitionTypeIfNeed())
             .GroupBy(x => x.InterfaceType)
-            .ToArray();
-
-        foreach (var registrationGroup in registrations)
-        {
-            container.RegisterGroup(registrationGroup);
-        }
+            .Foreach(container.RegisterGroup);
 
         return container;
     }
