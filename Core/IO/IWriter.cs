@@ -1,4 +1,4 @@
-namespace Core.IO;
+namespace Maestro.Core.IO;
 
 public interface IWriter
 {

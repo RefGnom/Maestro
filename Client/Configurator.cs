@@ -1,12 +1,12 @@
-﻿using Core;
-using Core.IO;
-using Core.Logging;
-using Core.Providers;
-using Data.Factories;
+﻿using Maestro.Core;
+using Maestro.Core.IO;
+using Maestro.Core.Logging;
+using Maestro.Core.Providers;
+using Maestro.Data.Factories;
 using Microsoft.Extensions.Configuration;
 using SimpleInjector;
 
-namespace Client;
+namespace Maestro.Client;
 
 public static class Configurator
 {

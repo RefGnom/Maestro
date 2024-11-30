@@ -1,4 +1,4 @@
-﻿namespace Core.Result;
+﻿namespace Maestro.Core.Result;
 
 public class Result<T>
 {

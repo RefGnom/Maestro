@@ -1,6 +1,6 @@
-﻿using Data.Models;
+﻿using Maestro.Data.Models;
 
-namespace Data.Factories;
+namespace Maestro.Data.Factories;
 
 public class EventFactory(IGuidFactory guidFactory) : IEventFactory
 {

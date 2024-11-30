@@ -1,7 +1,7 @@
 using System.Globalization;
-using Core.Result;
+using Maestro.Core.Result;
 
-namespace Core.Providers;
+namespace Maestro.Core.Providers;
 
 public class DateTimeProvider : IDateTimeProvider
 {

@@ -1,4 +1,4 @@
-﻿namespace Core.Providers;
+﻿namespace Maestro.Core.Providers;
 
 public interface ISettingsProvider
 {

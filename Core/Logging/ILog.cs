@@ -1,4 +1,4 @@
-namespace Core.Logging;
+namespace Maestro.Core.Logging;
 
 public interface ILog<TContext>
 {

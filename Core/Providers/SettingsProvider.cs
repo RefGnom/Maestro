@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace Core.Providers;
+namespace Maestro.Core.Providers;
 
 public class SettingsProvider(IConfiguration settings) : ISettingsProvider
 {

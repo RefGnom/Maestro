@@ -1,8 +1,8 @@
-﻿using Client.Models;
-using Core.Providers;
-using Core.Result;
+﻿using Maestro.Client.Models;
+using Maestro.Core.Providers;
+using Maestro.Core.Result;
 
-namespace Client;
+namespace Maestro.Client;
 
 public class MessagesParser(IDateTimeProvider dateTimeProvider) : IMessageParser
 {

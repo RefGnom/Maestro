@@ -1,12 +1,12 @@
-﻿using Core;
-using Core.Logging;
-using Core.Providers;
-using Data.Factories;
+﻿using Maestro.Core;
+using Maestro.Core.Logging;
+using Maestro.Core.Providers;
+using Maestro.Data.Factories;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace Client;
+namespace Maestro.Client;
 
 public class MaestroService(
     ILog<MaestroService> logger,

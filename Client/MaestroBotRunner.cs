@@ -1,10 +1,10 @@
-﻿using Core.Logging;
-using Core.Providers;
+﻿using Maestro.Core.Logging;
+using Maestro.Core.Providers;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types.Enums;
 
-namespace Client;
+namespace Maestro.Client;
 
 internal class MaestroBotRunner
 {
