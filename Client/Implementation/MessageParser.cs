@@ -2,7 +2,7 @@
 using Maestro.Core.Providers;
 using Maestro.Core.Result;
 
-namespace Maestro.Client;
+namespace Maestro.Client.Implementation;
 
 public class MessagesParser(IDateTimeProvider dateTimeProvider) : IMessageParser
 {
@@ -23,8 +23,13 @@ public class MessagesParser(IDateTimeProvider dateTimeProvider) : IMessageParser
             var dateTimeParseResult = dateTimeProvider.TryParse(time, date);
             if (dateTimeParseResult.IsSuccessful)
             {
-                return Result.CreateSuccess(new Message(command, dateTimeParseResult.Value,
-                    string.Join(" ", parts.Skip(3))));
+                return Result.CreateSuccess(
+                    new Message(
+                        command,
+                        dateTimeParseResult.Value,
+                        string.Join(" ", parts.Skip(3))
+                    )
+                );
             }
         }
         else
@@ -32,8 +37,13 @@ public class MessagesParser(IDateTimeProvider dateTimeProvider) : IMessageParser
             var timeParseResult = dateTimeProvider.TryParse(date);
             if (timeParseResult.IsSuccessful)
             {
-                return Result.CreateSuccess(new Message(command, timeParseResult.Value,
-                    string.Join(" ", parts.Skip(2))));
+                return Result.CreateSuccess(
+                    new Message(
+                        command,
+                        timeParseResult.Value,
+                        string.Join(" ", parts.Skip(2))
+                    )
+                );
             }
         }
 

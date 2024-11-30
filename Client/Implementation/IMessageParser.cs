@@ -1,7 +1,7 @@
 ﻿using Maestro.Client.Models;
 using Maestro.Core.Result;
 
-namespace Maestro.Client;
+namespace Maestro.Client.Implementation;
 
 public interface IMessageParser
 {

@@ -6,7 +6,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace Maestro.Client;
+namespace Maestro.Client.Implementation;
 
 public class MaestroService(
     ILog<MaestroService> logger,
