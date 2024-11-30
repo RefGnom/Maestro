@@ -1,4 +1,5 @@
-﻿using Maestro.Core.Providers;
+﻿using System.Reflection;
+using Maestro.Core.Providers;
 using Microsoft.Extensions.Configuration;
 using SimpleInjector;
 
@@ -46,6 +47,17 @@ public static class DependencyInjectionConfigurator
             .AddJsonFile(settingsName, optional: false, reloadOnChange: true)
             .Build();
         container.RegisterInstance<ISettingsProvider>(new SettingsProvider(configuration));
+        return container;
+    }
+
+    public static Container ConfigureApplication(this Container container)
+    {
+        var applicationType = Assembly
+            .GetEntryAssembly()!
+            .GetExportedTypes()
+            .Single(x => x.GetInterfaces().Contains(typeof(IApplication)));
+
+        container.RegisterSingleton(applicationType, applicationType);
         return container;
     }
 }
