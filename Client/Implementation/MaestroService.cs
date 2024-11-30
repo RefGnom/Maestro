@@ -9,7 +9,7 @@ using Telegram.Bot.Types.Enums;
 namespace Maestro.Client.Implementation;
 
 public class MaestroService(
-    ILog<MaestroService> logger,
+    ILog<MaestroService> log,
     IEventsApiService eventsApiService,
     IMessageParser messageParser,
     IDateTimeProvider dateTimeProvider,
@@ -17,6 +17,12 @@ public class MaestroService(
 )
     : IMaestroService
 {
+    private readonly ILog<MaestroService> _log = log;
+    private readonly IEventsApiService _eventsApiService = eventsApiService;
+    private readonly IMessageParser _messageParser = messageParser;
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
+    private readonly IEventFactory _eventFactory = eventFactory;
+
     public async Task UpdateHandler(ITelegramBotClient bot, Update update, CancellationToken cancellationToken)
     {
         if (update.Type != UpdateType.Message || update.Message is null)
@@ -24,10 +30,10 @@ public class MaestroService(
             return;
         }
 
-        var parseResult = messageParser.ParseMessage(update.Message.Text);
+        var parseResult = _messageParser.ParseMessage(update.Message.Text);
         if (!parseResult.IsSuccessful)
         {
-            logger.Warn(parseResult.Message);
+            _log.Warn(parseResult.Message);
             await bot.SendMessage(
                 update.Message.Chat.Id,
                 "Чтобы создать новое напоминание используйте команду /create {время напоминания} {описание}.",
@@ -36,10 +42,10 @@ public class MaestroService(
             return;
         }
 
-        if (parseResult.Value.ReminderTime < dateTimeProvider.GetCurrentDateTime())
+        if (parseResult.Value.ReminderTime < _dateTimeProvider.GetCurrentDateTime())
         {
             var errorMessage = "Reminder time is less than current time";
-            logger.Warn(errorMessage);
+            _log.Warn(errorMessage);
             await bot.SendMessage(
                 update.Message.Chat.Id,
                 errorMessage,
@@ -48,14 +54,14 @@ public class MaestroService(
         }
 
         var message = parseResult.Value;
-        await eventsApiService.CreateAsync(
-            eventFactory.Create(
+        await _eventsApiService.CreateAsync(
+            _eventFactory.Create(
                 update.Message.Chat.Id,
                 message.Description,
                 message.ReminderTime
             )
         );
-        logger.Info("Event created");
+        _log.Info("Event created");
         await bot.SendMessage(
             update.Message.Chat.Id,
             $"Напоминание \"{parseResult.Value.Description}\" создано на время {parseResult.Value
@@ -66,7 +72,7 @@ public class MaestroService(
 
     public async Task ErrorHandler(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
-        logger.Error(exception.Message);
+        _log.Error(exception.Message);
         await Task.CompletedTask;
     }
 }

@@ -26,7 +26,7 @@ public static class AssemblyHelper
     private static bool IsCorrectName(string? path)
     {
         var fileName = Path.GetFileName(path);
-        return fileName != null && fileName.StartsWith(serviceName, StringComparison.OrdinalIgnoreCase);
+        return fileName is not null && fileName.StartsWith(serviceName, StringComparison.OrdinalIgnoreCase);
     }
 
 }

@@ -27,7 +27,7 @@ public static class DependencyInjectionConfigurator
             .Where(x => x.Resolve())
             .Select(x => x.GetGenericDefinitionTypeIfNeed())
             .GroupBy(x => x.InterfaceType)
-            .Foreach(container.RegisterGroup);
+            .ForEach(container.RegisterGroup);
 
         return container;
     }
