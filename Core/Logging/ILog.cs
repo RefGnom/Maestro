@@ -1,6 +1,6 @@
 namespace Core.Logging;
 
-public interface ILog
+public interface ILog<TContext>
 {
     void Info(string message);
     void Warn(string message);

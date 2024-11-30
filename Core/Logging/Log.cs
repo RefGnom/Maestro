@@ -4,7 +4,7 @@ using Core.Providers;
 
 namespace Core.Logging;
 
-public class Log(IDateTimeProvider dateTimeProvider, IWriter writer, string context = "Program.Main") : ILog
+public class Log<TContext>(IDateTimeProvider dateTimeProvider, IWriter writer) : ILog<TContext>
 {
     public void Info(string message)
     {
@@ -25,7 +25,7 @@ public class Log(IDateTimeProvider dateTimeProvider, IWriter writer, string cont
     {
         writer.WriteLine(
             $"[{dateTimeProvider.GetCurrentDateTime().ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture)}] " +
-            $"[{context}] " +
+            $"[{typeof(TContext)}] " +
             $"[{level}] " +
             $"{message}",
             color

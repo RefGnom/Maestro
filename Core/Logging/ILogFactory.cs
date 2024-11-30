@@ -2,5 +2,5 @@ namespace Core.Logging;
 
 public interface ILogFactory
 {
-    ILog ForContext<T>();
+    ILog<T> ForContext<T>();
 }
