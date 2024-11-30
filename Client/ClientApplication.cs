@@ -21,6 +21,9 @@ public class ClientApplication(ISettingsProvider settingsProvider, IMaestroServi
         DropPendingUpdates = true
     };
 
+    private readonly IMaestroService _maestroService = maestroService;
+    private readonly ILog<ClientApplication> _log = log;
+
     public void SetUp()
     {
     }
@@ -28,11 +31,11 @@ public class ClientApplication(ISettingsProvider settingsProvider, IMaestroServi
     public Task RunAsync()
     {
         _botClient.StartReceiving(
-            maestroService.UpdateHandler,
-            maestroService.ErrorHandler,
+            _maestroService.UpdateHandler,
+            _maestroService.ErrorHandler,
             _receiverOptions
         );
-        log.Info("Telegram client started");
+        _log.Info("Telegram client started");
         return Task.CompletedTask;
     }
 }

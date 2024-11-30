@@ -6,6 +6,8 @@ namespace Maestro.Client.Implementation;
 
 public class MessagesParser(IDateTimeProvider dateTimeProvider) : IMessageParser
 {
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
+
     public Result<Message> ParseMessage(string message)
     {
         if (!message.StartsWith("/create"))
@@ -20,7 +22,7 @@ public class MessagesParser(IDateTimeProvider dateTimeProvider) : IMessageParser
         var hasDate = time.All(c => !char.IsLetter(c));
         if (hasDate)
         {
-            var dateTimeParseResult = dateTimeProvider.TryParse(time, date);
+            var dateTimeParseResult = _dateTimeProvider.TryParse(time, date);
             if (dateTimeParseResult.IsSuccessful)
             {
                 return Result.CreateSuccess(
@@ -34,7 +36,7 @@ public class MessagesParser(IDateTimeProvider dateTimeProvider) : IMessageParser
         }
         else
         {
-            var timeParseResult = dateTimeProvider.TryParse(date);
+            var timeParseResult = _dateTimeProvider.TryParse(date);
             if (timeParseResult.IsSuccessful)
             {
                 return Result.CreateSuccess(

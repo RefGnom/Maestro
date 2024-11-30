@@ -6,6 +6,9 @@ namespace Maestro.Core.Logging;
 
 public class Log<TContext>(IDateTimeProvider dateTimeProvider, IWriter writer) : ILog<TContext>
 {
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
+    private readonly IWriter _writer = writer;
+
     public void Info(string message)
     {
         LogEvent("Info", message, ConsoleColor.Gray);
@@ -23,8 +26,8 @@ public class Log<TContext>(IDateTimeProvider dateTimeProvider, IWriter writer) :
 
     private void LogEvent(string level, string message, ConsoleColor color)
     {
-        writer.WriteLine(
-            $"[{dateTimeProvider.GetCurrentDateTime().ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture)}] " +
+        _writer.WriteLine(
+            $"[{_dateTimeProvider.GetCurrentDateTime().ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture)}] " +
             $"[{typeof(TContext)}] " +
             $"[{level}] " +
             $"{message}",
