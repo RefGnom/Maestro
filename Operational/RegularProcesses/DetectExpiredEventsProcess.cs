@@ -5,7 +5,7 @@ namespace Maestro.Operational.RegularProcesses;
 
 public class DetectExpiredEventsProcess(ILogFactory logFactory) : RegularProcessBase(logFactory.CreateLog<DetectExpiredEventsProcess>())
 {
-    public override string ProcessName => "Процесс по очищению истёкших эвентов";
+    public override string ProcessName => ProcessNames.DetectExpiredEventsProcessName;
     public override bool IsActiveByDefault => true;
     protected override TimeSpan Timeout => TimeSpan.FromSeconds(3);
 
