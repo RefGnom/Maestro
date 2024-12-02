@@ -1,20 +1,11 @@
-﻿using Data;
-using SimpleInjector;
+﻿using Maestro.Core.Configuration;
 
-namespace Client;
+namespace Maestro.Client;
 
 internal static class Program
 {
     private static async Task Main()
     {
-        var container = new Container();
-        container.ConfigureServices()
-            .ConfigureSettings();
-        await using var dataContext = await DataContext.GetAsync();
-        var tcs = new TaskCompletionSource();
-        var cts = new CancellationTokenSource();
-        var bot = container.GetInstance<MaestroBotRunner>();
-        bot.Start(cts);
-        await tcs.Task;
+        await ApplicationRunner.RunAsync<ClientApplication, ClientConfigurator>();
     }
 }

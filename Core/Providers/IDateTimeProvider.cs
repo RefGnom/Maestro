@@ -1,6 +1,6 @@
-using Core.Result;
+using Maestro.Core.Result;
 
-namespace Core.Providers;
+namespace Maestro.Core.Providers;
 
 public interface IDateTimeProvider
 {

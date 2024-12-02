@@ -1,11 +1,14 @@
 using System.Globalization;
-using Core.IO;
-using Core.Providers;
+using Maestro.Core.IO;
+using Maestro.Core.Providers;
 
-namespace Core.Logging;
+namespace Maestro.Core.Logging;
 
-public class Log(IDateTimeProvider dateTimeProvider, IWriter writer, string context = "Program.Main") : ILog
+public class Log<TContext>(IDateTimeProvider dateTimeProvider, IWriter writer) : ILog<TContext>
 {
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
+    private readonly IWriter _writer = writer;
+
     public void Info(string message)
     {
         LogEvent("Info", message, ConsoleColor.Gray);
@@ -23,9 +26,9 @@ public class Log(IDateTimeProvider dateTimeProvider, IWriter writer, string cont
 
     private void LogEvent(string level, string message, ConsoleColor color)
     {
-        writer.WriteLine(
-            $"[{dateTimeProvider.GetCurrentDateTime().ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture)}] " +
-            $"[{context}] " +
+        _writer.WriteLine(
+            $"[{_dateTimeProvider.GetCurrentDateTime().ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture)}] " +
+            $"[{typeof(TContext)}] " +
             $"[{level}] " +
             $"{message}",
             color

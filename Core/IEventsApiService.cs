@@ -1,6 +1,6 @@
-﻿using Data.Models;
+﻿using Maestro.Data.Models;
 
-namespace Core;
+namespace Maestro.Core;
 
 public interface IEventsApiService
 {

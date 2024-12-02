@@ -1,4 +1,4 @@
-namespace Data.Models;
+namespace Maestro.Data.Models;
 
 public class User
 {

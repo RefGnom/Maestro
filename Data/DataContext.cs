@@ -1,7 +1,7 @@
 using System.Text.Json;
-using Data.Models;
+using Maestro.Data.Models;
 
-namespace Data;
+namespace Maestro.Data;
 
 public class DataContext : IAsyncDisposable
 {
