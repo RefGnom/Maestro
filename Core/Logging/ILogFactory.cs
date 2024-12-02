@@ -2,5 +2,6 @@ namespace Maestro.Core.Logging;
 
 public interface ILogFactory
 {
-    ILog<T> ForContext<T>();
+    ILog<T> CreateGenericLog<T>();
+    ILog CreateLog<T>();
 }

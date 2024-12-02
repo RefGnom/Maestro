@@ -11,8 +11,13 @@ public class LogFactory(IDateTimeProvider dateTimeProvider, IWriter writer) : IL
     [Obsolete("Не использовать. Нужен для логов на этапе конфигурации")]
     public static LogFactory ClosedFactory => new(new DateTimeProvider(), new Writer());
 
-    public ILog<T> ForContext<T>()
+    public ILog<T> CreateGenericLog<T>()
     {
         return new Log<T>(_dateTimeProvider, _writer);
+    }
+
+    public ILog CreateLog<T>()
+    {
+        return new Log(_dateTimeProvider, _writer, typeof(T).ToString());
     }
 }
