@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Maestro.Core.Linq;
-using Maestro.Core.Logging;
 using Maestro.Core.Providers;
 using Microsoft.Extensions.Configuration;
 using SimpleInjector;
@@ -36,25 +35,10 @@ public static class DependencyInjectionConfigurator
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile(settingsName, optional: false, reloadOnChange: true)
-            .SetFileLoadExceptionHandler(HandleFileLoadException)
+            .AddJsonFile(settingsName, optional: true, reloadOnChange: true)
             .Build();
         container.RegisterInstance<ISettingsProvider>(new SettingsProvider(configuration));
         return container;
-
-        void HandleFileLoadException(FileLoadExceptionContext fileLoadExceptionContext)
-        {
-            if (fileLoadExceptionContext.Exception is not FileNotFoundException)
-            {
-                throw fileLoadExceptionContext.Exception;
-            }
-
-#pragma warning disable CS0618 // Type or member is obsolete
-            var log = LogFactory.ClosedFactory.ForContext<ConfiguratorBase>();
-#pragma warning restore CS0618 // Type or member is obsolete
-            log.Warn(fileLoadExceptionContext.Exception.Message);
-            fileLoadExceptionContext.Ignore = true;
-        }
     }
 
     public static Container ConfigureApplication(this Container container)
