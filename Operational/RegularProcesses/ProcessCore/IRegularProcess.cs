@@ -1,4 +1,4 @@
-﻿namespace Operational.RegularProcesses.ProcessCore;
+﻿namespace Maestro.Operational.RegularProcesses.ProcessCore;
 
 public interface IRegularProcess
 {

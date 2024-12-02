@@ -1,6 +1,6 @@
 ﻿using Maestro.Core.Configuration;
 
-namespace Operational;
+namespace Maestro.Operational;
 
 public class OperationalConfigurator : ConfiguratorBase
 {
