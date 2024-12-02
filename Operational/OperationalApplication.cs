@@ -1,12 +1,13 @@
 ﻿using Maestro.Core.Configuration;
-using Operational.RegularProcesses.ProcessCore;
+using Maestro.Core.Linq;
+using Maestro.Operational.RegularProcesses.ProcessCore;
 
-namespace Operational;
+namespace Maestro.Operational;
 
-public class OperationalApplication(IProcessRunner processRunner, IRegularProcess regularProcess) : IApplication
+public class OperationalApplication(IProcessRunner processRunner, IEnumerable<IRegularProcess> regularProcesses) : IApplication
 {
     private readonly IProcessRunner _processRunner = processRunner;
-    private readonly IRegularProcess _regularProcess = regularProcess;
+    private readonly IRegularProcess[] _regularProcesses = regularProcesses.ToArray();
 
     public void SetUp()
     {
@@ -14,7 +15,7 @@ public class OperationalApplication(IProcessRunner processRunner, IRegularProces
 
     public async Task RunAsync()
     {
-        _processRunner.RegisterProcess(_regularProcess);
+        _regularProcesses.ForEach(_processRunner.RegisterProcess);
         await _processRunner.RunAsync();
     }
 }

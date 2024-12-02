@@ -1,6 +1,6 @@
 ﻿using Maestro.Core.Configuration;
 
-namespace Operational;
+namespace Maestro.Operational;
 
 public static class EntryPoint
 {
