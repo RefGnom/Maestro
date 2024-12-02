@@ -1,5 +1,5 @@
 ﻿using System.Timers;
-using Core.Logging;
+using Maestro.Core.Logging;
 using Timer = System.Timers.Timer;
 
 namespace Operational.RegularProcesses.ProcessCore;
@@ -21,7 +21,7 @@ public abstract class RegularProcessBase : IRegularProcess
     public abstract bool IsActiveByDefault { get; }
     protected abstract TimeSpan Timeout { get; }
 
-    public abstract Task RunAsync();
+    protected abstract Task RunAsync();
 
     public Task StartAsync(bool isRepeat = true)
     {
@@ -41,7 +41,7 @@ public abstract class RegularProcessBase : IRegularProcess
 
     public Task StopAsync()
     {
-        _log.Info("Stoping regular process");
+        _log.Info("Stopping regular process");
         _timer.Stop();
 
         return Task.CompletedTask;
