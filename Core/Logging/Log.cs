@@ -1,4 +1,5 @@
 using System.Globalization;
+using Maestro.Core.Configuration.ConfigurationAttributes;
 using Maestro.Core.IO;
 using Maestro.Core.Providers;
 
@@ -36,6 +37,7 @@ public class Log<TContext>(IDateTimeProvider dateTimeProvider, IWriter writer) :
     }
 }
 
+[ConfigurationIgnore]
 public class Log(IDateTimeProvider dateTimeProvider, IWriter writer, string context) : ILog
 {
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
