@@ -1,12 +1,12 @@
-﻿using Maestro.Client.Implementation;
-using Maestro.Core.Configuration;
+﻿using Maestro.Core.Configuration;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
+using Maestro.TelegramIntegrator.Implementation;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types.Enums;
 
-namespace Maestro.Client;
+namespace Maestro.TelegramIntegrator;
 
 public class ClientApplication(ISettingsProvider settingsProvider, IMaestroService maestroService, ILog<ClientApplication> log) : IApplication
 {

@@ -1,8 +1,8 @@
-﻿using Maestro.Client.Models;
-using Maestro.Core.Providers;
+﻿using Maestro.Core.Providers;
 using Maestro.Core.Result;
+using Maestro.TelegramIntegrator.Models;
 
-namespace Maestro.Client.Implementation;
+namespace Maestro.TelegramIntegrator.Implementation;
 
 public class MessagesParser(IDateTimeProvider dateTimeProvider) : IMessageParser
 {
