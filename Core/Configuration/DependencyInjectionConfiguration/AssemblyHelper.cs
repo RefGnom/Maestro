@@ -4,7 +4,7 @@ namespace Maestro.Core.Configuration.DependencyInjectionConfiguration;
 
 public static class AssemblyHelper
 {
-    private const string serviceName = "Maestro";
+    private const string ServiceName = "Maestro";
     private static readonly string[] ExtensionTemplates = [".exe", ".dll"];
 
     public static Assembly[] GetServiceAssemblies()
@@ -26,7 +26,7 @@ public static class AssemblyHelper
     private static bool IsCorrectName(string? path)
     {
         var fileName = Path.GetFileName(path);
-        return fileName is not null && fileName.StartsWith(serviceName, StringComparison.OrdinalIgnoreCase);
+        return fileName is not null && fileName.StartsWith(ServiceName, StringComparison.OrdinalIgnoreCase);
     }
 
 }

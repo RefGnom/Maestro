@@ -1,4 +1,4 @@
-﻿using Maestro.Core;
+﻿using Maestro.Client;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
 using Maestro.Data.Factories;
@@ -6,11 +6,11 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace Maestro.Client.Implementation;
+namespace Maestro.TelegramIntegrator.Implementation;
 
 public class MaestroService(
     ILog<MaestroService> log,
-    IEventsApiService eventsApiService,
+    IEventsApiClient eventsApiClient,
     IMessageParser messageParser,
     IDateTimeProvider dateTimeProvider,
     IEventFactory eventFactory
@@ -18,7 +18,7 @@ public class MaestroService(
     : IMaestroService
 {
     private readonly ILog<MaestroService> _log = log;
-    private readonly IEventsApiService _eventsApiService = eventsApiService;
+    private readonly IEventsApiClient _eventsApiClient = eventsApiClient;
     private readonly IMessageParser _messageParser = messageParser;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
     private readonly IEventFactory _eventFactory = eventFactory;
@@ -54,7 +54,7 @@ public class MaestroService(
         }
 
         var message = parseResult.Value;
-        await _eventsApiService.CreateAsync(
+        await _eventsApiClient.CreateAsync(
             _eventFactory.Create(
                 update.Message.Chat.Id,
                 message.Description,

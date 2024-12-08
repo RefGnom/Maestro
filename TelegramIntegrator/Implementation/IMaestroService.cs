@@ -1,7 +1,7 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace Maestro.Client.Implementation;
+namespace Maestro.TelegramIntegrator.Implementation;
 
 public interface IMaestroService
 {
