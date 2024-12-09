@@ -1,6 +1,6 @@
 ﻿using Maestro.Core.Configuration;
 
-namespace Maestro.Client;
+namespace Maestro.TelegramIntegrator;
 
 public class ClientConfigurator : ConfiguratorBase
 {

@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using Maestro.Core.Linq;
+using Maestro.Core.Extensions;
 using Maestro.Core.Providers;
 using Microsoft.Extensions.Configuration;
 using SimpleInjector;

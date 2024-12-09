@@ -4,9 +4,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{EA04D4E7-0A5E-409E-840C-07250C15FDEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{71A59A78-3A2A-4742-A379-4B0A32CC3518}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramIntegrator", "TelegramIntegrator\TelegramIntegrator.csproj", "{71A59A78-3A2A-4742-A379-4B0A32CC3518}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{31882AF3-F4AF-4C05-A2CF-55CA14AFF9F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{E1982B0C-AC33-4FFD-9FCF-83D5E39E79FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{F2C7BD01-057E-494B-AD04-05A1BC8691E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +34,13 @@ Global
 		{31882AF3-F4AF-4C05-A2CF-55CA14AFF9F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31882AF3-F4AF-4C05-A2CF-55CA14AFF9F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31882AF3-F4AF-4C05-A2CF-55CA14AFF9F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1982B0C-AC33-4FFD-9FCF-83D5E39E79FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1982B0C-AC33-4FFD-9FCF-83D5E39E79FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1982B0C-AC33-4FFD-9FCF-83D5E39E79FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1982B0C-AC33-4FFD-9FCF-83D5E39E79FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2C7BD01-057E-494B-AD04-05A1BC8691E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2C7BD01-057E-494B-AD04-05A1BC8691E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2C7BD01-057E-494B-AD04-05A1BC8691E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2C7BD01-057E-494B-AD04-05A1BC8691E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

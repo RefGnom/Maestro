@@ -1,4 +1,4 @@
-﻿namespace Maestro.Core.Linq;
+﻿namespace Maestro.Core.Extensions;
 
 public static class LinqExtensions
 {
