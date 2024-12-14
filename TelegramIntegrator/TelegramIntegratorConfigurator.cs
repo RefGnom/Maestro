@@ -2,6 +2,6 @@
 
 namespace Maestro.TelegramIntegrator;
 
-public class ClientConfigurator : ConfiguratorBase
+public class TelegramIntegratorConfigurator : ConfiguratorBase
 {
 }

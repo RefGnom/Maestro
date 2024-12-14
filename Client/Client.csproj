@@ -7,9 +7,4 @@
         <AssemblyName>Maestro.Client</AssemblyName>
         <RootNamespace>Maestro.Client</RootNamespace>
     </PropertyGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Data\Data.csproj" />
-    </ItemGroup>
-
 </Project>
