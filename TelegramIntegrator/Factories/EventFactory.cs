@@ -1,5 +1,5 @@
-﻿using Maestro.Client.Models;
-using Maestro.Core.Factories;
+﻿using Maestro.Core.Factories;
+using Maestro.Core.Models;
 
 namespace Maestro.TelegramIntegrator.Factories;
 
@@ -9,6 +9,6 @@ public class EventFactory(IGuidFactory guidFactory) : IEventFactory
 
     public EventDto Create(long userId, string description, DateTime reminderTime, TimeSpan reminderTimeDuration)
     {
-        return new EventDto(_guidFactory.Create(), userId, 1, description, reminderTime, reminderTimeDuration);
+        return new EventDto(userId, description, reminderTime, reminderTimeDuration);
     }
 }

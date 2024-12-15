@@ -1,4 +1,4 @@
-﻿using Maestro.Client.Models;
+﻿using Maestro.Core.Models;
 
 namespace Maestro.TelegramIntegrator.Factories;
 

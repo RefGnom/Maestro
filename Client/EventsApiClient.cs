@@ -1,4 +1,4 @@
-﻿using Maestro.Client.Models;
+﻿using Maestro.Core.Models;
 
 namespace Maestro.Client;
 
@@ -17,10 +17,6 @@ public class EventsApiClient : IEventsApiClient
         throw new NotImplementedException();
     }
     public Task<EventDto[]> SelectEventsForUserAsync(long userId, DateTime inclusiveStartDate, DateTime exclusiveEndDate)
-    {
-        throw new NotImplementedException();
-    }
-    public Task<EventDto[]> SelectEventsForIntegratorAsync(long integratorId)
     {
         throw new NotImplementedException();
     }
