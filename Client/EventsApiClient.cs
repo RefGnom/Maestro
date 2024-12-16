@@ -4,31 +4,27 @@ namespace Maestro.Client;
 
 public class EventsApiClient : IEventsApiClient
 {
-    public Task CreateAsync(EventDto @event)
+    public Task CreateAsync(NotificationDto notification)
     {
         throw new NotImplementedException();
     }
-    public Task<EventDto?> FindAsync(long id)
+    public Task<NotificationDto?> FindAsync(long id)
     {
         throw new NotImplementedException();
     }
-    public Task<EventDto[]> SelectEventsForUserAsync(long userId)
+    public Task<NotificationDto[]> SelectEventsForUserAsync(long userId)
     {
         throw new NotImplementedException();
     }
-    public Task<EventDto[]> SelectEventsForUserAsync(long userId, DateTime inclusiveStartDate, DateTime exclusiveEndDate)
+    public Task<NotificationDto[]> SelectEventsForUserAsync(long userId, DateTime inclusiveStartDate, DateTime exclusiveEndDate)
     {
         throw new NotImplementedException();
     }
-    public Task DeleteCompletedEvents()
+    public Task MarkEventsAsCompletedAsync(params long[] eventIds)
     {
         throw new NotImplementedException();
     }
-    public Task DeleteExpiredEvents(DateTime expirationTime)
-    {
-        throw new NotImplementedException();
-    }
-    public Task MarkEventsAsCompleted(long[] eventIds)
+    public Task DeleteEventAsync(long eventId)
     {
         throw new NotImplementedException();
     }
