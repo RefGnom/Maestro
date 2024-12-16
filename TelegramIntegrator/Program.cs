@@ -6,6 +6,6 @@ internal static class Program
 {
     private static async Task Main()
     {
-        await ApplicationRunner.RunAsync<ClientApplication, ClientConfigurator>();
+        await ApplicationRunner.RunAsync<TelegramIntegratorApplication, TelegramIntegratorConfigurator>();
     }
 }

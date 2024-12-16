@@ -8,7 +8,11 @@ using Telegram.Bot.Types.Enums;
 
 namespace Maestro.TelegramIntegrator;
 
-public class ClientApplication(ISettingsProvider settingsProvider, IMaestroService maestroService, ILog<ClientApplication> log) : IApplication
+public class TelegramIntegratorApplication(
+    ISettingsProvider settingsProvider,
+    IMaestroCommandHandler maestroCommandHandler,
+    ILog<TelegramIntegratorApplication> log
+) : IApplication
 {
     private readonly ITelegramBotClient _botClient = new TelegramBotClient(settingsProvider.Get("TelegramBotToken"));
 
@@ -21,8 +25,8 @@ public class ClientApplication(ISettingsProvider settingsProvider, IMaestroServi
         DropPendingUpdates = true
     };
 
-    private readonly IMaestroService _maestroService = maestroService;
-    private readonly ILog<ClientApplication> _log = log;
+    private readonly IMaestroCommandHandler _maestroCommandHandler = maestroCommandHandler;
+    private readonly ILog<TelegramIntegratorApplication> _log = log;
 
     public void SetUp()
     {
@@ -31,8 +35,8 @@ public class ClientApplication(ISettingsProvider settingsProvider, IMaestroServi
     public Task RunAsync()
     {
         _botClient.StartReceiving(
-            _maestroService.UpdateHandler,
-            _maestroService.ErrorHandler,
+            _maestroCommandHandler.UpdateHandler,
+            _maestroCommandHandler.ErrorHandler,
             _receiverOptions
         );
         _log.Info("Telegram client started");

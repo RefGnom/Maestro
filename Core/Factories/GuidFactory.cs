@@ -1,4 +1,4 @@
-﻿namespace Maestro.Data.Factories;
+﻿namespace Maestro.Core.Factories;
 
 public class GuidFactory : IGuidFactory
 {
