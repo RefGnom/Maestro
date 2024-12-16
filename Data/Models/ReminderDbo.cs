@@ -1,6 +1,6 @@
 ﻿namespace Maestro.Data.Models;
 
-public record NotificationDbo(
+public record ReminderDbo(
     long Id,
     long UserId,
     long IntegratorId,

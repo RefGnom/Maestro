@@ -45,7 +45,7 @@ public class MaestroCommandHandler(
             }
 
             await _eventsApiClient.CreateAsync(
-                NotificationDto.Create(
+                ReminderDto.Create(
                     update.Message.Chat.Id,
                     message.Description,
                     message.ReminderTime,

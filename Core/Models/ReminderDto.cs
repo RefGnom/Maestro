@@ -1,6 +1,6 @@
 ﻿namespace Maestro.Core.Models;
 
-public record NotificationDto(
+public record ReminderDto(
     long Id,
     long UserId,
     string Description,
@@ -10,7 +10,7 @@ public record NotificationDto(
     bool IsCompleted
 )
 {
-    public static NotificationDto Create(
+    public static ReminderDto Create(
         long userId,
         string description,
         DateTime reminderTime,
@@ -18,6 +18,6 @@ public record NotificationDto(
         bool isRepeatable
     )
     {
-        return new NotificationDto(0, userId, description, reminderTime, reminderTimeDuration, isRepeatable, false);
+        return new ReminderDto(0, userId, description, reminderTime, reminderTimeDuration, isRepeatable, false);
     }
 }
