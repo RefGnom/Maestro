@@ -1,13 +1,8 @@
 ﻿namespace Maestro.Operational.ProcessesCore;
 
-public class ProcessRunner : IProcessRunner
+public class ProcessRunner(IProcessProvider processProvider) : IProcessRunner
 {
-    private readonly List<IRegularProcess> _regularProcesses = [];
-
-    public void RegisterProcess(IRegularProcess regularProcess)
-    {
-        _regularProcesses.Add(regularProcess);
-    }
+    private readonly IRegularProcess[] _regularProcesses = processProvider.SelectAll();
 
     public async Task RunAsync()
     {
