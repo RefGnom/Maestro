@@ -4,10 +4,10 @@ using Timer = System.Timers.Timer;
 
 namespace Maestro.Operational.ProcessesCore;
 
-public abstract class RegularProcessBase : IRegularProcess
+public abstract class RegularProcessBase<TProcess> : IRegularProcess
 {
     private readonly Timer _timer;
-    private readonly ILog _log;
+    private readonly ILog<TProcess> _log;
     private readonly object _timerLockObject = new object();
 
     public abstract string ProcessName { get; }
@@ -24,7 +24,7 @@ public abstract class RegularProcessBase : IRegularProcess
     }
     protected abstract TimeSpan Timeout { get; }
 
-    protected RegularProcessBase(ILog log)
+    protected RegularProcessBase(ILog<TProcess> log)
     {
         _log = log;
         _timer = new Timer();

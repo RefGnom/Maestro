@@ -9,13 +9,8 @@ public class LogFactory(IDateTimeProvider dateTimeProvider, IWriter writer) : IL
     private readonly IWriter _writer = writer;
 
 
-    public ILog<T> CreateGenericLog<T>()
+    public ILog<T> CreateLog<T>()
     {
         return new Log<T>(_dateTimeProvider, _writer);
-    }
-
-    public ILog CreateLog<T>()
-    {
-        return new Log(_dateTimeProvider, _writer, typeof(T).ToString());
     }
 }
