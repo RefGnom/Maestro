@@ -1,4 +1,4 @@
-﻿namespace Maestro.OperationalCore.ProcessCore;
+﻿namespace Maestro.Operational.ProcessesCore;
 
 public class ProcessProvider(IEnumerable<IRegularProcess> regularProcesses) : IProcessProvider
 {

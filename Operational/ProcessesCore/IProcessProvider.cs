@@ -1,4 +1,4 @@
-﻿namespace Maestro.OperationalCore.ProcessCore;
+﻿namespace Maestro.Operational.ProcessesCore;
 
 public interface IProcessProvider
 {

@@ -2,7 +2,7 @@
 using Maestro.Core.Logging;
 using Timer = System.Timers.Timer;
 
-namespace Maestro.OperationalCore.ProcessCore;
+namespace Maestro.Operational.ProcessesCore;
 
 public abstract class RegularProcessBase : IRegularProcess
 {

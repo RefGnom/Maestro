@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramIntegrator", "Teleg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{31882AF3-F4AF-4C05-A2CF-55CA14AFF9F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OperationalCore", "OperationalCore\OperationalCore.csproj", "{CB5893E4-440E-4340-B82D-589056C33F25}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Operational", "Operational\Operational.csproj", "{CB5893E4-440E-4340-B82D-589056C33F25}"
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{E1982B0C-AC33-4FFD-9FCF-83D5E39E79FD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{F2C7BD01-057E-494B-AD04-05A1BC8691E9}"

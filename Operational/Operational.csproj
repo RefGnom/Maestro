@@ -6,8 +6,8 @@
         <LangVersion>latest</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyName>Maestro.OperationalCore</AssemblyName>
-        <RootNamespace>Maestro.OperationalCore</RootNamespace>
+        <AssemblyName>Maestro.Operational</AssemblyName>
+        <RootNamespace>Maestro.Operational</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
