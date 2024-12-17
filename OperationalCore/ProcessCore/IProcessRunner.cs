@@ -1,4 +1,4 @@
-﻿namespace Maestro.Operational.RegularProcesses.ProcessCore;
+﻿namespace Maestro.OperationalCore.ProcessCore;
 
 public interface IProcessRunner
 {

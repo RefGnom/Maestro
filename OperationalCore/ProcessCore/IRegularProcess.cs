@@ -1,9 +1,10 @@
-﻿namespace Maestro.Operational.RegularProcesses.ProcessCore;
+﻿namespace Maestro.OperationalCore.ProcessCore;
 
 public interface IRegularProcess
 {
     string ProcessName { get; }
     bool IsActiveByDefault { get; }
+    bool IsRan { get; }
     Task StartAsync(bool isRepeat = true);
     Task StopAsync();
 }

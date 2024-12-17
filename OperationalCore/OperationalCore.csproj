@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
+        <OutputType>Library</OutputType>
         <TargetFramework>net8.0</TargetFramework>
-        <LangVersion>default</LangVersion>
+        <LangVersion>latest</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyName>Maestro.Operational</AssemblyName>
-        <RootNamespace>Maestro.Operational</RootNamespace>
+        <AssemblyName>Maestro.OperationalCore</AssemblyName>
+        <RootNamespace>Maestro.OperationalCore</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
