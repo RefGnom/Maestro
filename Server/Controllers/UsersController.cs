@@ -9,7 +9,7 @@ namespace Maestro.Server.Controllers;
 public class UsersController(IUsersRepository usersRepository) : ControllerBase
 {
     private readonly IUsersRepository _usersRepository = usersRepository;
-    
+
     [HttpGet("get")]
     public IActionResult Get()
     {

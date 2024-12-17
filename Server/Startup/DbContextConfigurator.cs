@@ -23,7 +23,6 @@ public static class DbContextConfigurator
     public static void EnsureDbCreated(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
-        
         scope.ServiceProvider.GetRequiredService<DataContext>().Database.EnsureCreated();
         // scope.ServiceProvider.GetRequiredService<DataContext>().Database.Migrate();
     }
