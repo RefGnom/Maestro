@@ -8,23 +8,23 @@ public class EventsApiClient : IEventsApiClient
     {
         throw new NotImplementedException();
     }
+
     public Task<ReminderDto?> FindAsync(long id)
     {
         throw new NotImplementedException();
     }
+
     public Task<ReminderDto[]> SelectEventsForUserAsync(long userId)
     {
         throw new NotImplementedException();
     }
+
     public Task<ReminderDto[]> SelectEventsForUserAsync(long userId, DateTime inclusiveStartDate, DateTime exclusiveEndDate)
     {
         throw new NotImplementedException();
     }
+
     public Task MarkEventsAsCompletedAsync(params long[] eventIds)
-    {
-        throw new NotImplementedException();
-    }
-    public Task DeleteEventAsync(long eventId)
     {
         throw new NotImplementedException();
     }
