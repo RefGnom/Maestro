@@ -24,6 +24,11 @@ public class EventsApiClient : IEventsApiClient
         throw new NotImplementedException();
     }
 
+    public Task<ReminderDto[]> SelectEvents(DateTime inclusiveStartDate, DateTime exclusiveEndDate)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task MarkEventsAsCompletedAsync(params long[] eventIds)
     {
         throw new NotImplementedException();
