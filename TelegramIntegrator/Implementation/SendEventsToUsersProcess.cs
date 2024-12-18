@@ -1,4 +1,5 @@
 ﻿using Maestro.Client;
+using Maestro.Core.Extensions;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
 using Maestro.Operational.ProcessesCore;
@@ -23,20 +24,23 @@ public class SendEventsToUsersProcess(
         var inclusiveStartDate = currentDate.AddMinutes(-2); // почему 2? Хз. Нужно умно определять это число
         var exclusiveEndDate = currentDate.AddMinutes(2);
 
-        var events = await _eventsApiClient.SelectEvents(inclusiveStartDate, exclusiveEndDate);
-        var eventsToSend = events
-            .Where(x => !x.IsCompleted)
-            .Where(x => x.ReminderTime < currentDate)
-            .ToArray();
-
-        foreach (var eventToSend in eventsToSend)
+        int eventsReadCount;
+        do
         {
-            await telegramBotWrapper.SendMessageAsync(eventToSend.UserId, eventToSend.Description);
-        }
+            var events = await _eventsApiClient.SelectEvents(inclusiveStartDate, exclusiveEndDate);
+            var eventsToSend = events
+                .Where(x => !x.IsCompleted)
+                .Where(x => x.ReminderTime < currentDate)
+                .ToArray();
 
-        var sentUserEventIds = eventsToSend.Where(x => !x.IsRepeatable)
-            .Select(x => x.Id)
-            .ToArray();
-        await _eventsApiClient.MarkEventsAsCompletedAsync(sentUserEventIds);
+            await eventsToSend.ForEachAsync(async x => await telegramBotWrapper.SendMessageAsync(x.UserId, x.Description));
+
+            var sentUserEventIds = eventsToSend.Where(x => !x.IsRepeatable)
+                .Select(x => x.Id)
+                .ToArray();
+            await _eventsApiClient.MarkEventsAsCompletedAsync(sentUserEventIds);
+
+            eventsReadCount = events.Length;
+        } while (eventsReadCount == 100);
     }
 }
