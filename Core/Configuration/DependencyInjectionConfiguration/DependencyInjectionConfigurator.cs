@@ -2,16 +2,16 @@
 using Maestro.Core.Extensions;
 using Maestro.Core.Providers;
 using Microsoft.Extensions.Configuration;
-using SimpleInjector;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Maestro.Core.Configuration.DependencyInjectionConfiguration;
 
 public static class DependencyInjectionConfigurator
 {
-    private const string settingsName = "appsettings.json";
-    private static readonly Lifestyle LifestyleByDefault = Lifestyle.Singleton;
+    private const string SettingsName = "appsettings.json";
+    private const ServiceLifetime LifestyleByDefault = ServiceLifetime.Singleton;
 
-    public static Container Configure(this Container container)
+    public static IServiceCollection Configure(this IServiceCollection container)
     {
         var assemblies = AssemblyHelper.GetServiceAssemblies();
 
@@ -31,46 +31,41 @@ public static class DependencyInjectionConfigurator
         return container;
     }
 
-    public static Container ConfigureSettings(this Container container)
+    public static IServiceCollection ConfigureSettings(this IServiceCollection container)
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile(settingsName, optional: true, reloadOnChange: true)
+            .AddJsonFile(SettingsName, optional: true, reloadOnChange: true)
             .Build();
-        container.RegisterInstance<ISettingsProvider>(new SettingsProvider(configuration));
+        container.AddSingleton<ISettingsProvider>(new SettingsProvider(configuration));
         return container;
     }
 
-    public static Container ConfigureApplication(this Container container)
+    public static IServiceCollection ConfigureApplication(this IServiceCollection container)
     {
         var applicationType = Assembly
             .GetEntryAssembly()!
             .GetExportedTypes()
             .Single(x => x.GetInterfaces().Contains(typeof(IApplication)));
 
-        container.RegisterSingleton(applicationType, applicationType);
+        container.AddSingleton(applicationType, applicationType);
         return container;
     }
 
-    private static void RegisterGroup(this Container container, IEnumerable<Registration> registrationGroup)
+    private static void RegisterGroup(this IServiceCollection container, IEnumerable<Registration> registrationGroup)
     {
         var registrations = registrationGroup.ToArray();
         var registrationMaster = registrations.DistinctBy(x => x.InterfaceType).Single();
         var scopeAttribute = registrationMaster.GetScopeAttribute();
 
-        if (registrations.Length == 1)
+        foreach (var registration in registrations)
         {
-            container.Register(
-                registrationMaster.InterfaceType,
-                registrationMaster.ImplementationType,
+            var descriptor = new ServiceDescriptor(
+                registration.InterfaceType,
+                registration.ImplementationType,
                 scopeAttribute?.Lifestyle ?? registrationMaster.Lifestyle
             );
+            container.Add(descriptor);
         }
-
-        container.Collection.Register(
-            registrationMaster.InterfaceType,
-            registrations.Select(x => x.ImplementationType),
-            scopeAttribute?.Lifestyle ?? registrationMaster.Lifestyle
-        );
     }
 }
