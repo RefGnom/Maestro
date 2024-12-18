@@ -7,7 +7,7 @@ public abstract class ConfiguratorBase
 {
     public void Configure(IServiceCollection container)
     {
-        container.Configure().ConfigureSettings().ConfigureApplication();
+        container.UseAutoConfiguration().ConfigureSettings().ConfigureApplication();
         Customize(container);
     }
 

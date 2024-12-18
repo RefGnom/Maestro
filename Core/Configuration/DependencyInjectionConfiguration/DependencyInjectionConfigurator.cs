@@ -11,7 +11,7 @@ public static class DependencyInjectionConfigurator
     private const string SettingsName = "appsettings.json";
     private const ServiceLifetime LifestyleByDefault = ServiceLifetime.Singleton;
 
-    public static IServiceCollection Configure(this IServiceCollection container)
+    public static IServiceCollection UseAutoConfiguration(this IServiceCollection container)
     {
         var assemblies = AssemblyHelper.GetServiceAssemblies();
 
