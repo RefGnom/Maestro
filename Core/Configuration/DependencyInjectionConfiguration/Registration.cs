@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
 using Maestro.Core.Configuration.ConfigurationAttributes;
-using SimpleInjector;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Maestro.Core.Configuration.DependencyInjectionConfiguration;
 
-public record Registration(Type InterfaceType, Type ImplementationType, Lifestyle Lifestyle)
+public record Registration(Type InterfaceType, Type ImplementationType, ServiceLifetime Lifestyle)
 {
     public bool Resolve()
     {

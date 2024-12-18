@@ -1,9 +1,9 @@
-﻿using SimpleInjector;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Maestro.Core.Configuration.ConfigurationAttributes;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
-public class ConfigurationScopeAttribute(Lifestyle lifestyle) : Attribute
+public class ConfigurationScopeAttribute(ServiceLifetime lifestyle) : Attribute
 {
-    public Lifestyle Lifestyle { get; } = lifestyle;
+    public ServiceLifetime Lifestyle { get; } = lifestyle;
 }
