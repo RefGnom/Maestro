@@ -9,7 +9,7 @@ public class ProcessRunner(IProcessProvider processProvider) : IProcessRunner
         var activeByDefaultRegularProcess = _regularProcesses.Where(regularProcess => regularProcess.IsActiveByDefault);
         foreach (var regularProcess in activeByDefaultRegularProcess)
         {
-            await regularProcess.StartAsync();
+            await Task.Factory.StartNew(async () => await regularProcess.StartAsync());
         }
     }
 
