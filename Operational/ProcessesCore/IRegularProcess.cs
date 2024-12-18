@@ -4,7 +4,7 @@ public interface IRegularProcess
 {
     string ProcessName { get; }
     bool IsActiveByDefault { get; }
-    bool IsRan { get; }
-    Task StartAsync(bool isRepeat = true);
+    bool IsRunning { get; }
+    Task StartAsync(bool isRepeatable = true);
     Task StopAsync();
 }

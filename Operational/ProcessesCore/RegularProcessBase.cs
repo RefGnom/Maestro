@@ -12,7 +12,7 @@ public abstract class RegularProcessBase<TProcess> : IRegularProcess
 
     public abstract string ProcessName { get; }
     public abstract bool IsActiveByDefault { get; }
-    public bool IsRan
+    public bool IsRunning
     {
         get
         {
@@ -39,13 +39,13 @@ public abstract class RegularProcessBase<TProcess> : IRegularProcess
         return Task.CompletedTask;
     }
 
-    public Task StartAsync(bool isRepeat = true)
+    public Task StartAsync(bool isRepeatable = true)
     {
         lock (_timerLockObject)
         {
-            _log.Info($"Starting regular process {ProcessName}, IsRepeat: {isRepeat}");
+            _log.Info($"Starting regular process {ProcessName}, IsRepeat: {isRepeatable}");
             _timer.Interval = Timeout.TotalMilliseconds;
-            _timer.AutoReset = isRepeat;
+            _timer.AutoReset = isRepeatable;
             _timer.Start();
         }
 

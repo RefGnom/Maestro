@@ -3,5 +3,5 @@
 public interface IProcessProvider
 {
     IRegularProcess[] SelectAll();
-    IRegularProcess[] SelectByMode(bool modeIsRan);
+    IRegularProcess[] SelectByMode(bool modeIsRunning);
 }

@@ -6,5 +6,5 @@ public class ProcessProvider(IEnumerable<IRegularProcess> regularProcesses) : IP
 
     public IRegularProcess[] SelectAll() => _regularProcesses;
 
-    public IRegularProcess[] SelectByMode(bool modeIsRan) => _regularProcesses.Where(x => x.IsRan && modeIsRan).ToArray();
+    public IRegularProcess[] SelectByMode(bool modeIsRunning) => _regularProcesses.Where(x => x.IsRunning && modeIsRunning).ToArray();
 }

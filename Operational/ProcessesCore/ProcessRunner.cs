@@ -13,10 +13,10 @@ public class ProcessRunner(IProcessProvider processProvider) : IProcessRunner
         }
     }
 
-    public async Task StartProcessAsync(string processName, bool isRepeat = false)
+    public async Task StartProcessAsync(string processName, bool isRepeatable = false)
     {
         var regularProcess = _regularProcesses.Single(x => x.ProcessName == processName);
-        await regularProcess.StartAsync(isRepeat);
+        await regularProcess.StartAsync(isRepeatable);
     }
 
     public async Task StopProcessAsync(string processName)
