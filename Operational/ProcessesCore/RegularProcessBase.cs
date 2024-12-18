@@ -1,14 +1,12 @@
-﻿using System.Timers;
-using Maestro.Core.Logging;
-using Timer = System.Timers.Timer;
+﻿using Maestro.Core.Logging;
 
 namespace Maestro.Operational.ProcessesCore;
 
-public abstract class RegularProcessBase<TProcess> : IRegularProcess
+public abstract class RegularProcessBase<TProcess>(ILog<TProcess> log) : IRegularProcess
 {
-    private readonly Timer _timer;
-    private readonly ILog<TProcess> _log;
-    private readonly object _timerLockObject = new object();
+    private bool _isRunning;
+    private readonly ILog<TProcess> _log = log;
+    private readonly object _modeLockObject = new();
 
     public abstract string ProcessName { get; }
     public abstract bool IsActiveByDefault { get; }
@@ -16,20 +14,20 @@ public abstract class RegularProcessBase<TProcess> : IRegularProcess
     {
         get
         {
-            lock (_timerLockObject)
+            lock (_modeLockObject)
             {
-                return _timer.Enabled;
+                return _isRunning;
+            }
+        }
+        private set
+        {
+            lock (_modeLockObject)
+            {
+                _isRunning = value;
             }
         }
     }
     protected abstract TimeSpan Timeout { get; }
-
-    protected RegularProcessBase(ILog<TProcess> log)
-    {
-        _log = log;
-        _timer = new Timer();
-        _timer.Elapsed += TimerOnElapsed;
-    }
 
     protected abstract Task TryRunAsync();
 
@@ -39,40 +37,36 @@ public abstract class RegularProcessBase<TProcess> : IRegularProcess
         return Task.CompletedTask;
     }
 
-    public Task StartAsync(bool isRepeatable = true)
+    public async Task StartAsync(bool isRepeatable = true)
     {
-        lock (_timerLockObject)
-        {
-            _log.Info($"Starting regular process {ProcessName}, IsRepeat: {isRepeatable}");
-            _timer.Interval = Timeout.TotalMilliseconds;
-            _timer.AutoReset = isRepeatable;
-            _timer.Start();
-        }
+        IsRunning = true;
+        _log.Info($"Starting regular process {ProcessName}, IsRepeat: {isRepeatable}");
 
-        return Task.CompletedTask;
+        do
+        {
+            await SafeRunAsync();
+            await Task.Delay(Timeout);
+        } while (isRepeatable && IsRunning);
     }
 
-    private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
+    private async Task SafeRunAsync()
     {
         _log.Info($"Attempt to run regular process {ProcessName}");
 
         try
         {
-            TryRunAsync().GetAwaiter().GetResult();
+            await TryRunAsync();
         }
         catch (Exception exception)
         {
-            HandleErrorAsync(exception).GetAwaiter().GetResult();
+            await HandleErrorAsync(exception);
         }
     }
 
     public Task StopAsync()
     {
-        lock (_timerLockObject)
-        {
-            _log.Info($"Stopping regular process {ProcessName}");
-            _timer.Stop();
-        }
+        IsRunning = false;
+        _log.Info($"Stopping regular process {ProcessName}");
 
         return Task.CompletedTask;
     }
