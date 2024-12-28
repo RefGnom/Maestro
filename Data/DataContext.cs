@@ -21,7 +21,13 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         {
             Id = 1,
             IntegratorId = 1,
-            Key = "admin",
+            Key = "00000000000000000000000000000000",
+            State = ApiKeyState.Active
+        }, new ApiKeyDbo
+        {
+            Id = 2,
+            IntegratorId = 2,
+            Key = "ffff0000000000000000000000000000",
             State = ApiKeyState.Active
         });
 

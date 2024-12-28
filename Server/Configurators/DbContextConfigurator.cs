@@ -1,7 +1,7 @@
 using Maestro.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace Maestro.Server.Startup;
+namespace Maestro.Server.Configurators;
 
 public static class DbContextConfigurator
 {
@@ -14,6 +14,8 @@ public static class DbContextConfigurator
         var username = dbSection.GetValue<string>("Username");
         var host = dbSection.GetValue<string>("Host");
         var password = dbSection.GetValue<string>("Password");
+
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
         services.AddDbContext<DataContext>(
             options => { options.UseNpgsql($"Port={port}; Database={dataBase}; Username={username}; Host={host}; Password={password};"); },

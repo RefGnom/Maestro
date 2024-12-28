@@ -5,18 +5,25 @@ using Maestro.Server.Repositories;
 
 namespace Maestro.Server.Middlewares;
 
-public class ApiKeysAuthorizationMiddleware(RequestDelegate next)
+public class ApiKeysAuthorizationMiddleware(RequestDelegate next, ILogFactory logFactory)
 {
     private readonly RequestDelegate _next = next;
-    private readonly ILog<ApiKeysAuthorizationMiddleware> _log = new Log<ApiKeysAuthorizationMiddleware>(new DateTimeProvider(), new Writer()); // fuck cyrus
+    private readonly ILog<ApiKeysAuthorizationMiddleware> _log = logFactory.CreateLog<ApiKeysAuthorizationMiddleware>();
 
     public async Task InvokeAsync(HttpContext context, IApiKeysRepository apiKeysRepository)
     {
         var apiKeyHeaderValues = context.Request.Headers.Authorization;
 
+        if (apiKeyHeaderValues.Count is 0)
+        {
+            _log.Info("Handled unauthorized request");
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            return;
+        }
+
         if (apiKeyHeaderValues.Count is not 1)
         {
-            _log.Info("Handled authorized request. Bad Authorization header");
+            _log.Info("Handled request. Too many values of Authorization header");
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
             return;
         }
@@ -26,12 +33,12 @@ public class ApiKeysAuthorizationMiddleware(RequestDelegate next)
 
         if (integratorId is null)
         {
-            _log.Info("Handled authorized request. ApiKey was not resolved");
+            _log.Info("Handled request. ApiKey was not resolved");
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return;
         }
 
-        _log.Info($"Handled authorized request. IntegratorId:{integratorId}");
+        _log.Info($"Handled authorized request. IntegratorId: {integratorId}");
         await _next(context);
     }
 }

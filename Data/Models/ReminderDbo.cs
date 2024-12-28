@@ -16,7 +16,7 @@ public class ReminderDbo
 
     public DateTime ReminderTime { get; init; }
 
-    public DateTime ReminderTimeDuration { get; init; }
+    public TimeSpan ReminderTimeDuration { get; init; }
 
     public bool IsRepeatable { get; init; }
 

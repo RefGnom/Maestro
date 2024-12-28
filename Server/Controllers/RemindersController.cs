@@ -12,19 +12,19 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
 {
     private readonly IRemindersRepository _remindersRepository = remindersRepository;
     private readonly IMapper _mapper = mapper;
-    
+
     [HttpGet("forUser")]
-    public async Task<ActionResult> ForUser(long userId, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> ForUser(long userId)
     {
-        var reminders = await _remindersRepository.GetForUser(userId, cancellationToken);
+        var reminders = await _remindersRepository.GetForUser(userId, HttpContext.RequestAborted);
         return new ObjectResult(reminders);
     }
-    
+
     [HttpPost("create")]
-    public async Task<ActionResult> Create(ReminderDto reminderDto, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> Create([FromBody] ReminderDto reminderDto)
     {
         var reminderDbo = _mapper.Map<ReminderDbo>(reminderDto);
-        await _remindersRepository.AddAsync(reminderDbo, cancellationToken);
+        await _remindersRepository.AddAsync(reminderDbo, HttpContext.RequestAborted);
         return Created();
     }
 }

@@ -1,6 +1,6 @@
 using Maestro.Server.Repositories;
 
-namespace Maestro.Server.Startup;
+namespace Maestro.Server.Configurators;
 
 public static class RepositoriesConfigurator
 {

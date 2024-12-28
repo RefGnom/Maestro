@@ -1,5 +1,5 @@
+using Maestro.Server.Configurators;
 using Maestro.Server.Middlewares.Extensions;
-using Maestro.Server.Startup;
 
 namespace Maestro.Server;
 
@@ -13,6 +13,7 @@ public class Program
         builder.Services.AddDbContext(builder.Configuration);
         builder.Services.AddRepositories();
         builder.Services.AddMapper();
+        builder.Services.AddServices();
 
         var app = builder.Build();
 
