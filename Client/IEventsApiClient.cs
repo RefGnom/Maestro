@@ -9,5 +9,4 @@ public interface IEventsApiClient
     public Task<ReminderDto[]> SelectRemindersForUserAsync(long userId);
     public Task<ReminderDto[]> SelectRemindersForUserAsync(long userId, DateTime inclusiveStartDate, DateTime exclusiveEndDate);
     public Task MarkEventsAsCompletedAsync(params long[] eventIds);
-    public Task DeleteEventAsync(long eventId);
 }

@@ -9,4 +9,12 @@ public static class LinqExtensions
             action(element);
         }
     }
+
+    public static async Task ForEachAsync<T>(this IEnumerable<T> enumerable, Func<T, Task> action)
+    {
+        foreach (var element in enumerable)
+        {
+            await action(element);
+        }
+    }
 }

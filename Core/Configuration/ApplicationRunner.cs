@@ -1,4 +1,4 @@
-﻿using SimpleInjector;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Maestro.Core.Configuration;
 
@@ -8,11 +8,12 @@ public static class ApplicationRunner
         where TApplication : class, IApplication
         where TConfigurator : ConfiguratorBase, new()
     {
-        var container = new Container();
+        var container = new ServiceCollection();
         var configurator = new TConfigurator();
         configurator.Configure(container);
 
-        var application = container.GetInstance<TApplication>();
+        var serviceProvider = container.BuildServiceProvider();
+        var application = serviceProvider.GetRequiredService<TApplication>();
 
         application.SetUp();
         await application.RunAsync();
