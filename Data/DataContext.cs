@@ -18,19 +18,21 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         modelBuilder.Entity<ApiKeyDbo>().Property(dbo => dbo.Key).HasMaxLength(32);
 
         // easyDebug
-        modelBuilder.Entity<ApiKeyDbo>().HasData(new ApiKeyDbo
-        {
-            Id = 1,
-            IntegratorId = 1,
-            Key = "00000000000000000000000000000000",
-            State = ApiKeyState.Active
-        }, new ApiKeyDbo
-        {
-            Id = 2,
-            IntegratorId = 2,
-            Key = "ffff0000000000000000000000000000",
-            State = ApiKeyState.Active
-        });
+        modelBuilder.Entity<ApiKeyDbo>().HasData(
+            new ApiKeyDbo // user for tests
+            {
+                Id = 1,
+                IntegratorId = 1,
+                Key = "00000000000000000000000000000000",
+                State = ApiKeyState.Active
+            },
+            new ApiKeyDbo // telegram integrator
+            {
+                Id = 2,
+                IntegratorId = 2,
+                Key = "ffff0000000000000000000000000000",
+                State = ApiKeyState.Active
+            });
 
         base.OnModelCreating(modelBuilder);
     }

@@ -1,9 +1,10 @@
 using FluentAssertions;
 using Maestro.Client;
+using Maestro.Core.IO;
 using Maestro.Core.Logging;
+using Maestro.Core.Providers;
 using Maestro.Server.Core.ApiModels;
 using Maestro.Tests.Extensions;
-using NSubstitute;
 
 namespace Maestro.Tests.Client;
 
@@ -18,7 +19,10 @@ public class ApiClientTests
         const string uri = "http://localhost:5000/api/v1/";
         const string apiKey = "00000000000000000000000000000000";
 
-        _apiClient = new ApiClient(uri, apiKey, Substitute.For<ILogFactory>());
+        _apiClient = new ApiClient(uri, apiKey, 
+            // Substitute.For<ILogFactory>()
+            new LogFactory(new DateTimeProvider(), new Writer())
+            );
     }
 
     [OneTimeTearDown]
@@ -38,30 +42,30 @@ public class ApiClientTests
         {
             new()
             {
+                UserId = userId,
                 Description = "Test1",
-                IsCompleted = true,
-                IsRepeatable = true,
                 ReminderTime = new DateTime(2024, 1, 1),
                 ReminderTimeDuration = TimeSpan.FromMinutes(1),
-                UserId = userId
+                IsCompleted = true,
+                IsRepeatable = true,
             },
             new()
             {
+                UserId = userId,
                 Description = "Test2",
-                IsCompleted = true,
-                IsRepeatable = false,
                 ReminderTime = new DateTime(2024, 4, 3),
                 ReminderTimeDuration = TimeSpan.FromMinutes(2),
-                UserId = userId
+                IsCompleted = true,
+                IsRepeatable = false,
             },
             new()
             {
+                UserId = userId,
                 Description = "Test3",
-                IsCompleted = false,
-                IsRepeatable = false,
                 ReminderTime = new DateTime(2024, 1, 2),
                 ReminderTimeDuration = TimeSpan.FromMinutes(3),
-                UserId = userId
+                IsCompleted = false,
+                IsRepeatable = false,
             }
         };
 
@@ -87,21 +91,29 @@ public class ApiClientTests
     #region Post
 
     [Test]
+    [Order(1)]
     public async Task Reminders_Create()
     {
-        var reminderDto = new ReminderDto
+        var reminder = new ReminderDto
         {
+            UserId = 2,
             Description = "Test",
-            IsCompleted = true,
-            IsRepeatable = true,
-            ReminderTime = DateTime.Now,
+            ReminderTime = new DateTime(2024, 1, 2),
             ReminderTimeDuration = TimeSpan.FromMinutes(1),
-            UserId = 1
+            IsCompleted = true,
+            IsRepeatable = false,
         };
 
-        var createdReminderId = await _apiClient.CreateReminderAsync(reminderDto);
+        var createdReminderId = await _apiClient.CreateReminderAsync(reminder);
 
         createdReminderId.Should().NotBe(0);
+    }
+
+    [Test]
+    [Order(2)]
+    public async Task Reminders_Get()
+    {
+        
     }
 
     #endregion

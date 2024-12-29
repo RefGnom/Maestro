@@ -36,10 +36,13 @@ public class ApiClient : IApiClient, IDisposable
 
     public async IAsyncEnumerable<ReminderDtoWithId> GetRemindersForUserAsync(long userId)
     {
+        const string requestEndpoint = "reminders/forUser";
+        
         var offset = 0;
+        
         do
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "reminders/forUser")
+            var request = new HttpRequestMessage(HttpMethod.Get, requestEndpoint)
             {
                 Content = JsonContent.Create(new RemindersForUserDto
                 {
@@ -49,7 +52,7 @@ public class ApiClient : IApiClient, IDisposable
                 })
             };
 
-            _log.Info($"Sending request to {request.RequestUri}. Offset: {offset}, Limit: {RemindersForUserDto.LimitMaxValue}");
+            _log.Info($"Sending request to {requestEndpoint}. Offset: {offset}, Limit: {RemindersForUserDto.LimitMaxValue}");
 
             var response = await _httpClient.SendAsync(request);
 
@@ -57,7 +60,7 @@ public class ApiClient : IApiClient, IDisposable
 
             var remindersDto = await response.Content.ReadFromJsonAsync<List<ReminderDtoWithId>>();
 
-            _log.Info($"Received response from {request.RequestUri}. StatusCode: {response.StatusCode}. ItemsCount: {remindersDto!.Count}");
+            _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}. ItemsCount: {remindersDto!.Count}");
 
             foreach (var reminderDto in remindersDto)
             {
@@ -84,18 +87,20 @@ public class ApiClient : IApiClient, IDisposable
 
     public async Task<long> CreateReminderAsync(ReminderDto reminder)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, "reminders/create")
+        const string requestEndpoint = "reminders/create";
+
+        var request = new HttpRequestMessage(HttpMethod.Post, requestEndpoint)
         {
             Content = JsonContent.Create(reminder)
         };
 
-        _log.Info($"Sending request to {request.RequestUri}");
+        _log.Info($"Sending request to {requestEndpoint}");
 
         var response = await _httpClient.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
 
-        _log.Info($"Received response from {request.RequestUri}. StatusCode: {response.StatusCode}");
+        _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
 
         var createdReminderId = (await response.Content.ReadFromJsonAsync<ReminderIdDto>())!.Id;
 
