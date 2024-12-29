@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// ReSharper disable PropertyCanBeMadeInitOnly.Global
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
@@ -6,19 +6,19 @@ namespace Maestro.Data.Models;
 
 public class ReminderDbo
 {
-    public long Id { get; init; }
+    public long Id { get; set; }
 
-    public long UserId { get; init; }
+    public long UserId { get; set; }
 
-    public long IntegratorId { get; init; }
+    public long IntegratorId { get; set; }
 
-    public string Description { get; init; }
+    public string Description { get; set; }
 
-    public DateTime ReminderTime { get; init; }
+    public DateTime ReminderTime { get; set; }
 
-    public TimeSpan ReminderTimeDuration { get; init; }
+    public TimeSpan ReminderTimeDuration { get; set; }
 
-    public bool IsRepeatable { get; init; }
+    public bool IsRepeatable { get; set; }
 
-    public bool IsCompleted { get; init; }
+    public bool IsCompleted { get; set; }
 }

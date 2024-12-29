@@ -1,4 +1,4 @@
-namespace Maestro.Data;
+namespace Maestro.Data.Models;
 
 public enum ApiKeyState
 {

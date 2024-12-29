@@ -1,6 +1,7 @@
 using Maestro.Core.IO;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
+using Maestro.Server.Extensions;
 using Maestro.Server.Repositories;
 
 namespace Maestro.Server.Middlewares;
@@ -39,6 +40,9 @@ public class ApiKeysAuthorizationMiddleware(RequestDelegate next, ILogFactory lo
         }
 
         _log.Info($"Handled authorized request. IntegratorId: {integratorId}");
+        
+        context.SetIntegratorId(integratorId.Value);
+        
         await _next(context);
     }
 }

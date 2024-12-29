@@ -4,16 +4,11 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyName>Maestro.Data</AssemblyName>
-        <RootNamespace>Maestro.Data</RootNamespace>
+        <AssemblyName>Maestro.Server.Core</AssemblyName>
+        <RootNamespace>Maestro.Server.Core</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Core\Core.csproj" />
       <ProjectReference Include="..\Data.Core\Data.Core.csproj" />
     </ItemGroup>
 

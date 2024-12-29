@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Maestro.Data.Core;
 using Maestro.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
