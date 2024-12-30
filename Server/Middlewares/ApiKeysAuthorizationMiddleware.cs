@@ -50,7 +50,7 @@ public class ApiKeysAuthorizationMiddleware(RequestDelegate next, ILogFactory lo
             return;
         }
 
-        _log.Info($"Handled authorized request. IntegratorId: {(isCacheResolved ? cachedIntegratorId : integratorId)}");
+        _log.Info($"Handled authorized request. IntegratorId: {integratorId}");
 
         httpContext.SetIntegratorId(integratorId.Value);
         _memoryCache.Set(apiKey, integratorId, new MemoryCacheEntryOptions
