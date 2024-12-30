@@ -2,7 +2,7 @@ using System.Net;
 using AutoMapper;
 using Maestro.Core.Logging;
 using Maestro.Data.Models;
-using Maestro.Server.Core.ApiModels;
+using Maestro.Server.Core.Models;
 using Maestro.Server.Extensions;
 using Maestro.Server.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -17,18 +17,41 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
     private readonly IMapper _mapper = mapper;
     private readonly ILog<RemindersController> _log = logFactory.CreateLog<RemindersController>();
 
+    #region Get
+
     [HttpGet("forUser")]
     public async Task<ActionResult> ForUser([FromBody] RemindersForUserDto remindersForUserDto)
     {
-        var remindersDboList =
+        var remindersDbo =
             await _remindersRepository.GetForUserAsync(remindersForUserDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
 
-        _log.Info($"Fetched reminders Count: {remindersDboList.Count}");
+        _log.Info($"Fetched reminders Count: {remindersDbo.Count}");
 
-        var remindersDtoList = _mapper.Map<List<ReminderDtoWithId>>(remindersDboList);
+        var remindersDto = _mapper.Map<List<ReminderDtoWithId>>(remindersDbo);
 
-        return new ObjectResult(remindersDtoList);
+        return new ObjectResult(remindersDto);
     }
+
+    [HttpGet("byId")]
+    public async Task<ActionResult> ById([FromBody] ReminderIdDto reminderIdDto)
+    {
+        var reminderDbo = await _remindersRepository.GetByIdAsync(reminderIdDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
+
+        if (reminderDbo is null)
+        {
+            return new NotFoundResult();
+        }
+
+        var reminderDto = _mapper.Map<ReminderDto>(reminderDbo);
+
+        _log.Info($"Fetched reminder Id: {reminderDbo.Id}");
+
+        return new ObjectResult(reminderDto);
+    }
+
+    #endregion
+
+    #region Post
 
     [HttpPost("create")]
     public async Task<ActionResult> Create([FromBody] ReminderDto reminderDto)
@@ -45,4 +68,6 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
             StatusCode = (int)HttpStatusCode.Created
         };
     }
+
+    #endregion
 }

@@ -1,6 +1,7 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using Maestro.Core.Logging;
-using Maestro.Server.Core.ApiModels;
+using Maestro.Server.Core.Models;
 
 namespace Maestro.Client;
 
@@ -29,17 +30,40 @@ public class ApiClient : IApiClient, IDisposable
 
     # region Get
 
-    public Task<ReminderDto?> GetReminderAsync(long reminderId)
+    public async Task<ReminderDto?> GetReminderAsync(long reminderId)
     {
-        throw new NotImplementedException();
+        const string requestEndpoint = "reminders/byId";
+
+        var request = new HttpRequestMessage(HttpMethod.Get, requestEndpoint)
+        {
+            Content = JsonContent.Create(new ReminderIdDto
+            {
+                Id = reminderId
+            })
+        };
+
+        _log.Info($"Sending request to {requestEndpoint}. Reminder Id: {reminderId}");
+
+        var response = await _httpClient.SendAsync(request);
+
+        _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
+
+        if (response.StatusCode is HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        var reminder = await response.Content.ReadFromJsonAsync<ReminderDto>();
+
+        return reminder;
     }
 
     public async IAsyncEnumerable<ReminderDtoWithId> GetRemindersForUserAsync(long userId)
     {
         const string requestEndpoint = "reminders/forUser";
-        
+
         var offset = 0;
-        
+
         do
         {
             var request = new HttpRequestMessage(HttpMethod.Get, requestEndpoint)
@@ -58,16 +82,16 @@ public class ApiClient : IApiClient, IDisposable
 
             response.EnsureSuccessStatusCode();
 
-            var remindersDto = await response.Content.ReadFromJsonAsync<List<ReminderDtoWithId>>();
+            var reminders = await response.Content.ReadFromJsonAsync<List<ReminderDtoWithId>>();
 
-            _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}. ItemsCount: {remindersDto!.Count}");
+            _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}. ItemsCount: {reminders!.Count}");
 
-            foreach (var reminderDto in remindersDto)
+            foreach (var reminder in reminders)
             {
-                yield return reminderDto;
+                yield return reminder;
             }
 
-            if (remindersDto.Count < RemindersForUserDto.LimitMaxValue)
+            if (reminders.Count < RemindersForUserDto.LimitMaxValue)
             {
                 yield break;
             }

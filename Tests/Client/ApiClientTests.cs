@@ -3,7 +3,7 @@ using Maestro.Client;
 using Maestro.Core.IO;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
-using Maestro.Server.Core.ApiModels;
+using Maestro.Server.Core.Models;
 using Maestro.Tests.Extensions;
 
 namespace Maestro.Tests.Client;
@@ -31,10 +31,8 @@ public class ApiClientTests
         _apiClient.Dispose();
     }
 
-    #region Get
-
     [Test]
-    public async Task Reminders_ForUser()
+    public async Task Reminders_should_create_and_get_equivalent_reminders_for_user()
     {
         const int userId = 1;
 
@@ -86,13 +84,8 @@ public class ApiClientTests
         remindersCreateList.Should().BeEquivalentTo(filteredRemindersForUser, options => { return options.Excluding(x => x.Id); });
     }
 
-    #endregion
-
-    #region Post
-
     [Test]
-    [Order(1)]
-    public async Task Reminders_Create()
+    public async Task Reminders_should_create_and_get_equivalent_reminder()
     {
         var reminder = new ReminderDto
         {
@@ -106,15 +99,8 @@ public class ApiClientTests
 
         var createdReminderId = await _apiClient.CreateReminderAsync(reminder);
 
-        createdReminderId.Should().NotBe(0);
-    }
+        var createdReminder = await _apiClient.GetReminderAsync(createdReminderId);
 
-    [Test]
-    [Order(2)]
-    public async Task Reminders_Get()
-    {
-        
+        createdReminder.Should().BeEquivalentTo(reminder);
     }
-
-    #endregion
 }

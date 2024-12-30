@@ -1,7 +1,7 @@
 ﻿using Maestro.Client;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
-using Maestro.Server.Core.ApiModels;
+using Maestro.Server.Core.Models;
 using Maestro.TelegramIntegrator.Parsers;
 using Telegram.Bot;
 using Telegram.Bot.Types;

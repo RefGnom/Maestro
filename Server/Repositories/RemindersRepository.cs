@@ -1,6 +1,6 @@
 using Maestro.Data;
 using Maestro.Data.Models;
-using Maestro.Server.Core.ApiModels;
+using Maestro.Server.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Maestro.Server.Repositories;
@@ -19,6 +19,15 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
             .ToListAsync(cancellationToken);
         
         return remindersDboList;
+    }
+
+    public Task<ReminderDbo?> GetByIdAsync(ReminderIdDto reminderIdDto, long integratorId, CancellationToken cancellationToken)
+    {
+        var reminderDbo = _dataContext.Reminders
+            .Where(reminderDbo => reminderDbo.Id == reminderIdDto.Id && reminderDbo.IntegratorId == integratorId)
+            .SingleOrDefaultAsync(cancellationToken);
+
+        return reminderDbo;
     }
 
     public async Task<long> AddAsync(ReminderDbo reminderDbo, CancellationToken cancellationToken)

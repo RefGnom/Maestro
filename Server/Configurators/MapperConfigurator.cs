@@ -1,6 +1,6 @@
 using AutoMapper;
 using Maestro.Data.Models;
-using Maestro.Server.Core.ApiModels;
+using Maestro.Server.Core.Models;
 
 namespace Maestro.Server.Configurators;
 
@@ -10,7 +10,7 @@ public static class MapperConfigurator
     {
         var configuration = new MapperConfiguration(configure =>
         {
-            configure.CreateMap<ReminderDto, ReminderDbo>();
+            configure.CreateMap<ReminderDto, ReminderDbo>().ReverseMap();
             configure.CreateMap<ReminderDbo, ReminderDtoWithId>();
         });
         var mapper = configuration.CreateMapper();

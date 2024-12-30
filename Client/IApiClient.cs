@@ -1,4 +1,4 @@
-﻿using Maestro.Server.Core.ApiModels;
+﻿using Maestro.Server.Core.Models;
 
 namespace Maestro.Client;
 

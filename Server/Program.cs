@@ -21,8 +21,9 @@ public class Program
 
         app.MapControllers();
 
+        app.UseRequestLogging();
         app.UseApiKeysAuthorization();
-        
+            
         app.Run();
     }
 }
