@@ -15,7 +15,7 @@ public static class DbContextConfigurator
         var host = dbSection.GetValue<string>("Host");
         var password = dbSection.GetValue<string>("Password");
 
-        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", isEnabled: true);
 
         services.AddDbContext<DataContext>(
             options => { options.UseNpgsql($"Port={port}; Database={dataBase}; Username={username}; Host={host}; Password={password};"); },

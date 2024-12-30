@@ -11,18 +11,16 @@ namespace Maestro.Tests.Client;
 [TestFixture]
 public class ApiClientTests
 {
-    private ApiClient _apiClient;
-
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
         const string uri = "http://localhost:5000/api/v1/";
         const string apiKey = "00000000000000000000000000000000";
 
-        _apiClient = new ApiClient(uri, apiKey, 
+        _apiClient = new ApiClient(uri, apiKey,
             // Substitute.For<ILogFactory>()
             new LogFactory(new DateTimeProvider(), new Writer())
-            );
+        );
     }
 
     [OneTimeTearDown]
@@ -30,6 +28,7 @@ public class ApiClientTests
     {
         _apiClient.Dispose();
     }
+    private ApiClient _apiClient;
 
     [Test]
     public async Task Reminders_should_create_and_get_equivalent_reminders_for_user()
@@ -42,28 +41,28 @@ public class ApiClientTests
             {
                 UserId = userId,
                 Description = "Test1",
-                ReminderTime = new DateTime(2024, 1, 1),
+                ReminderTime = new DateTime(year: 2024, month: 1, day: 1),
                 ReminderTimeDuration = TimeSpan.FromMinutes(1),
                 IsCompleted = true,
-                IsRepeatable = true,
+                IsRepeatable = true
             },
             new()
             {
                 UserId = userId,
                 Description = "Test2",
-                ReminderTime = new DateTime(2024, 4, 3),
+                ReminderTime = new DateTime(year: 2024, month: 4, day: 3),
                 ReminderTimeDuration = TimeSpan.FromMinutes(2),
                 IsCompleted = true,
-                IsRepeatable = false,
+                IsRepeatable = false
             },
             new()
             {
                 UserId = userId,
                 Description = "Test3",
-                ReminderTime = new DateTime(2024, 1, 2),
+                ReminderTime = new DateTime(year: 2024, month: 1, day: 2),
                 ReminderTimeDuration = TimeSpan.FromMinutes(3),
                 IsCompleted = false,
-                IsRepeatable = false,
+                IsRepeatable = false
             }
         };
 
@@ -91,10 +90,10 @@ public class ApiClientTests
         {
             UserId = 2,
             Description = "Test",
-            ReminderTime = new DateTime(2024, 1, 2),
+            ReminderTime = new DateTime(year: 2024, month: 1, day: 2),
             ReminderTimeDuration = TimeSpan.FromMinutes(1),
             IsCompleted = true,
-            IsRepeatable = false,
+            IsRepeatable = false
         };
 
         var createdReminderId = await _apiClient.CreateReminderAsync(reminder);

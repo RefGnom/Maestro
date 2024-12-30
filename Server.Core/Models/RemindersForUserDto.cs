@@ -10,7 +10,7 @@ public class RemindersForUserDto
 
     public long UserId { get; set; }
 
-    [Range(0, int.MaxValue)] public int Offset { get; set; }
+    [Range(minimum: 0, int.MaxValue)] public int Offset { get; set; }
 
-    [Range(0, LimitMaxValue)] public int Limit { get; set; }
+    [Range(minimum: 0, LimitMaxValue)] public int Limit { get; set; }
 }

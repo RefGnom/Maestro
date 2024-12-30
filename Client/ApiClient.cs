@@ -12,20 +12,20 @@ public class ApiClient : IApiClient, IDisposable
 
     public ApiClient(string uri, string apiKey, ILogFactory logFactory)
     {
-        if (string.IsNullOrEmpty(uri))
-        {
-            throw new ArgumentNullException(nameof(uri));
-        }
+        if (string.IsNullOrEmpty(uri)) throw new ArgumentNullException(nameof(uri));
 
-        if (string.IsNullOrEmpty(apiKey))
-        {
-            throw new ArgumentNullException(nameof(apiKey));
-        }
+        if (string.IsNullOrEmpty(apiKey)) throw new ArgumentNullException(nameof(apiKey));
 
         ArgumentNullException.ThrowIfNull(logFactory, nameof(logFactory));
 
         _httpClient = new HttpClient { BaseAddress = new Uri(uri), DefaultRequestHeaders = { { "Authorization", apiKey } } };
         _log = logFactory.CreateLog<ApiClient>();
+    }
+
+    public void Dispose()
+    {
+        _httpClient.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     # region Get
@@ -48,10 +48,7 @@ public class ApiClient : IApiClient, IDisposable
 
         _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
 
-        if (response.StatusCode is HttpStatusCode.NotFound)
-        {
-            return null;
-        }
+        if (response.StatusCode is HttpStatusCode.NotFound) return null;
 
         var reminder = await response.Content.ReadFromJsonAsync<ReminderDto>();
 
@@ -86,15 +83,9 @@ public class ApiClient : IApiClient, IDisposable
 
             _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}. ItemsCount: {reminders!.Count}");
 
-            foreach (var reminder in reminders)
-            {
-                yield return reminder;
-            }
+            foreach (var reminder in reminders) yield return reminder;
 
-            if (reminders.Count < RemindersForUserDto.LimitMaxValue)
-            {
-                yield break;
-            }
+            if (reminders.Count < RemindersForUserDto.LimitMaxValue) yield break;
 
             offset += RemindersForUserDto.LimitMaxValue;
         } while (true);
@@ -139,10 +130,4 @@ public class ApiClient : IApiClient, IDisposable
     }
 
     #endregion
-
-    public void Dispose()
-    {
-        _httpClient.Dispose();
-        GC.SuppressFinalize(this);
-    }
 }

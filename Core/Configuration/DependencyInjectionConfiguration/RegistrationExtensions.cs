@@ -8,13 +8,11 @@ public static class RegistrationExtensions
     public static Registration GetGenericDefinitionTypeIfNeed(this Registration registration)
     {
         if (registration.InterfaceType.IsGenericType && registration.ImplementationType.IsGenericType)
-        {
             return new Registration(
                 registration.InterfaceType.GetGenericTypeDefinition(),
                 registration.ImplementationType.GetGenericTypeDefinition(),
                 registration.Lifestyle
             );
-        }
 
         return registration;
     }

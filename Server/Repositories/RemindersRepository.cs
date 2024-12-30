@@ -9,7 +9,8 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
 {
     private readonly DataContext _dataContext = dataContext;
 
-    public async Task<List<ReminderDbo>> GetForUserAsync(RemindersForUserDto remindersForUserDto, long integratorId, CancellationToken cancellationToken)
+    public async Task<List<ReminderDbo>> GetForUserAsync(RemindersForUserDto remindersForUserDto, long integratorId,
+        CancellationToken cancellationToken)
     {
         var remindersDboList = await _dataContext.Reminders
             .Where(reminderDbo => reminderDbo.UserId == remindersForUserDto.UserId && reminderDbo.IntegratorId == integratorId)
@@ -17,7 +18,7 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
             .Skip(remindersForUserDto.Offset)
             .Take(remindersForUserDto.Limit)
             .ToListAsync(cancellationToken);
-        
+
         return remindersDboList;
     }
 
@@ -33,7 +34,7 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
     public async Task<long> AddAsync(ReminderDbo reminderDbo, CancellationToken cancellationToken)
     {
         var createdReminderEntity = (await _dataContext.Reminders.AddAsync(reminderDbo, cancellationToken)).Entity;
-        
+
         await _dataContext.SaveChangesAsync(cancellationToken);
 
         return createdReminderEntity.Id;

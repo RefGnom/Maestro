@@ -8,10 +8,10 @@ namespace Maestro.Server.Middlewares;
 
 public class ApiKeysAuthorizationMiddleware(RequestDelegate next, ILogFactory logFactory, IDateTimeProvider dateTimeProvider)
 {
-    private readonly RequestDelegate _next = next;
-    private readonly ILog<ApiKeysAuthorizationMiddleware> _log = logFactory.CreateLog<ApiKeysAuthorizationMiddleware>();
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
+    private readonly ILog<ApiKeysAuthorizationMiddleware> _log = logFactory.CreateLog<ApiKeysAuthorizationMiddleware>();
     private readonly MemoryCache _memoryCache = new(new MemoryCacheOptions());
+    private readonly RequestDelegate _next = next;
 
     public async Task InvokeAsync(HttpContext httpContext, IApiKeysRepository apiKeysRepository)
     {

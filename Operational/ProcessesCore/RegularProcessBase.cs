@@ -6,9 +6,17 @@ namespace Maestro.Operational.ProcessesCore;
 
 public abstract class RegularProcessBase<TProcess> : IRegularProcess
 {
-    private readonly Timer _timer;
     private readonly ILog<TProcess> _log;
-    private readonly object _timerLockObject = new object();
+    private readonly Timer _timer;
+    private readonly object _timerLockObject = new();
+
+    protected RegularProcessBase(ILog<TProcess> log)
+    {
+        _log = log;
+        _timer = new Timer();
+        _timer.Elapsed += TimerOnElapsed;
+    }
+    protected abstract TimeSpan Timeout { get; }
 
     public abstract string ProcessName { get; }
     public abstract bool IsActiveByDefault { get; }
@@ -21,22 +29,6 @@ public abstract class RegularProcessBase<TProcess> : IRegularProcess
                 return _timer.Enabled;
             }
         }
-    }
-    protected abstract TimeSpan Timeout { get; }
-
-    protected RegularProcessBase(ILog<TProcess> log)
-    {
-        _log = log;
-        _timer = new Timer();
-        _timer.Elapsed += TimerOnElapsed;
-    }
-
-    protected abstract Task TryRunAsync();
-
-    protected virtual Task HandleErrorAsync(Exception exception)
-    {
-        _log.Error($"Regular process {ProcessName} finished with error: {exception}");
-        return Task.CompletedTask;
     }
 
     public Task StartAsync(bool isRepeatable = true)
@@ -52,6 +44,25 @@ public abstract class RegularProcessBase<TProcess> : IRegularProcess
         return Task.CompletedTask;
     }
 
+    public Task StopAsync()
+    {
+        lock (_timerLockObject)
+        {
+            _log.Info($"Stopping regular process {ProcessName}");
+            _timer.Stop();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    protected abstract Task TryRunAsync();
+
+    protected virtual Task HandleErrorAsync(Exception exception)
+    {
+        _log.Error($"Regular process {ProcessName} finished with error: {exception}");
+        return Task.CompletedTask;
+    }
+
     private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
     {
         _log.Info($"Attempt to run regular process {ProcessName}");
@@ -64,16 +75,5 @@ public abstract class RegularProcessBase<TProcess> : IRegularProcess
         {
             HandleErrorAsync(exception).GetAwaiter().GetResult();
         }
-    }
-
-    public Task StopAsync()
-    {
-        lock (_timerLockObject)
-        {
-            _log.Info($"Stopping regular process {ProcessName}");
-            _timer.Stop();
-        }
-
-        return Task.CompletedTask;
     }
 }

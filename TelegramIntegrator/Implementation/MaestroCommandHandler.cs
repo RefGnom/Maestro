@@ -17,17 +17,14 @@ public class MaestroCommandHandler(
 )
     : IMaestroCommandHandler
 {
-    private readonly ILog<MaestroCommandHandler> _log = log;
     private readonly IApiClient _apiClient = apiClient;
-    private readonly IMessageParser _messageParser = messageParser;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
+    private readonly ILog<MaestroCommandHandler> _log = log;
+    private readonly IMessageParser _messageParser = messageParser;
 
     public async Task UpdateHandler(ITelegramBotClient bot, Update update, CancellationToken cancellationToken)
     {
-        if (update.Type != UpdateType.Message || update.Message is null)
-        {
-            return;
-        }
+        if (update.Type != UpdateType.Message || update.Message is null) return;
 
         if (_messageParser.TryParse(update.Message.Text!, out var message))
         {
@@ -50,7 +47,7 @@ public class MaestroCommandHandler(
                     message.Description,
                     message.ReminderTime,
                     TimeSpan.Zero,
-                    false
+                    isRepeatable: false
                 )
             );
             _log.Info("Event created");
@@ -68,7 +65,6 @@ public class MaestroCommandHandler(
                 "Чтобы создать новое напоминание используйте команду /create {время напоминания} {описание}.",
                 cancellationToken: cancellationToken
             );
-            return;
         }
     }
 

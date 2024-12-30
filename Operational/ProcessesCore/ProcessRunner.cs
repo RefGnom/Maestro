@@ -7,10 +7,7 @@ public class ProcessRunner(IProcessProvider processProvider) : IProcessRunner
     public async Task RunAsync()
     {
         var activeByDefaultRegularProcess = _regularProcesses.Where(regularProcess => regularProcess.IsActiveByDefault);
-        foreach (var regularProcess in activeByDefaultRegularProcess)
-        {
-            await regularProcess.StartAsync();
-        }
+        foreach (var regularProcess in activeByDefaultRegularProcess) await regularProcess.StartAsync();
     }
 
     public async Task StartProcessAsync(string processName, bool isRepeatable = false)

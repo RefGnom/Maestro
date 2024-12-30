@@ -32,7 +32,7 @@ public class MessagesParser(IDateTimeParser dateTimeParser) : IMessageParser
         }
         else
         {
-            if (_dateTimeProvider.TryParse(date, null, out var dateTimeParseResult))
+            if (_dateTimeProvider.TryParse(date, date: null, out var dateTimeParseResult))
             {
                 messageResult = new Message(command, dateTimeParseResult!.Value, parts.Last());
                 return true;
