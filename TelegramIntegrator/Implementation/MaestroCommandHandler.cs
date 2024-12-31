@@ -17,10 +17,10 @@ public class MaestroCommandHandler(
 )
     : IMaestroCommandHandler
 {
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
     private readonly ILog<MaestroCommandHandler> _log = log;
     private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
     private readonly IMessageParser _messageParser = messageParser;
-    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
     public async Task UpdateHandler(ITelegramBotClient bot, Update update, CancellationToken cancellationToken)
     {

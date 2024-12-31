@@ -13,9 +13,29 @@ namespace Maestro.Server.Controllers;
 [Route("api/v1/reminders")]
 public class RemindersController(IRemindersRepository remindersRepository, IMapper mapper, ILogFactory logFactory) : ControllerBase
 {
-    private readonly IRemindersRepository _remindersRepository = remindersRepository;
-    private readonly IMapper _mapper = mapper;
     private readonly ILog<RemindersController> _log = logFactory.CreateLog<RemindersController>();
+    private readonly IMapper _mapper = mapper;
+    private readonly IRemindersRepository _remindersRepository = remindersRepository;
+
+    #region Post
+
+    [HttpPost("create")]
+    public async Task<ActionResult> Create([FromBody] ReminderDto reminderDto)
+    {
+        var reminderDbo = _mapper.Map<ReminderDbo>(reminderDto);
+        reminderDbo.IntegratorId = HttpContext.GetIntegratorId();
+
+        var createdReminderId = await _remindersRepository.AddAsync(reminderDbo, HttpContext.RequestAborted);
+
+        _log.Info($"Created reminder Id: {createdReminderId}");
+
+        return new ObjectResult(new ReminderIdDto { Id = createdReminderId })
+        {
+            StatusCode = (int)HttpStatusCode.Created
+        };
+    }
+
+    #endregion
 
     #region Get
 
@@ -47,26 +67,6 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
         _log.Info($"Fetched reminder Id: {reminderDbo.Id}");
 
         return new ObjectResult(reminderDto);
-    }
-
-    #endregion
-
-    #region Post
-
-    [HttpPost("create")]
-    public async Task<ActionResult> Create([FromBody] ReminderDto reminderDto)
-    {
-        var reminderDbo = _mapper.Map<ReminderDbo>(reminderDto);
-        reminderDbo.IntegratorId = HttpContext.GetIntegratorId();
-
-        var createdReminderId = await _remindersRepository.AddAsync(reminderDbo, HttpContext.RequestAborted);
-
-        _log.Info($"Created reminder Id: {createdReminderId}");
-
-        return new ObjectResult(new ReminderIdDto { Id = createdReminderId })
-        {
-            StatusCode = (int)HttpStatusCode.Created
-        };
     }
 
     #endregion

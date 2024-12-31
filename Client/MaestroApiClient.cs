@@ -28,6 +28,12 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         _log = logFactory.CreateLog<MaestroApiClient>();
     }
 
+    public void Dispose()
+    {
+        _httpClient.Dispose();
+        GC.SuppressFinalize(this);
+    }
+
     # region Get
 
     public async Task<ReminderDto?> GetReminderAsync(long reminderId)
@@ -54,7 +60,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         }
 
         response.EnsureSuccessStatusCode();
-        
+
         var reminder = await response.Content.ReadFromJsonAsync<ReminderDto>();
 
         return reminder;
@@ -141,10 +147,4 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
     }
 
     #endregion
-
-    public void Dispose()
-    {
-        _httpClient.Dispose();
-        GC.SuppressFinalize(this);
-    }
 }

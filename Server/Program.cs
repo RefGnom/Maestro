@@ -24,7 +24,7 @@ public class Program
 
         app.UseRequestLogging();
         app.UseApiKeysAuthorization();
-            
+
         app.Run();
     }
 }

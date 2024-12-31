@@ -15,6 +15,9 @@ public class TelegramIntegratorApplication(
 ) : IApplication
 {
     private readonly ITelegramBotClient _botClient = new TelegramBotClient(settingsProvider.Get("TelegramBotToken"));
+    private readonly ILog<TelegramIntegratorApplication> _log = log;
+
+    private readonly IMaestroCommandHandler _maestroCommandHandler = maestroCommandHandler;
 
     private readonly ReceiverOptions _receiverOptions = new()
     {
@@ -24,9 +27,6 @@ public class TelegramIntegratorApplication(
         ],
         DropPendingUpdates = true
     };
-
-    private readonly IMaestroCommandHandler _maestroCommandHandler = maestroCommandHandler;
-    private readonly ILog<TelegramIntegratorApplication> _log = log;
 
     public void SetUp()
     {

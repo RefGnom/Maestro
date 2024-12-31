@@ -11,18 +11,16 @@ namespace Maestro.Tests.Client;
 [TestFixture]
 public class MaestroApiClientTests
 {
-    private MaestroApiClient _maestroApiClient;
-
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
         const string uri = "http://localhost:5000/api/v1/";
         const string apiKey = "00000000000000000000000000000000";
 
-        _maestroApiClient = new MaestroApiClient(uri, apiKey, 
+        _maestroApiClient = new MaestroApiClient(uri, apiKey,
             // Substitute.For<ILogFactory>()
             new LogFactory(new DateTimeProvider(), new Writer())
-            );
+        );
     }
 
     [OneTimeTearDown]
@@ -30,6 +28,7 @@ public class MaestroApiClientTests
     {
         _maestroApiClient.Dispose();
     }
+    private MaestroApiClient _maestroApiClient;
 
     [Test]
     public async Task Reminders_should_create_and_get_equivalent_reminders_for_user()
@@ -45,7 +44,7 @@ public class MaestroApiClientTests
                 ReminderTime = new DateTime(2024, 1, 1),
                 ReminderTimeDuration = TimeSpan.FromMinutes(1),
                 IsCompleted = true,
-                IsRepeatable = true,
+                IsRepeatable = true
             },
             new()
             {
@@ -54,7 +53,7 @@ public class MaestroApiClientTests
                 ReminderTime = new DateTime(2024, 4, 3),
                 ReminderTimeDuration = TimeSpan.FromMinutes(2),
                 IsCompleted = true,
-                IsRepeatable = false,
+                IsRepeatable = false
             },
             new()
             {
@@ -63,7 +62,7 @@ public class MaestroApiClientTests
                 ReminderTime = new DateTime(2024, 1, 2),
                 ReminderTimeDuration = TimeSpan.FromMinutes(3),
                 IsCompleted = false,
-                IsRepeatable = false,
+                IsRepeatable = false
             }
         };
 
@@ -94,7 +93,7 @@ public class MaestroApiClientTests
             ReminderTime = new DateTime(2024, 1, 2),
             ReminderTimeDuration = TimeSpan.FromMinutes(1),
             IsCompleted = true,
-            IsRepeatable = false,
+            IsRepeatable = false
         };
 
         var createdReminderId = await _maestroApiClient.CreateReminderAsync(reminder);
