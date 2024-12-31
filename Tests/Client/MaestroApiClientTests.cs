@@ -9,9 +9,9 @@ using Maestro.Tests.Extensions;
 namespace Maestro.Tests.Client;
 
 [TestFixture]
-public class ApiClientTests
+public class MaestroApiClientTests
 {
-    private ApiClient _apiClient;
+    private MaestroApiClient _maestroApiClient;
 
     [OneTimeSetUp]
     public void OneTimeSetUp()
@@ -19,7 +19,7 @@ public class ApiClientTests
         const string uri = "http://localhost:5000/api/v1/";
         const string apiKey = "00000000000000000000000000000000";
 
-        _apiClient = new ApiClient(uri, apiKey, 
+        _maestroApiClient = new MaestroApiClient(uri, apiKey, 
             // Substitute.For<ILogFactory>()
             new LogFactory(new DateTimeProvider(), new Writer())
             );
@@ -28,7 +28,7 @@ public class ApiClientTests
     [OneTimeTearDown]
     public void OneTimeTearDown()
     {
-        _apiClient.Dispose();
+        _maestroApiClient.Dispose();
     }
 
     [Test]
@@ -71,11 +71,11 @@ public class ApiClientTests
 
         foreach (var reminder in remindersCreateList)
         {
-            var createdReminderId = await _apiClient.CreateReminderAsync(reminder);
+            var createdReminderId = await _maestroApiClient.CreateReminderAsync(reminder);
             createdRemindersId.Add(createdReminderId);
         }
 
-        var remindersForUser = await _apiClient.GetRemindersForUserAsync(userId).ToListAsync();
+        var remindersForUser = await _maestroApiClient.GetRemindersForUserAsync(userId).ToListAsync();
 
         var filteredRemindersForUser = remindersForUser
             .Where(reminder => createdRemindersId.Contains(reminder.Id))
@@ -97,9 +97,9 @@ public class ApiClientTests
             IsRepeatable = false,
         };
 
-        var createdReminderId = await _apiClient.CreateReminderAsync(reminder);
+        var createdReminderId = await _maestroApiClient.CreateReminderAsync(reminder);
 
-        var createdReminder = await _apiClient.GetReminderAsync(createdReminderId);
+        var createdReminder = await _maestroApiClient.GetReminderAsync(createdReminderId);
 
         createdReminder.Should().BeEquivalentTo(reminder);
     }

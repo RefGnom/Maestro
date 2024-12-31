@@ -5,12 +5,12 @@ using Maestro.Server.Core.Models;
 
 namespace Maestro.Client;
 
-public class ApiClient : IApiClient, IDisposable
+public class MaestroApiClient : IMaestroApiClient, IDisposable
 {
     private readonly HttpClient _httpClient;
-    private readonly ILog<ApiClient> _log;
+    private readonly ILog<MaestroApiClient> _log;
 
-    public ApiClient(string uri, string apiKey, ILogFactory logFactory)
+    public MaestroApiClient(string uri, string apiKey, ILogFactory logFactory)
     {
         if (string.IsNullOrEmpty(uri))
         {
@@ -25,7 +25,7 @@ public class ApiClient : IApiClient, IDisposable
         ArgumentNullException.ThrowIfNull(logFactory, nameof(logFactory));
 
         _httpClient = new HttpClient { BaseAddress = new Uri(uri), DefaultRequestHeaders = { { "Authorization", apiKey } } };
-        _log = logFactory.CreateLog<ApiClient>();
+        _log = logFactory.CreateLog<MaestroApiClient>();
     }
 
     # region Get
@@ -53,6 +53,8 @@ public class ApiClient : IApiClient, IDisposable
             return null;
         }
 
+        response.EnsureSuccessStatusCode();
+        
         var reminder = await response.Content.ReadFromJsonAsync<ReminderDto>();
 
         return reminder;

@@ -55,7 +55,7 @@ public class ApiKeysAuthorizationMiddleware(RequestDelegate next, ILogFactory lo
         httpContext.SetIntegratorId(integratorId.Value);
         _memoryCache.Set(apiKey, integratorId, new MemoryCacheEntryOptions
         {
-            AbsoluteExpiration = _dateTimeProvider.GetCurrentDateTime().AddSeconds(10)
+            AbsoluteExpiration = _dateTimeProvider.GetCurrentDateTime().AddMinutes(5)
         });
 
         await _next(httpContext);

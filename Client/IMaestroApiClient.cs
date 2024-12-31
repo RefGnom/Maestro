@@ -2,7 +2,7 @@
 
 namespace Maestro.Client;
 
-public interface IApiClient
+public interface IMaestroApiClient
 {
     public Task<long> CreateReminderAsync(ReminderDto reminder);
     public Task<ReminderDto?> GetReminderAsync(long reminderId);

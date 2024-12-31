@@ -11,14 +11,14 @@ namespace Maestro.TelegramIntegrator.Implementation;
 
 public class MaestroCommandHandler(
     ILog<MaestroCommandHandler> log,
-    IApiClient apiClient,
+    IMaestroApiClient maestroApiClient,
     IMessageParser messageParser,
     IDateTimeProvider dateTimeProvider
 )
     : IMaestroCommandHandler
 {
     private readonly ILog<MaestroCommandHandler> _log = log;
-    private readonly IApiClient _apiClient = apiClient;
+    private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
     private readonly IMessageParser _messageParser = messageParser;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
@@ -44,7 +44,7 @@ public class MaestroCommandHandler(
                 );
             }
 
-            await _apiClient.CreateReminderAsync(
+            await _maestroApiClient.CreateReminderAsync(
                 ReminderDto.Create(
                     update.Message.Chat.Id,
                     message.Description,

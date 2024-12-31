@@ -10,7 +10,7 @@ public class RequestLoggingMiddleware(RequestDelegate next, ILogFactory logFacto
 
     public async Task InvokeAsync(HttpContext httpContext, IApiKeysRepository apiKeysRepository)
     {
-        var remoteIp = httpContext.Request.Headers["X-Remote-Ip"].SingleOrDefault() ?? httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+        var remoteIp = httpContext.Request.Headers["X-Remote-Ip"].SingleOrDefault() ?? httpContext.Connection.RemoteIpAddress?.ToString() ?? "<Unknown>";
         
         _log.Info($"Handled request. Endpoint: {httpContext.Request.Path}. Remote Ip: {remoteIp}");
         

@@ -4,5 +4,5 @@ namespace Maestro.Server.Core.Models;
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 public class ReminderDtoWithId : ReminderDto
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
 }
