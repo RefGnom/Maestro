@@ -4,7 +4,13 @@ public class ProcessProvider(IEnumerable<IRegularProcess> regularProcesses) : IP
 {
     private readonly IRegularProcess[] _regularProcesses = regularProcesses.ToArray();
 
-    public IRegularProcess[] SelectAll() => _regularProcesses;
+    public IRegularProcess[] SelectAll()
+    {
+        return _regularProcesses;
+    }
 
-    public IRegularProcess[] SelectByMode(bool modeIsRunning) => _regularProcesses.Where(x => x.IsRunning && modeIsRunning).ToArray();
+    public IRegularProcess[] SelectByMode(bool modeIsRunning)
+    {
+        return _regularProcesses.Where(x => x.IsRunning && modeIsRunning).ToArray();
+    }
 }

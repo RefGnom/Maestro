@@ -28,5 +28,4 @@ public static class AssemblyHelper
         var fileName = Path.GetFileName(path);
         return fileName is not null && fileName.StartsWith(ServiceName, StringComparison.OrdinalIgnoreCase);
     }
-
 }

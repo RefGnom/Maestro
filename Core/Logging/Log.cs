@@ -28,7 +28,7 @@ public class Log<TContext>(IDateTimeProvider dateTimeProvider, IWriter writer) :
     {
         _writer.WriteLine(
             $"[{_dateTimeProvider.GetCurrentDateTime().ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture)}] " +
-            $"[{typeof(TContext)}] " +
+            $"[{typeof(TContext).Name}] " +
             $"[{level}] " +
             $"{message}",
             color

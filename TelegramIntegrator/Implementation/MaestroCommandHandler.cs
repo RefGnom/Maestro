@@ -1,7 +1,7 @@
 ﻿using Maestro.Client;
 using Maestro.Core.Logging;
-using Maestro.Core.Models;
 using Maestro.Core.Providers;
+using Maestro.Server.Core.Models;
 using Maestro.TelegramIntegrator.Parsers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -11,16 +11,16 @@ namespace Maestro.TelegramIntegrator.Implementation;
 
 public class MaestroCommandHandler(
     ILog<MaestroCommandHandler> log,
-    IEventsApiClient eventsApiClient,
+    IMaestroApiClient maestroApiClient,
     IMessageParser messageParser,
     IDateTimeProvider dateTimeProvider
 )
     : IMaestroCommandHandler
 {
-    private readonly ILog<MaestroCommandHandler> _log = log;
-    private readonly IEventsApiClient _eventsApiClient = eventsApiClient;
-    private readonly IMessageParser _messageParser = messageParser;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
+    private readonly ILog<MaestroCommandHandler> _log = log;
+    private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
+    private readonly IMessageParser _messageParser = messageParser;
 
     public async Task UpdateHandler(ITelegramBotClient bot, Update update, CancellationToken cancellationToken)
     {
@@ -44,7 +44,7 @@ public class MaestroCommandHandler(
                 );
             }
 
-            await _eventsApiClient.CreateAsync(
+            await _maestroApiClient.CreateReminderAsync(
                 ReminderDto.Create(
                     update.Message.Chat.Id,
                     message.Description,
