@@ -11,7 +11,7 @@ public class ApiKeysRepository(DataContext dataContext) : IApiKeysRepository
     public async Task<long?> GetApiKeyIntegratorIdAsync(string apiKeyHash, CancellationToken cancellationToken)
     {
         var apiKeyDbo = await _dataContext.IntegratorsApiKeys.SingleOrDefaultAsync(apiKeyDbo => apiKeyDbo.ApiKey == apiKeyHash, cancellationToken);
-        return apiKeyDbo?.Id;
+        return apiKeyDbo?.IntegratorId;
     }
 
     public async Task<long> GetLastIntegratorIdAsync(CancellationToken cancellationToken)
