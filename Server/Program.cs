@@ -11,10 +11,15 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddControllers();
+        builder.Services.AddHttpContextAccessor();
         builder.Services.AddDbContext(builder.Configuration);
         builder.Services.AddRepositories();
         builder.Services.AddMapper();
         builder.Services.AddServices();
+        builder.Services.AddAuthenticationWithSchemes();
+        builder.Services.AddAuthorizationPolicies();
+
+        builder.ConfigureLogging();
 
         var app = builder.Build();
 
@@ -23,7 +28,8 @@ public class Program
         app.MapControllers();
 
         app.UseRequestLogging();
-        app.UseApiKeysAuthorization();
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.Run();
     }

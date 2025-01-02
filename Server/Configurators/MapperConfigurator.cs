@@ -11,7 +11,7 @@ public static class MapperConfigurator
         var configuration = new MapperConfiguration(configure =>
         {
             configure.CreateMap<ReminderDto, ReminderDbo>().ReverseMap();
-            configure.CreateMap<ReminderDbo, ReminderDtoWithId>();
+            configure.CreateMap<ReminderDbo, ReminderWithIdDto>();
         });
         var mapper = configuration.CreateMapper();
 
