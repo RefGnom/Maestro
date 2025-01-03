@@ -66,7 +66,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         return reminder;
     }
 
-    public async IAsyncEnumerable<ReminderDtoWithId> GetRemindersForUserAsync(long userId)
+    public async IAsyncEnumerable<ReminderWithIdDto> GetRemindersForUserAsync(long userId)
     {
         const string requestEndpoint = "reminders/forUser";
 
@@ -90,7 +90,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
 
             response.EnsureSuccessStatusCode();
 
-            var reminders = await response.Content.ReadFromJsonAsync<List<ReminderDtoWithId>>();
+            var reminders = await response.Content.ReadFromJsonAsync<List<ReminderWithIdDto>>();
 
             _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}. ItemsCount: {reminders!.Count}");
 
@@ -108,9 +108,48 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         } while (true);
     }
 
-    public Task<ReminderDto[]> GetRemindersForUserAsync(long userId, DateTime inclusiveStartDate, DateTime exclusiveEndDate)
+    public async IAsyncEnumerable<ReminderWithIdDto> GetRemindersForUserAsync(long userId, DateTime inclusiveStartDate, DateTime exclusiveEndDate)
     {
-        throw new NotImplementedException();
+        const string requestEndpoint = "reminders/forUserInTimeRange";
+
+        var offset = 0;
+
+        do
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, requestEndpoint)
+            {
+                Content = JsonContent.Create(new RemindersForUserWithTimeRangeDto
+                {
+                    UserId = userId,
+                    Offset = offset,
+                    Limit = RemindersForUserDto.LimitMaxValue,
+                    InclusiveStartDate = inclusiveStartDate,
+                    ExclusiveEndDate = exclusiveEndDate
+                })
+            };
+
+            _log.Info($"Sending request to {requestEndpoint}. Offset: {offset}, Limit: {RemindersForUserDto.LimitMaxValue}, Time range: {inclusiveStartDate} - {exclusiveEndDate}");
+
+            var response = await _httpClient.SendAsync(request);
+
+            response.EnsureSuccessStatusCode();
+
+            var reminders = await response.Content.ReadFromJsonAsync<List<ReminderWithIdDto>>();
+
+            _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}. ItemsCount: {reminders!.Count}");
+
+            foreach (var reminder in reminders)
+            {
+                yield return reminder;
+            }
+
+            if (reminders.Count < RemindersForUserDto.LimitMaxValue)
+            {
+                yield break;
+            }
+
+            offset += RemindersForUserDto.LimitMaxValue;
+        }while(true);
     }
 
     #endregion
@@ -141,9 +180,22 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         return createdReminderId;
     }
 
-    public Task MarkRemindersAsCompletedAsync(params long[] remindersId)
+    public async Task MarkRemindersAsCompletedAsync(params long[] remindersId)
     {
-        throw new NotImplementedException();
+        const string requestEndpoint = "reminders/markAsCompleted";
+
+        var request = new HttpRequestMessage(HttpMethod.Post, requestEndpoint)
+        {
+            Content = JsonContent.Create(remindersId)
+        };
+
+        _log.Info($"Sending request to {requestEndpoint}");
+
+        var response = await _httpClient.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
     }
 
     #endregion
