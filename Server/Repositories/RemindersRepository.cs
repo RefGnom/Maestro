@@ -22,6 +22,22 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
         return remindersDboList;
     }
 
+    public async Task<List<ReminderDbo>> GetForUserInTimeRangeAsync(RemindersForUserDtoWithTimeRange remindersForUserDto, long integratorId,
+        CancellationToken cancellationToken)
+    {
+        var remindersDboList = await _dataContext.Reminders
+            .Where(reminderDbo => reminderDbo.UserId == remindersForUserDto.UserId
+                              && reminderDbo.IntegratorId == integratorId
+                              && reminderDbo.ReminderTime >= remindersForUserDto.InclusiveStartDate
+                              && reminderDbo.ReminderTime < remindersForUserDto.ExclusiveEndDate)
+            .OrderBy(reminderDbo => reminderDbo.Id)
+            .Skip(remindersForUserDto.Offset)
+            .Take(remindersForUserDto.Limit)
+            .ToListAsync(cancellationToken);
+
+        return remindersDboList;
+    }
+
     public Task<ReminderDbo?> GetByIdAsync(ReminderIdDto reminderIdDto, long integratorId, CancellationToken cancellationToken)
     {
         var reminderDbo = _dataContext.Reminders
@@ -38,5 +54,19 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
         await _dataContext.SaveChangesAsync(cancellationToken);
 
         return createdReminderEntity.Id;
+    }
+
+    public async Task MarkAsCompleted(long[] remindersId, long integratorId, CancellationToken cancellationToken)
+    {
+        var reminders = await _dataContext.Reminders
+        .Where(reminderDbo => remindersId.Contains(reminderDbo.Id) && reminderDbo.IntegratorId == integratorId)
+        .ToListAsync(cancellationToken);
+
+        foreach (var reminder in reminders)
+        {
+            reminder.IsCompleted = true;
+        }
+
+        await _dataContext.SaveChangesAsync(cancellationToken);
     }
 }
