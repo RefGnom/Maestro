@@ -66,7 +66,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         return reminder;
     }
 
-    public async IAsyncEnumerable<ReminderDtoWithId> GetRemindersForUserAsync(long userId)
+    public async IAsyncEnumerable<ReminderWithIdDto> GetRemindersForUserAsync(long userId)
     {
         const string requestEndpoint = "reminders/forUser";
 
@@ -90,7 +90,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
 
             response.EnsureSuccessStatusCode();
 
-            var reminders = await response.Content.ReadFromJsonAsync<List<ReminderDtoWithId>>();
+            var reminders = await response.Content.ReadFromJsonAsync<List<ReminderWithIdDto>>();
 
             _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}. ItemsCount: {reminders!.Count}");
 
