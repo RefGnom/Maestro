@@ -1,19 +1,22 @@
 using System.Net;
 using AutoMapper;
-using Maestro.Core.Logging;
 using Maestro.Data.Models;
+using Maestro.Server.Authorization;
 using Maestro.Server.Core.Models;
 using Maestro.Server.Extensions;
 using Maestro.Server.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AuthenticationSchemes = Maestro.Server.Authentication.AuthenticationSchemes;
 
 namespace Maestro.Server.Controllers;
 
+[Authorize(Policy = AuthorizationPolicies.Integrator, AuthenticationSchemes = AuthenticationSchemes.ApiKey)]
 [ApiController]
 [Route("api/v1/reminders")]
-public class RemindersController(IRemindersRepository remindersRepository, IMapper mapper, ILogFactory logFactory) : ControllerBase
+public class RemindersController(IRemindersRepository remindersRepository, IMapper mapper, ILoggerFactory loggerFactory) : ControllerBase
 {
-    private readonly ILog<RemindersController> _log = logFactory.CreateLog<RemindersController>();
+    private readonly ILogger _logger = loggerFactory.CreateLogger(nameof(RemindersController));
     private readonly IMapper _mapper = mapper;
     private readonly IRemindersRepository _remindersRepository = remindersRepository;
 
@@ -27,7 +30,7 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
 
         var createdReminderId = await _remindersRepository.AddAsync(reminderDbo, HttpContext.RequestAborted);
 
-        _log.Info($"Created reminder Id: {createdReminderId}");
+        _logger.LogInformation("Created reminder Id: {reminderId}", createdReminderId);
 
         return new ObjectResult(new ReminderIdDto { Id = createdReminderId })
         {
@@ -55,9 +58,9 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
         var remindersDbo =
             await _remindersRepository.GetForUserAsync(remindersForUserDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
 
-        _log.Info($"Fetched reminders Count: {remindersDbo.Count}");
+        _logger.LogInformation("Fetched reminders Count: {reminderCount}", remindersDbo.Count);
 
-        var remindersDto = _mapper.Map<List<ReminderDtoWithId>>(remindersDbo);
+        var remindersDto = _mapper.Map<List<ReminderWithIdDto>>(remindersDbo);
 
         return new ObjectResult(remindersDto);
     }
@@ -74,7 +77,7 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
 
         var reminderDto = _mapper.Map<ReminderDto>(reminderDbo);
 
-        _log.Info($"Fetched reminder Id: {reminderDbo.Id}");
+        _logger.LogInformation("Fetched reminder Id: {reminderId}", reminderDbo.Id);
 
         return new ObjectResult(reminderDto);
     }

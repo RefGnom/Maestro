@@ -1,16 +1,13 @@
+using System.Security.Claims;
+
 namespace Maestro.Server.Extensions;
 
 public static class HttpContextExtensions
 {
-    private const string IntegratorIdKey = "IntegratorId";
-
     public static long GetIntegratorId(this HttpContext httpContext)
     {
-        return (long)httpContext.Items[IntegratorIdKey]!;
-    }
-
-    public static void SetIntegratorId(this HttpContext httpContext, long integratorId)
-    {
-        httpContext.Items.Add(IntegratorIdKey, integratorId);
+        var claim = httpContext.User.Claims.SingleOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)!;
+        var integratorId = long.Parse(claim.Value);
+        return integratorId;
     }
 }
