@@ -108,7 +108,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         } while (true);
     }
 
-    public async IAsyncEnumerable<ReminderDtoWithId> GetRemindersForUserAsync(long userId, DateTime inclusiveStartDate, DateTime exclusiveEndDate)
+    public async IAsyncEnumerable<ReminderWithIdDto> GetRemindersForUserAsync(long userId, DateTime inclusiveStartDate, DateTime exclusiveEndDate)
     {
         const string requestEndpoint = "reminders/forUserInTimeRange";
 
@@ -118,7 +118,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         {
             var request = new HttpRequestMessage(HttpMethod.Get, requestEndpoint)
             {
-                Content = JsonContent.Create(new RemindersForUserDtoWithTimeRange
+                Content = JsonContent.Create(new RemindersForUserWithTimeRangeDto
                 {
                     UserId = userId,
                     Offset = offset,
@@ -134,7 +134,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
 
             response.EnsureSuccessStatusCode();
 
-            var reminders = await response.Content.ReadFromJsonAsync<List<ReminderDtoWithId>>();
+            var reminders = await response.Content.ReadFromJsonAsync<List<ReminderWithIdDto>>();
 
             _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}. ItemsCount: {reminders!.Count}");
 

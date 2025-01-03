@@ -43,7 +43,7 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
     {
         await _remindersRepository.MarkAsCompleted(remindersId, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
 
-        _log.Info($"Marked reminders as completed. ReminderIds: {string.Join(", ", remindersId)}");
+        _logger.LogInformation("Marked reminders as completed. ReminderIds: {remindersId}", string.Join(", ", remindersId));
 
         return NoContent();
     }
@@ -83,14 +83,14 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
     }
 
     [HttpGet("forUserInTimeRange")]
-    public async Task<ActionResult> ForUserInTimeRange([FromBody] RemindersForUserDtoWithTimeRange remindersForUserDto)
+    public async Task<ActionResult> ForUserInTimeRange([FromBody] RemindersForUserWithTimeRangeDto remindersForUserDto)
     {
         var remindersDbo =
             await _remindersRepository.GetForUserInTimeRangeAsync(remindersForUserDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
 
-        _log.Info($"Fetched reminders Count: {remindersDbo.Count}");
+        _logger.LogInformation("Fetched reminders Count: {reminderCount}", remindersDbo.Count);
 
-        var remindersDto = _mapper.Map<List<ReminderDtoWithId>>(remindersDbo);
+        var remindersDto = _mapper.Map<List<ReminderWithIdDto>>(remindersDbo);
 
         return new ObjectResult(remindersDto);
     }

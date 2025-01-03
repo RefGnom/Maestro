@@ -22,7 +22,7 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
         return remindersDboList;
     }
 
-    public async Task<List<ReminderDbo>> GetForUserInTimeRangeAsync(RemindersForUserDtoWithTimeRange remindersForUserDto, long integratorId,
+    public async Task<List<ReminderDbo>> GetForUserInTimeRangeAsync(RemindersForUserWithTimeRangeDto remindersForUserDto, long integratorId,
         CancellationToken cancellationToken)
     {
         var remindersDboList = await _dataContext.Reminders

@@ -108,7 +108,7 @@ public class MaestroApiClientTests
     {
         const int userId = 3;
         DateTime inclusiveStartDate = new DateTime(2025, 1, 1);
-        DateTime exclusiveEndDate = new DateTime(2024, 1, 4);
+        DateTime exclusiveEndDate = new DateTime(2025, 1, 4);
 
         var remindersCreateList = new List<ReminderDto>
         {
@@ -147,8 +147,9 @@ public class MaestroApiClientTests
         {
             var createdReminderId = await _maestroApiClient.CreateReminderAsync(reminder);
             createdRemindersId.Add(createdReminderId);
-            await _maestroApiClient.MarkRemindersAsCompletedAsync(createdReminderId);
         }
+
+        await _maestroApiClient.MarkRemindersAsCompletedAsync(createdRemindersId.ToArray());
 
         var remindersForUser = await _maestroApiClient.GetRemindersForUserAsync(userId, inclusiveStartDate, exclusiveEndDate).ToListAsync();
 
