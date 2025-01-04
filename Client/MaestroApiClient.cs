@@ -108,9 +108,9 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         } while (true);
     }
 
-    public async IAsyncEnumerable<ReminderWithIdDto> GetRemindersForUserAsync(long userId, DateTime inclusiveStartDate, DateTime exclusiveEndDate)
+    public async IAsyncEnumerable<ReminderWithIdDto> GetRemindersForUserAsync(long userId, DateTime exclusiveStartDateTime)
     {
-        const string requestEndpoint = "reminders/forUserInTimeRange";
+        const string requestEndpoint = "reminders/forUser";
 
         var offset = 0;
 
@@ -118,17 +118,16 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         {
             var request = new HttpRequestMessage(HttpMethod.Get, requestEndpoint)
             {
-                Content = JsonContent.Create(new RemindersForUserWithTimeRangeDto
+                Content = JsonContent.Create(new RemindersForUserDto
                 {
                     UserId = userId,
                     Offset = offset,
                     Limit = RemindersForUserDto.LimitMaxValue,
-                    InclusiveStartDate = inclusiveStartDate,
-                    ExclusiveEndDate = exclusiveEndDate
+                    ExclusiveStartDateTime = exclusiveStartDateTime
                 })
             };
 
-            _log.Info($"Sending request to {requestEndpoint}. Offset: {offset}, Limit: {RemindersForUserDto.LimitMaxValue}, Time range: {inclusiveStartDate} - {exclusiveEndDate}");
+            _log.Info($"Sending request to {requestEndpoint}. Offset: {offset}, Limit: {RemindersForUserDto.LimitMaxValue}");
 
             var response = await _httpClient.SendAsync(request);
 
@@ -149,7 +148,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
             }
 
             offset += RemindersForUserDto.LimitMaxValue;
-        }while(true);
+        } while (true);
     }
 
     #endregion
@@ -183,19 +182,24 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
     public async Task MarkRemindersAsCompletedAsync(params long[] remindersId)
     {
         const string requestEndpoint = "reminders/markAsCompleted";
+        const int chunkSize = 50;
 
-        var request = new HttpRequestMessage(HttpMethod.Post, requestEndpoint)
+        for (int i = 0; i < remindersId.Length; i += chunkSize)
         {
-            Content = JsonContent.Create(remindersId)
-        };
+            var chunk = remindersId.Skip(i).Take(chunkSize).ToList();
+            var request = new HttpRequestMessage(HttpMethod.Post, requestEndpoint)
+            {
+                Content = JsonContent.Create(chunk)
+            };
 
-        _log.Info($"Sending request to {requestEndpoint}");
+            _log.Info($"Sending request to {requestEndpoint}. Chunk size: {chunk.Count}");
 
-        var response = await _httpClient.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
 
-        response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
 
-        _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
+            _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
+        }
     }
 
     #endregion

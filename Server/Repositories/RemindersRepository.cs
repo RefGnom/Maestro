@@ -12,24 +12,15 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
     public async Task<List<ReminderDbo>> GetForUserAsync(RemindersForUserDto remindersForUserDto, long integratorId,
         CancellationToken cancellationToken)
     {
-        var remindersDboList = await _dataContext.Reminders
-            .Where(reminderDbo => reminderDbo.UserId == remindersForUserDto.UserId && reminderDbo.IntegratorId == integratorId)
-            .OrderBy(reminderDbo => reminderDbo.Id)
-            .Skip(remindersForUserDto.Offset)
-            .Take(remindersForUserDto.Limit)
-            .ToListAsync(cancellationToken);
+        var remindersDbo = _dataContext.Reminders
+        .Where(reminderDbo => reminderDbo.UserId == remindersForUserDto.UserId && reminderDbo.IntegratorId == integratorId);
 
-        return remindersDboList;
-    }
+        if (remindersForUserDto.ExclusiveStartDateTime is not null)
+        {
+            remindersDbo = remindersDbo.Where(reminderDbo => reminderDbo.ReminderTime > remindersForUserDto.ExclusiveStartDateTime);
+        }
 
-    public async Task<List<ReminderDbo>> GetForUserInTimeRangeAsync(RemindersForUserWithTimeRangeDto remindersForUserDto, long integratorId,
-        CancellationToken cancellationToken)
-    {
-        var remindersDboList = await _dataContext.Reminders
-            .Where(reminderDbo => reminderDbo.UserId == remindersForUserDto.UserId
-                              && reminderDbo.IntegratorId == integratorId
-                              && reminderDbo.ReminderTime >= remindersForUserDto.InclusiveStartDate
-                              && reminderDbo.ReminderTime < remindersForUserDto.ExclusiveEndDate)
+        var remindersDboList = await remindersDbo
             .OrderBy(reminderDbo => reminderDbo.Id)
             .Skip(remindersForUserDto.Offset)
             .Take(remindersForUserDto.Limit)
@@ -56,7 +47,7 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
         return createdReminderEntity.Id;
     }
 
-    public async Task MarkAsCompleted(long[] remindersId, long integratorId, CancellationToken cancellationToken)
+    public async Task MarkAsCompleted(List<long> remindersId, long integratorId, CancellationToken cancellationToken)
     {
         var reminders = await _dataContext.Reminders
         .Where(reminderDbo => remindersId.Contains(reminderDbo.Id) && reminderDbo.IntegratorId == integratorId)

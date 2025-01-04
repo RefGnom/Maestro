@@ -15,7 +15,7 @@ public class MaestroApiClientTests
     public void OneTimeSetUp()
     {
         const string uri = "http://localhost:5000/api/v1/";
-        const string apiKey = "00000000000000000000000000000000";
+        const string apiKey = "integrator123";
 
         _maestroApiClient = new MaestroApiClient(uri, apiKey,
             // Substitute.For<ILogFactory>()
@@ -104,11 +104,10 @@ public class MaestroApiClientTests
     }
 
     [Test]
-    public async Task Reminders_should_marked_as_complited_and_get_reminders_for_user_in_time_range()
+    public async Task Reminders_should_marked_as_completed_and_get_reminders_after_startDateTime()
     {
         const int userId = 3;
-        DateTime inclusiveStartDate = new DateTime(2025, 1, 1);
-        DateTime exclusiveEndDate = new DateTime(2025, 1, 4);
+        var exclusiveStartDateTime = new DateTime(2025, 1, 1);
 
         var remindersCreateList = new List<ReminderDto>
         {
@@ -118,7 +117,7 @@ public class MaestroApiClientTests
                 Description = "Test1",
                 ReminderTime = new DateTime(2025, 1, 1),
                 ReminderTimeDuration = TimeSpan.FromMinutes(1),
-                IsCompleted = false,
+                IsCompleted = true,
                 IsRepeatable = true
             },
             new()
@@ -151,17 +150,17 @@ public class MaestroApiClientTests
 
         await _maestroApiClient.MarkRemindersAsCompletedAsync(createdRemindersId.ToArray());
 
-        var remindersForUser = await _maestroApiClient.GetRemindersForUserAsync(userId, inclusiveStartDate, exclusiveEndDate).ToListAsync();
+        var remindersForUser = await _maestroApiClient.GetRemindersForUserAsync(userId, exclusiveStartDateTime).ToListAsync();
 
         var filteredRemindersForUser = remindersForUser
             .Where(reminder => createdRemindersId.Contains(reminder.Id))
             .ToList();
 
-        filteredRemindersForUser.Count.Should().Equals(3);
+        filteredRemindersForUser.Should().HaveCount(2);
 
         foreach (var reminder in filteredRemindersForUser)
         {
-            reminder.ReminderTime.Should().BeOnOrAfter(inclusiveStartDate).And.BeBefore(exclusiveEndDate);
+            reminder.ReminderTime.Should().BeAfter(exclusiveStartDateTime);
             reminder.IsCompleted.Should().BeTrue();
         }
     }

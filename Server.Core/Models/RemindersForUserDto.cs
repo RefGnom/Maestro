@@ -13,4 +13,6 @@ public class RemindersForUserDto
     [Range(0, int.MaxValue)] public int Offset { get; set; }
 
     [Range(0, LimitMaxValue)] public int Limit { get; set; }
+
+    public DateTime? ExclusiveStartDateTime { get; set; }
 }
