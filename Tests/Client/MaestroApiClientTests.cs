@@ -74,7 +74,7 @@ public class MaestroApiClientTests
             createdRemindersId.Add(createdReminderId);
         }
 
-        var remindersForUser = await _maestroApiClient.GetRemindersForUserAsync(userId).ToListAsync();
+        var remindersForUser = await _maestroApiClient.GetRemindersForUserAsync(userId, null).ToListAsync();
 
         var filteredRemindersForUser = remindersForUser
             .Where(reminder => createdRemindersId.Contains(reminder.Id))
@@ -104,7 +104,7 @@ public class MaestroApiClientTests
     }
 
     [Test]
-    public async Task Reminders_should_marked_as_completed_and_get_reminders_after_startDateTime()
+    public async Task Reminders_should_create_and_get_reminders_after_startDateTime()
     {
         const int userId = 3;
         var exclusiveStartDateTime = new DateTime(2025, 1, 1);
@@ -148,8 +148,6 @@ public class MaestroApiClientTests
             createdRemindersId.Add(createdReminderId);
         }
 
-        await _maestroApiClient.MarkRemindersAsCompletedAsync(createdRemindersId.ToArray());
-
         var remindersForUser = await _maestroApiClient.GetRemindersForUserAsync(userId, exclusiveStartDateTime).ToListAsync();
 
         var filteredRemindersForUser = remindersForUser
@@ -159,9 +157,53 @@ public class MaestroApiClientTests
         filteredRemindersForUser.Should().HaveCount(2);
 
         foreach (var reminder in filteredRemindersForUser)
-        {
             reminder.ReminderTime.Should().BeAfter(exclusiveStartDateTime);
-            reminder.IsCompleted.Should().BeTrue();
+    }
+
+    [Test]
+    public async Task Reminders_should_create_and_marked_as_completed()
+    {
+        const int userId = 4;
+
+        var remindersCreateList = new List<ReminderDto>
+        {
+            new()
+            {
+                UserId = userId,
+                Description = "Test1",
+                ReminderTime = new DateTime(2025, 1, 1),
+                ReminderTimeDuration = TimeSpan.FromMinutes(1),
+                IsCompleted = true,
+                IsRepeatable = true
+            },
+            new()
+            {
+                UserId = userId,
+                Description = "Test2",
+                ReminderTime = new DateTime(2025, 1, 2),
+                ReminderTimeDuration = TimeSpan.FromMinutes(2),
+                IsCompleted = false,
+                IsRepeatable = false
+            }
+        };
+
+        var createdRemindersId = new List<long>();
+
+        foreach (var reminder in remindersCreateList)
+        {
+            var createdReminderId = await _maestroApiClient.CreateReminderAsync(reminder);
+            createdRemindersId.Add(createdReminderId);
         }
+
+        await _maestroApiClient.MarkRemindersAsCompletedAsync(createdRemindersId.ToArray());
+
+        var remindersForUser = await _maestroApiClient.GetRemindersForUserAsync(userId, null).ToListAsync();
+
+        var filteredRemindersForUser = remindersForUser
+            .Where(reminder => createdRemindersId.Contains(reminder.Id))
+            .ToList();
+
+        foreach (var reminder in filteredRemindersForUser)
+            reminder.IsCompleted.Should().BeTrue();
     }
 }

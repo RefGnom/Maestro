@@ -11,7 +11,7 @@ using AuthenticationSchemes = Maestro.Server.Authentication.AuthenticationScheme
 
 namespace Maestro.Server.Controllers;
 
-[Authorize(Policy = AuthorizationPolicies.Integrator, AuthenticationSchemes = AuthenticationSchemes.ApiKey)]
+//[Authorize(Policy = AuthorizationPolicies.Integrator, AuthenticationSchemes = AuthenticationSchemes.ApiKey)]
 [ApiController]
 [Route("api/v1/reminders")]
 public class RemindersController(IRemindersRepository remindersRepository, IMapper mapper, ILoggerFactory loggerFactory) : ControllerBase
@@ -39,7 +39,7 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
     }
 
     [HttpPost("markAsCompleted")]
-    public async Task<ActionResult> MarkAsCompleted([FromBody] List<long> remindersId)
+    public async Task<ActionResult> MarkAsCompleted([FromBody] RemindersIdDto remindersId)
     {
         await _remindersRepository.MarkAsCompleted(remindersId, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
 

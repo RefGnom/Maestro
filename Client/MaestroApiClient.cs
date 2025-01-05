@@ -66,49 +66,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         return reminder;
     }
 
-    public async IAsyncEnumerable<ReminderWithIdDto> GetRemindersForUserAsync(long userId)
-    {
-        const string requestEndpoint = "reminders/forUser";
-
-        var offset = 0;
-
-        do
-        {
-            var request = new HttpRequestMessage(HttpMethod.Get, requestEndpoint)
-            {
-                Content = JsonContent.Create(new RemindersForUserDto
-                {
-                    UserId = userId,
-                    Offset = offset,
-                    Limit = RemindersForUserDto.LimitMaxValue
-                })
-            };
-
-            _log.Info($"Sending request to {requestEndpoint}. Offset: {offset}, Limit: {RemindersForUserDto.LimitMaxValue}");
-
-            var response = await _httpClient.SendAsync(request);
-
-            response.EnsureSuccessStatusCode();
-
-            var reminders = await response.Content.ReadFromJsonAsync<List<ReminderWithIdDto>>();
-
-            _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}. ItemsCount: {reminders!.Count}");
-
-            foreach (var reminder in reminders)
-            {
-                yield return reminder;
-            }
-
-            if (reminders.Count < RemindersForUserDto.LimitMaxValue)
-            {
-                yield break;
-            }
-
-            offset += RemindersForUserDto.LimitMaxValue;
-        } while (true);
-    }
-
-    public async IAsyncEnumerable<ReminderWithIdDto> GetRemindersForUserAsync(long userId, DateTime exclusiveStartDateTime)
+    public async IAsyncEnumerable<ReminderWithIdDto> GetRemindersForUserAsync(long userId, DateTime? exclusiveStartDateTime)
     {
         const string requestEndpoint = "reminders/forUser";
 
@@ -182,17 +140,19 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
     public async Task MarkRemindersAsCompletedAsync(params long[] remindersId)
     {
         const string requestEndpoint = "reminders/markAsCompleted";
-        const int chunkSize = 50;
+        const int chunkSize = RemindersIdDto.LimitMaxValue;
 
         for (int i = 0; i < remindersId.Length; i += chunkSize)
         {
-            var chunk = remindersId.Skip(i).Take(chunkSize).ToList();
             var request = new HttpRequestMessage(HttpMethod.Post, requestEndpoint)
             {
-                Content = JsonContent.Create(chunk)
+                Content = JsonContent.Create(new RemindersIdDto
+                {
+                    Id = remindersId.Skip(i).Take(chunkSize).ToList()
+                })
             };
 
-            _log.Info($"Sending request to {requestEndpoint}. Chunk size: {chunk.Count}");
+            _log.Info($"Sending request to {requestEndpoint}");
 
             var response = await _httpClient.SendAsync(request);
 

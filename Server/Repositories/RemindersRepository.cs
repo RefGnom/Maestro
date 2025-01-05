@@ -47,10 +47,10 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
         return createdReminderEntity.Id;
     }
 
-    public async Task MarkAsCompleted(List<long> remindersId, long integratorId, CancellationToken cancellationToken)
+    public async Task MarkAsCompleted(RemindersIdDto remindersId, long integratorId, CancellationToken cancellationToken)
     {
         var reminders = await _dataContext.Reminders
-        .Where(reminderDbo => remindersId.Contains(reminderDbo.Id) && reminderDbo.IntegratorId == integratorId)
+        .Where(reminderDbo => remindersId.Id.Contains(reminderDbo.Id) && reminderDbo.IntegratorId == integratorId)
         .ToListAsync(cancellationToken);
 
         foreach (var reminder in reminders)
