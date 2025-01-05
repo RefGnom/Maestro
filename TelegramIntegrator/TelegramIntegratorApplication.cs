@@ -13,14 +13,13 @@ public class TelegramIntegratorApplication(
     ISettingsProvider settingsProvider,
     IMaestroCommandHandler maestroCommandHandler,
     ILog<TelegramIntegratorApplication> log,
-    IProcessRunner processRunner
+    IProcessRunner processRunner,
+    ITelegramBotClient botClient
 ) : IApplication
 {
-    private readonly ITelegramBotClient _botClient = new TelegramBotClient(settingsProvider.Get("TelegramBotToken"));
     private readonly ILog<TelegramIntegratorApplication> _log = log;
 
     private readonly IMaestroCommandHandler _maestroCommandHandler = maestroCommandHandler;
-
     private readonly ReceiverOptions _receiverOptions = new()
     {
         AllowedUpdates =
@@ -36,7 +35,7 @@ public class TelegramIntegratorApplication(
 
     public async Task RunAsync()
     {
-        _botClient.StartReceiving(
+        botClient.StartReceiving(
             _maestroCommandHandler.UpdateHandler,
             _maestroCommandHandler.ErrorHandler,
             _receiverOptions
