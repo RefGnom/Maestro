@@ -10,7 +10,9 @@ public class ApiKeysRepository(DataContext dataContext) : IApiKeysRepository
 
     public async Task<long?> GetApiKeyIntegratorIdAsync(string apiKeyHash, CancellationToken cancellationToken)
     {
-        var apiKeyDbo = await _dataContext.IntegratorsApiKeys.SingleOrDefaultAsync(apiKeyDbo => apiKeyDbo.ApiKey == apiKeyHash, cancellationToken);
+        var apiKeyDbo =
+            await _dataContext.IntegratorsApiKeys.SingleOrDefaultAsync(
+                apiKeyDbo => apiKeyDbo.ApiKey == apiKeyHash && apiKeyDbo.State == ApiKeyState.Active, cancellationToken);
         return apiKeyDbo?.IntegratorId;
     }
 
@@ -20,7 +22,7 @@ public class ApiKeysRepository(DataContext dataContext) : IApiKeysRepository
         return lastIntegratorId;
     }
 
-    public async Task<long?> AddApiKey(string apiKeyHash, long integratorId, CancellationToken cancellationToken)
+    public async Task<long?> AddApiKeyAsync(string apiKeyHash, long integratorId, CancellationToken cancellationToken)
     {
         var isApiKeyExists = await _dataContext.IntegratorsApiKeys.AnyAsync(apiKeyDbo => apiKeyDbo.ApiKey == apiKeyHash, cancellationToken);
 

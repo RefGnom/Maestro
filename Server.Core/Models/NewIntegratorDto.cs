@@ -5,5 +5,5 @@ public class NewIntegratorDto
 {
     public string ApiKey { get; set; }
     
-    public string Policy { get; set; }
+    public string Role { get; set; }
 }

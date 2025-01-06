@@ -66,7 +66,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         return reminder;
     }
 
-    public async IAsyncEnumerable<ReminderWithIdDto> GetRemindersForUserAsync(long userId, DateTime? exclusiveStartDateTime)
+    public async IAsyncEnumerable<ReminderWithIdDto> GetRemindersForUserAsync(long userId, DateTime? exclusiveStartDateTime = null)
     {
         const string requestEndpoint = "reminders/forUser";
 
@@ -85,7 +85,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
                 })
             };
 
-            _log.Info($"Sending request to {requestEndpoint}. Offset: {offset}, Limit: {RemindersForUserDto.LimitMaxValue}");
+            _log.Info($"Sending request to {requestEndpoint}. Offset: {offset}. Limit: {RemindersForUserDto.LimitMaxValue}");
 
             var response = await _httpClient.SendAsync(request);
 
@@ -140,19 +140,19 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
     public async Task MarkRemindersAsCompletedAsync(params long[] remindersId)
     {
         const string requestEndpoint = "reminders/markAsCompleted";
-        const int chunkSize = RemindersIdDto.LimitMaxValue;
 
-        for (int i = 0; i < remindersId.Length; i += chunkSize)
+        for (int offset = 0; offset < remindersId.Length; offset += RemindersIdDto.LimitMaxValue)
         {
+            var remindersIdWindow = remindersId.Skip(offset).Take(RemindersIdDto.LimitMaxValue).ToList();
             var request = new HttpRequestMessage(HttpMethod.Post, requestEndpoint)
             {
                 Content = JsonContent.Create(new RemindersIdDto
                 {
-                    Id = remindersId.Skip(i).Take(chunkSize).ToList()
+                    RemindersId = remindersIdWindow
                 })
             };
 
-            _log.Info($"Sending request to {requestEndpoint}");
+            _log.Info($"Sending request to {requestEndpoint}. Offset: {offset}. ItemsCount: {remindersIdWindow.Count}");
 
             var response = await _httpClient.SendAsync(request);
 

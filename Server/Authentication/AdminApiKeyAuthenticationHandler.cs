@@ -32,18 +32,17 @@ public class AdminApiKeyAuthenticationHandler(
         {
             return Task.FromResult(AuthenticateResult.Fail("Incorrect ApiKey"));
         }
-
+        
         var authenticationTicket = CreateAuthenticationTicket();
         return Task.FromResult(AuthenticateResult.Success(authenticationTicket));
+    }
 
-        AuthenticationTicket CreateAuthenticationTicket()
-        {
-            var claims = Array.Empty<Claim>();
-            var claimsIdentity = new ClaimsIdentity(claims, Scheme.Name);
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            // ReSharper disable once VariableHidesOuterVariable
-            var authenticationTicket = new AuthenticationTicket(claimsPrincipal, Scheme.Name);
-            return authenticationTicket;
-        }
+    private AuthenticationTicket CreateAuthenticationTicket()
+    {
+        var claims = new List<Claim> { new(ClaimTypes.Role, Roles.Admin) };
+        var claimsIdentity = new ClaimsIdentity(claims, Scheme.Name);
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+        var authenticationTicket = new AuthenticationTicket(claimsPrincipal, Scheme.Name);
+        return authenticationTicket;
     }
 }

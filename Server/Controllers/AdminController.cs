@@ -1,61 +1,58 @@
 using Maestro.Server.Authentication;
-using Maestro.Server.Authorization;
 using Maestro.Server.Core.Models;
 using Maestro.Server.Repositories;
 using Maestro.Server.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Maestro.Server.Controllers;
 
-[Authorize(Policy = AuthorizationPolicies.Admin, AuthenticationSchemes = AuthenticationSchemes.AdminApiKey)]
+[Authorize(Roles = Roles.Admin, AuthenticationSchemes = AuthenticationSchemes.AdminApiKey)]
 [ApiController]
 [Route("admin")]
 public class AdminController(
     IApiKeysRepository apiKeysRepository,
-    IIntegratorsPoliciesRepository integratorsPoliciesRepository,
-    IPoliciesValidator policiesValidator,
+    IIntegratorsRolesRepository integratorsRolesRepository,
+    IRolesValidator rolesValidator,
     IApiKeyHasher apiKeyHasher,
     ILoggerFactory logFactory) : ControllerBase
 {
     private static readonly object Lock = new();
 
     private readonly IApiKeysRepository _apiKeysRepository = apiKeysRepository;
-    private readonly IIntegratorsPoliciesRepository _integratorsPoliciesRepository = integratorsPoliciesRepository;
-    private readonly IPoliciesValidator _policiesValidator = policiesValidator;
+    private readonly IIntegratorsRolesRepository _integratorsRolesRepository = integratorsRolesRepository;
+    private readonly IRolesValidator _rolesValidator = rolesValidator;
     private readonly IApiKeyHasher _apiKeyHasher = apiKeyHasher;
-    private readonly ILogger _logger = logFactory.CreateLogger(nameof(AdminController));
+    private readonly ILogger _logger = logFactory.CreateLogger<AdminController>();
 
     [HttpPost("integrator")]
-    public async Task<ActionResult> Integrator([FromBody] NewIntegratorDto newIntegratorDto)
+    public ActionResult Integrator([FromBody] NewIntegratorDto newIntegratorDto)
     {
-        try
+        lock (Lock)
         {
-            Monitor.Enter(Lock);
-            
-            var newIntegratorId = await _apiKeysRepository.GetLastIntegratorIdAsync(HttpContext.RequestAborted) + 1;
+            var newIntegratorId = _apiKeysRepository.GetLastIntegratorIdAsync(HttpContext.RequestAborted).Result + 1;
             var apiKeyHash = _apiKeyHasher.Hash(newIntegratorDto.ApiKey);
-            var apiKeyId = await _apiKeysRepository.AddApiKey(apiKeyHash, newIntegratorId, HttpContext.RequestAborted);
+            var apiKeyId = _apiKeysRepository.AddApiKeyAsync(apiKeyHash, newIntegratorId, HttpContext.RequestAborted).Result;
 
             if (apiKeyId is null)
             {
                 return new ConflictResult();
             }
 
-            if (!_policiesValidator.Validate(newIntegratorDto.Policy))
+            if (!_rolesValidator.Validate(newIntegratorDto.Role))
             {
                 return new BadRequestResult();
             }
 
-            await _integratorsPoliciesRepository.AddIntegratorPolicyAsync(newIntegratorId, newIntegratorDto.Policy,
-                HttpContext.RequestAborted);
-            _logger.LogInformation("Policy {policy} issued to new Integrator. IntegratorId: {integratorId}", newIntegratorDto.Policy, newIntegratorId);
+            _integratorsRolesRepository.AddIntegratorRoleAsync(newIntegratorId, newIntegratorDto.Role, HttpContext.RequestAborted).Wait();
+            _logger.LogInformation("New Integrator created. IntegratorId: {integratorId}. Assigned Role: {role}. Issued ApiKey: {apiKeyId}",
+                newIntegratorId, newIntegratorDto.Role, apiKeyId);
 
-            return new CreatedResult();
-        }
-        finally
-        {
-            Monitor.Exit(Lock);
+            return new CreatedResult
+            {
+                StatusCode = StatusCodes.Status201Created
+            };
         }
     }
 }

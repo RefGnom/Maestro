@@ -1,41 +1,27 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Maestro.Data.Core;
 
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 namespace Maestro.Server.Core.Models;
 
 public class ReminderDto
 {
+    [Required]
     public long UserId { get; set; }
-
+    
+    [Required]
     [MaxLength(DataConstraints.ReminderDescriptionMaxLength)]
     public string Description { get; set; }
 
+    [Required]
     public DateTime ReminderTime { get; set; }
 
-    public TimeSpan ReminderTimeDuration { get; set; }
+    [Required]
+    public TimeSpan RemindInterval { get; set; }
 
-    public bool IsRepeatable { get; set; }
-
-    public bool IsCompleted { get; set; }
-
-    public static ReminderDto Create(
-        long userId,
-        string description,
-        DateTime reminderTime,
-        TimeSpan reminderTimeDuration,
-        bool isRepeatable
-    )
-    {
-        return new ReminderDto
-        {
-            UserId = userId,
-            Description = description,
-            ReminderTime = reminderTime,
-            ReminderTimeDuration = reminderTimeDuration,
-            IsRepeatable = isRepeatable,
-            IsCompleted = false
-        };
-    }
+    [Required]
+    public int RemindCount { get; set; }
 }

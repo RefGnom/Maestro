@@ -4,11 +4,11 @@
 
 namespace Maestro.Data.Models;
 
-public class IntegratorPolicyDbo
+public class IntegratorRoleDbo
 {
     public long Id { get; set; }
 
     public long IntegratorId { get; set; }
 
-    public string Policy { get; set; }
+    public string Role { get; set; }
 }

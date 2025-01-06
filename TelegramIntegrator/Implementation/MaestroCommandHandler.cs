@@ -44,14 +44,14 @@ public class MaestroCommandHandler(
                 );
             }
 
-            await _maestroApiClient.CreateReminderAsync(
-                ReminderDto.Create(
-                    update.Message.Chat.Id,
-                    message.Description,
-                    message.ReminderTime,
-                    TimeSpan.Zero,
-                    false
-                )
+            await _maestroApiClient.CreateReminderAsync(new()
+                // ReminderDto.Create(
+                //     update.Message.Chat.Id,
+                //     message.Description,
+                //     message.ReminderTime,
+                //     TimeSpan.Zero,
+                //     false
+                // )
             );
             _log.Info("Event created");
             await bot.SendMessage(
@@ -68,7 +68,6 @@ public class MaestroCommandHandler(
                 "Чтобы создать новое напоминание используйте команду /create {время напоминания} {описание}.",
                 cancellationToken: cancellationToken
             );
-            return;
         }
     }
 

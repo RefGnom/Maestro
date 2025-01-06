@@ -17,7 +17,6 @@ public class Program
         builder.Services.AddMapper();
         builder.Services.AddServices();
         builder.Services.AddAuthenticationWithSchemes();
-        builder.Services.AddAuthorizationPolicies();
 
         builder.ConfigureLogging();
 

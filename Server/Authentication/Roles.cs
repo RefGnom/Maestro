@@ -1,6 +1,6 @@
-namespace Maestro.Server.Authorization;
+namespace Maestro.Server.Authentication;
 
-public static class AuthorizationPolicies
+public static class Roles
 {
     public const string Admin = "Admin";
     public const string Daemon = "Daemon";

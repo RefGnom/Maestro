@@ -10,7 +10,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
 
     public DbSet<IntegratorApiKeyDbo> IntegratorsApiKeys { get; set; }
 
-    public DbSet<IntegratorPolicyDbo> IntegratorsPoliciesDbo { get; set; }
+    public DbSet<IntegratorRoleDbo> IntegratorsRolesDbo { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -19,8 +19,8 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         modelBuilder.Entity<IntegratorApiKeyDbo>().Property(dbo => dbo.ApiKey).HasMaxLength(DataConstraints.ApiKeyHashMaxLength);
         modelBuilder.Entity<IntegratorApiKeyDbo>().HasIndex(dbo => dbo.ApiKey).IsUnique();
 
-        modelBuilder.Entity<IntegratorPolicyDbo>().Property(dbo => dbo.Policy).HasMaxLength(16);
-        modelBuilder.Entity<IntegratorPolicyDbo>().HasAlternateKey(dbo => new { dbo.IntegratorId, dbo.Policy });
+        modelBuilder.Entity<IntegratorRoleDbo>().Property(dbo => dbo.Role).HasMaxLength(16);
+        modelBuilder.Entity<IntegratorRoleDbo>().HasAlternateKey(dbo => new { dbo.IntegratorId, dbo.Role });
 
         modelBuilder.Entity<IntegratorApiKeyDbo>().HasData(
             new IntegratorApiKeyDbo
@@ -31,12 +31,12 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
                 State = ApiKeyState.Inactive
             });
 
-        modelBuilder.Entity<IntegratorPolicyDbo>().HasData(
-            new IntegratorPolicyDbo
+        modelBuilder.Entity<IntegratorRoleDbo>().HasData(
+            new IntegratorRoleDbo
             {
                 Id = 1,
                 IntegratorId = 1,
-                Policy = "<no-policy>"
+                Role = "<no-role>"
             });
 
         base.OnModelCreating(modelBuilder);

@@ -12,12 +12,16 @@ public class ApiKeyAuthenticationHandler(
     ILoggerFactory loggerFactory,
     UrlEncoder encoder,
     IApiKeysIntegratorsCache apiKeysIntegratorsCache,
+    IIntegratorsRolesCache integratorsRolesCache,
+    IIntegratorsRolesRepository integratorsRolesRepository,
     IApiKeysRepository apiKeysRepository,
     IApiKeyHasher apiKeyHasher)
     : AuthenticationHandler<AuthenticationSchemeOptions>(options, loggerFactory, encoder)
 {
-    private readonly ILogger _logger = loggerFactory.CreateLogger(nameof(ApiKeyAuthenticationHandler));
+    private readonly ILogger _logger = loggerFactory.CreateLogger<ApiKeyAuthenticationHandler>();
     private readonly IApiKeysIntegratorsCache _apiKeysIntegratorsCache = apiKeysIntegratorsCache;
+    private readonly IIntegratorsRolesCache _integratorsRolesCache = integratorsRolesCache;
+    private readonly IIntegratorsRolesRepository _integratorsRolesRepository = integratorsRolesRepository;
     private readonly IApiKeysRepository _apiKeysRepository = apiKeysRepository;
     private readonly IApiKeyHasher _apiKeyHasher = apiKeyHasher;
 
@@ -36,10 +40,10 @@ public class ApiKeyAuthenticationHandler(
         var apiKey = apiKeyHeaderValues.Single()!;
         var apiKeyHash = _apiKeyHasher.Hash(apiKey);
 
-        if (_apiKeysIntegratorsCache.TryGetPolicies(apiKey, out var cachedIntegratorId))
+        if (_apiKeysIntegratorsCache.TryGetIntegratorId(apiKey, out var cachedIntegratorId))
         {
             _logger.LogInformation("ApiKey resolved. Cached IntegratorId: {integratorId}", cachedIntegratorId);
-            authenticationTicket = CreateAuthenticationTicket(cachedIntegratorId!.Value);
+            authenticationTicket = await CreateAuthenticationTicketAsync(cachedIntegratorId!.Value);
             return AuthenticateResult.Success(authenticationTicket);
         }
 
@@ -52,19 +56,40 @@ public class ApiKeyAuthenticationHandler(
 
         _logger.LogInformation("ApiKey resolved. IntegratorId: {integratorId}", integratorId);
         _apiKeysIntegratorsCache.Set(apiKey, integratorId.Value);
-        authenticationTicket = CreateAuthenticationTicket(integratorId.Value);
+        authenticationTicket = await CreateAuthenticationTicketAsync(integratorId.Value);
 
         return AuthenticateResult.Success(authenticationTicket);
+    }
 
-        // ReSharper disable once VariableHidesOuterVariable
-        AuthenticationTicket CreateAuthenticationTicket(long integratorId)
+    private static void AddIntegratorRoles(List<Claim> claims, IEnumerable<string> roles)
+    {
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+    }
+
+    private async Task<AuthenticationTicket> CreateAuthenticationTicketAsync(long integratorId)
+    {
+        var claims = new List<Claim> { new(ClaimTypes.NameIdentifier, integratorId.ToString()) };
+        await AddIntegratorRolesAsync(claims, integratorId);
+
+        var claimsIdentity = new ClaimsIdentity(claims, Scheme.Name);
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+        var authenticationTicket = new AuthenticationTicket(claimsPrincipal, Scheme.Name);
+        return authenticationTicket;
+    }
+
+    private async Task AddIntegratorRolesAsync(List<Claim> claims, long integratorId)
+    {
+        if (_integratorsRolesCache.TryGetRoles(integratorId, out var cachedRoles))
         {
-            var claims = new[] { new Claim(ClaimTypes.NameIdentifier, integratorId.ToString()) };
-            var claimsIdentity = new ClaimsIdentity(claims, Scheme.Name);
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            // ReSharper disable once VariableHidesOuterVariable
-            var authenticationTicket = new AuthenticationTicket(claimsPrincipal, Scheme.Name);
-            return authenticationTicket;
+            _logger.LogInformation("Roles resolved. Cached Roles: {roles}", string.Join(", ", cachedRoles!));
+            AddIntegratorRoles(claims, cachedRoles!);
+        }
+        else
+        {
+            var integratorRoles = await _integratorsRolesRepository.GetIntegratorRolesAsync(integratorId, Context.RequestAborted);
+            _integratorsRolesCache.Set(integratorId, integratorRoles);
+            _logger.LogInformation("Roles resolved. Roles: {roles}", string.Join(", ", integratorRoles));
+            AddIntegratorRoles(claims, integratorRoles);
         }
     }
 }
