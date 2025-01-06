@@ -5,9 +5,9 @@
 
 namespace Maestro.Server.Core.Models;
 
-public class RemindersIdDto
+public class RemindersIdsDto
 {
     public const int LimitMaxValue = 50;
 
-    [MaxLength(LimitMaxValue)] public List<long> RemindersId { get; set; }
+    [MaxLength(LimitMaxValue)] public IList<long> RemindersIds { get; set; }
 }

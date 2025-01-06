@@ -44,13 +44,13 @@ public class MaestroCommandHandler(
             }
 
             await _maestroApiClient.CreateReminderAsync(
-                ReminderDto.Create(
-                    update.Message.Chat.Id,
-                    message.Description,
-                    message.ReminderTime,
-                    TimeSpan.Zero,
-                    false
-                )
+                new() // ReminderDto.Create(
+                //     update.Message.Chat.Id,
+                //     message.Description,
+                //     message.ReminderTime,
+                //     TimeSpan.Zero,
+                //     false
+                // )
             );
             _log.Info("Event created");
             await bot.SendMessage(

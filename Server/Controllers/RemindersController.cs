@@ -21,6 +21,17 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
 
     #region Get
 
+    [HttpGet("all")]
+    public async Task<ActionResult> All([FromBody] AllRemindersDto allRemindersDto)
+    {
+        var remindersDbos =
+            await _remindersRepository.GetAllRemindersAsync(allRemindersDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
+
+        var remindersWithIdsDtos = _mapper.Map<List<ReminderWithIdDto>>(remindersDbos);
+
+        return new OkObjectResult(remindersWithIdsDtos);
+    }
+
     [HttpGet("forUser")]
     public async Task<ActionResult> ForUser([FromBody] RemindersForUserDto remindersForUserDto)
     {
@@ -29,9 +40,9 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
 
         _logger.LogInformation("Fetched RemindersCount: {reminderCount}", remindersDbo.Count);
 
-        var remindersDto = _mapper.Map<List<ReminderWithIdDto>>(remindersDbo);
+        var remindersWithIdsDtos = _mapper.Map<List<ReminderWithIdDto>>(remindersDbo);
 
-        return new OkObjectResult(remindersDto);
+        return new OkObjectResult(remindersWithIdsDtos);
     }
 
     [HttpGet("byId")]
@@ -71,11 +82,32 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
         };
     }
 
-    [HttpPost("markAsCompleted")]
-    public async Task<ActionResult> MarkAsCompleted([FromBody] RemindersIdDto remindersId)
+    [HttpPatch("markAsCompleted")]
+    public async Task<ActionResult> MarkAsCompleted([FromBody] RemindersIdsDto remindersIds)
     {
-        await _remindersRepository.MarkAsCompleted(remindersId, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
+        var notFoundRemindersIds =
+            await _remindersRepository.MarkAsCompleted(remindersIds, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
+
+        if (notFoundRemindersIds is not null)
+        {
+            return new NotFoundObjectResult(new RemindersIdsDto { RemindersIds = notFoundRemindersIds });
+        }
+
         return new OkResult();
+    }
+
+    [HttpPatch("decrementRemindCount")]
+    public async Task<ActionResult> DecrementRemindCount([FromBody] ReminderIdDto reminderIdDto)
+    {
+        var reminderCount =
+            await _remindersRepository.DecrementRemindCountAsync(reminderIdDto.Id, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
+
+        if (reminderCount is null)
+        {
+            return new NotFoundResult();
+        }
+
+        return new OkObjectResult(new ReminderCountDto { ReminderCount = reminderCount.Value });
     }
 
     #endregion

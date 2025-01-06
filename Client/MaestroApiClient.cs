@@ -10,6 +10,8 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
     private readonly HttpClient _httpClient;
     private readonly ILog<MaestroApiClient> _log;
 
+    private bool _isDisposed;
+
     public MaestroApiClient(string uri, string apiKey, ILogFactory logFactory)
     {
         if (string.IsNullOrEmpty(uri))
@@ -30,8 +32,14 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
 
     public void Dispose()
     {
+        if (_isDisposed)
+        {
+            return;
+        }
+
         _httpClient.Dispose();
         GC.SuppressFinalize(this);
+        _isDisposed = true;
     }
 
     # region Get
@@ -66,12 +74,52 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         return reminder;
     }
 
+    public async IAsyncEnumerable<ReminderWithIdDto> GetAllRemindersAsync(DateTime exclusiveStartDateTime)
+    {
+        const string requestEndpoint = "reminders/all";
+
+        var offset = 0;
+        do
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, requestEndpoint)
+            {
+                Content = JsonContent.Create(new AllRemindersDto
+                {
+                    Offset = offset,
+                    Limit = RemindersForUserDto.LimitMaxValue,
+                    ExclusiveStartDateTime = exclusiveStartDateTime
+                })
+            };
+
+            _log.Info($"Sending request to {requestEndpoint}. Offset: {offset}. Limit: {AllRemindersDto.LimitMaxValue}");
+
+            var response = await _httpClient.SendAsync(request);
+
+            response.EnsureSuccessStatusCode();
+
+            var reminders = await response.Content.ReadFromJsonAsync<List<ReminderWithIdDto>>();
+
+            _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}. ItemsCount: {reminders!.Count}");
+
+            foreach (var reminder in reminders)
+            {
+                yield return reminder;
+            }
+
+            if (reminders.Count < RemindersForUserDto.LimitMaxValue)
+            {
+                yield break;
+            }
+
+            offset += RemindersForUserDto.LimitMaxValue;
+        } while (true);
+    }
+
     public async IAsyncEnumerable<ReminderWithIdDto> GetRemindersForUserAsync(long userId, DateTime? exclusiveStartDateTime = null)
     {
         const string requestEndpoint = "reminders/forUser";
 
         var offset = 0;
-
         do
         {
             var request = new HttpRequestMessage(HttpMethod.Get, requestEndpoint)
@@ -132,33 +180,43 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
 
         var createdReminderId = (await response.Content.ReadFromJsonAsync<ReminderIdDto>())!.Id;
 
-        _log.Info($"Created reminder Id: {createdReminderId}");
+        _log.Info($"Created ReminderId: {createdReminderId}");
 
         return createdReminderId;
     }
 
-    public async Task MarkRemindersAsCompletedAsync(params long[] remindersId)
+    public async Task MarkRemindersAsCompletedAsync(params long[] remindersIds)
     {
         const string requestEndpoint = "reminders/markAsCompleted";
 
-        for (int offset = 0; offset < remindersId.Length; offset += RemindersIdDto.LimitMaxValue)
+        var iteration = 0;
+        var remindersIdsChunks = remindersIds.Chunk(RemindersIdsDto.LimitMaxValue);
+        foreach (var remindersIdsChunk in remindersIdsChunks)
         {
-            var remindersIdWindow = remindersId.Skip(offset).Take(RemindersIdDto.LimitMaxValue).ToList();
-            var request = new HttpRequestMessage(HttpMethod.Post, requestEndpoint)
+            var request = new HttpRequestMessage(HttpMethod.Patch, requestEndpoint)
             {
-                Content = JsonContent.Create(new RemindersIdDto
+                Content = JsonContent.Create(new RemindersIdsDto
                 {
-                    RemindersId = remindersIdWindow
+                    RemindersIds = remindersIdsChunk
                 })
             };
 
-            _log.Info($"Sending request to {requestEndpoint}. Offset: {offset}. ItemsCount: {remindersIdWindow.Count}");
+            _log.Info($"Sending request to {requestEndpoint}. Offset: {iteration * RemindersIdsDto.LimitMaxValue}. ItemsCount: {remindersIds}");
 
             var response = await _httpClient.SendAsync(request);
+
+            if (response.StatusCode is HttpStatusCode.NotFound)
+            {
+                var notFoundRemindersIds = await response.Content.ReadFromJsonAsync<RemindersIdsDto>();
+                throw new ArgumentException($"Reminder(s) with Id(s) was not found: [{string.Join(',', notFoundRemindersIds!.RemindersIds)}]",
+                    nameof(remindersIds));
+            }
 
             response.EnsureSuccessStatusCode();
 
             _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
+
+            iteration++;
         }
     }
 
