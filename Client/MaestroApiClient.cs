@@ -66,7 +66,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         return reminder;
     }
 
-    public async IAsyncEnumerable<ReminderDtoWithId> GetRemindersForUserAsync(long userId)
+    public async IAsyncEnumerable<ReminderWithIdDto> GetRemindersForUserAsync(long userId, DateTime? exclusiveStartDateTime = null)
     {
         const string requestEndpoint = "reminders/forUser";
 
@@ -80,17 +80,18 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
                 {
                     UserId = userId,
                     Offset = offset,
-                    Limit = RemindersForUserDto.LimitMaxValue
+                    Limit = RemindersForUserDto.LimitMaxValue,
+                    ExclusiveStartDateTime = exclusiveStartDateTime
                 })
             };
 
-            _log.Info($"Sending request to {requestEndpoint}. Offset: {offset}, Limit: {RemindersForUserDto.LimitMaxValue}");
+            _log.Info($"Sending request to {requestEndpoint}. Offset: {offset}. Limit: {RemindersForUserDto.LimitMaxValue}");
 
             var response = await _httpClient.SendAsync(request);
 
             response.EnsureSuccessStatusCode();
 
-            var reminders = await response.Content.ReadFromJsonAsync<List<ReminderDtoWithId>>();
+            var reminders = await response.Content.ReadFromJsonAsync<List<ReminderWithIdDto>>();
 
             _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}. ItemsCount: {reminders!.Count}");
 
@@ -106,11 +107,6 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
 
             offset += RemindersForUserDto.LimitMaxValue;
         } while (true);
-    }
-
-    public Task<ReminderDto[]> GetRemindersForUserAsync(long userId, DateTime inclusiveStartDate, DateTime exclusiveEndDate)
-    {
-        throw new NotImplementedException();
     }
 
     #endregion
@@ -141,9 +137,29 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         return createdReminderId;
     }
 
-    public Task MarkRemindersAsCompletedAsync(params long[] remindersId)
+    public async Task MarkRemindersAsCompletedAsync(params long[] remindersId)
     {
-        throw new NotImplementedException();
+        const string requestEndpoint = "reminders/markAsCompleted";
+
+        for (int offset = 0; offset < remindersId.Length; offset += RemindersIdDto.LimitMaxValue)
+        {
+            var remindersIdWindow = remindersId.Skip(offset).Take(RemindersIdDto.LimitMaxValue).ToList();
+            var request = new HttpRequestMessage(HttpMethod.Post, requestEndpoint)
+            {
+                Content = JsonContent.Create(new RemindersIdDto
+                {
+                    RemindersId = remindersIdWindow
+                })
+            };
+
+            _log.Info($"Sending request to {requestEndpoint}. Offset: {offset}. ItemsCount: {remindersIdWindow.Count}");
+
+            var response = await _httpClient.SendAsync(request);
+
+            response.EnsureSuccessStatusCode();
+
+            _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
+        }
     }
 
     #endregion
