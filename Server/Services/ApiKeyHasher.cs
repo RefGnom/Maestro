@@ -11,6 +11,8 @@ public class ApiKeyHasher : IApiKeyHasher
         var apiKeyBytes = Encoding.UTF8.GetBytes(apiKey);
         var hashedApiKey = MD5.HashData(apiKeyBytes);
         var base64HashString = Convert.ToBase64String(hashedApiKey);
-        return base64HashString.Length > DataConstraints.ApiKeyHashMaxLength ? base64HashString[..DataConstraints.ApiKeyHashMaxLength] : base64HashString;
+        return base64HashString.Length > DataConstraints.ApiKeyHashMaxLength
+            ? base64HashString[..DataConstraints.ApiKeyHashMaxLength]
+            : base64HashString;
     }
 }

@@ -9,19 +9,15 @@ namespace Maestro.Server.Core.Models;
 
 public class ReminderDto
 {
-    [Required]
-    public long UserId { get; set; }
-    
+    [Required] public long UserId { get; set; }
+
     [Required]
     [MaxLength(DataConstraints.ReminderDescriptionMaxLength)]
     public string Description { get; set; }
 
-    [Required]
-    public DateTime ReminderTime { get; set; }
+    [Required] public DateTime ReminderTime { get; set; }
 
-    [Required]
-    public TimeSpan RemindInterval { get; set; }
+    [Required] public TimeSpan RemindInterval { get; set; }
 
-    [Required]
-    public int RemindCount { get; set; }
+    [Required] public int RemindCount { get; set; }
 }

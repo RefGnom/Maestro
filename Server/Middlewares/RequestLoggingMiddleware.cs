@@ -13,9 +13,9 @@ public class RequestLoggingMiddleware(RequestDelegate next, ILoggerFactory logge
                        httpContext.Connection.RemoteIpAddress?.ToString() ?? "<Unknown>";
 
         _logger.LogInformation("Handled request. Remote Ip: {remoteIp}", remoteIp);
-    
+
         await _next.Invoke(httpContext);
-        
-        _logger.LogInformation("Response written. StatusCode: {statusCode}", httpContext.Response.StatusCode);        
+
+        _logger.LogInformation("Response written. StatusCode: {statusCode}", httpContext.Response.StatusCode);
     }
 }

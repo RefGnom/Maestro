@@ -15,7 +15,7 @@ public class IntegratorsRolesCache(IDateTimeProvider dateTimeProvider) : IIntegr
         {
             throw new ArgumentException($"Role with IntegratorId {integratorId} already exists", nameof(integratorId));
         }
-        
+
         _memoryCache.Set(integratorId, ImmutableList.CreateRange(roles), _dateTimeProvider.GetCurrentDateTime().AddMinutes(15));
     }
 

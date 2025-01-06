@@ -1,4 +1,3 @@
-using System.Net;
 using AutoMapper;
 using Maestro.Data.Models;
 using Maestro.Server.Authentication;

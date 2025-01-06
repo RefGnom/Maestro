@@ -1,7 +1,5 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using Maestro.Server.Repositories;
-using Maestro.Server.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 
@@ -32,7 +30,7 @@ public class AdminApiKeyAuthenticationHandler(
         {
             return Task.FromResult(AuthenticateResult.Fail("Incorrect ApiKey"));
         }
-        
+
         var authenticationTicket = CreateAuthenticationTicket();
         return Task.FromResult(AuthenticateResult.Success(authenticationTicket));
     }

@@ -3,7 +3,6 @@ using Maestro.Server.Core.Models;
 using Maestro.Server.Repositories;
 using Maestro.Server.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Maestro.Server.Controllers;

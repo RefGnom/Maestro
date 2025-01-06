@@ -4,6 +4,6 @@ namespace Maestro.Server.Core.Models;
 public class NewIntegratorDto
 {
     public string ApiKey { get; set; }
-    
+
     public string Role { get; set; }
 }

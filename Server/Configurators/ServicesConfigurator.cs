@@ -1,7 +1,6 @@
 using Maestro.Core.Providers;
 using Maestro.Server.Authentication;
 using Maestro.Server.Services;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Maestro.Server.Configurators;
 

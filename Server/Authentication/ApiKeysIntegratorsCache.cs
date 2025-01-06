@@ -12,7 +12,7 @@ public class ApiKeysIntegratorsCache(IDateTimeProvider dateTimeProvider) : IApiK
     {
         _memoryCache.Set(apiKey, integratorId, _dateTimeProvider.GetCurrentDateTime().AddMinutes(15));
     }
-    
+
     public bool TryGetIntegratorId(string apiKey, out long? integratorId)
     {
         return _memoryCache.TryGetValue(apiKey, out integratorId);

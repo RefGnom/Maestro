@@ -186,6 +186,5 @@ public class MaestroApiClientTests
         }
 
         await _maestroApiClient.MarkRemindersAsCompletedAsync(createdRemindersId.ToArray());
-
     }
 }
