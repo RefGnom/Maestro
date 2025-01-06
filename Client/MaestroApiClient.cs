@@ -201,7 +201,8 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
                 })
             };
 
-            _log.Info($"Sending request to {requestEndpoint}. Offset: {iteration * RemindersIdsDto.LimitMaxValue}. ItemsCount: {remindersIds}");
+            _log.Info(
+                $"Sending request to {requestEndpoint}. Offset: {iteration * RemindersIdsDto.LimitMaxValue}. ItemsCount: {remindersIds.Length}");
 
             var response = await _httpClient.SendAsync(request);
 
