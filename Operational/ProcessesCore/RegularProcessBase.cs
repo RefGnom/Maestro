@@ -27,8 +27,8 @@ public abstract class RegularProcessBase<TProcess>(ILog<TProcess> log) : IRegula
             }
         }
     }
-    protected abstract TimeSpan Timeout { get; }
-
+    protected abstract TimeSpan Interval { get; }
+    protected virtual TimeSpan CancellationTimeout => TimeSpan.FromMinutes(5);
     protected abstract Task TryRunAsync();
 
     protected virtual Task HandleErrorAsync(Exception exception)
@@ -39,32 +39,47 @@ public abstract class RegularProcessBase<TProcess>(ILog<TProcess> log) : IRegula
 
     public async Task StartAsync(bool isRepeatable = true)
     {
+        if (IsRunning)
+        {
+            throw new InvalidOperationException($"Нельзя запустить уже запущенный процесс {ProcessName}");
+        }
+
         IsRunning = true;
         _log.Info($"Starting regular process {ProcessName}, IsRepeat: {isRepeatable}");
 
         do
         {
-            await SafeRunAsync();
-            await Task.Delay(Timeout);
+            await SafeRunAsync().ConfigureAwait(false);
+            await Task.Delay(Interval).ConfigureAwait(false);
         } while (isRepeatable && IsRunning);
     }
 
     private async Task SafeRunAsync()
     {
         _log.Info($"Attempt to run regular process {ProcessName}");
+        var cancellationTokenSource = new CancellationTokenSource(CancellationTimeout);
 
         try
         {
-            await TryRunAsync();
+            await TryRunAsync().WaitAsync(cancellationTokenSource.Token).ConfigureAwait(false);
         }
         catch (Exception exception)
         {
-            await HandleErrorAsync(exception);
+            await HandleErrorAsync(exception).ConfigureAwait(false);
+        }
+        finally
+        {
+            cancellationTokenSource.Dispose();
         }
     }
 
     public Task StopAsync()
     {
+        if (!IsRunning)
+        {
+            throw new InvalidOperationException($"Нельзя остановить не запущеннный процесс {ProcessName}");
+        }
+
         IsRunning = false;
         _log.Info($"Stopping regular process {ProcessName}");
 
