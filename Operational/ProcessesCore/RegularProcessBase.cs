@@ -1,22 +1,12 @@
-﻿using System.Timers;
-using Maestro.Core.Logging;
-using Timer = System.Timers.Timer;
+﻿using Maestro.Core.Logging;
 
 namespace Maestro.Operational.ProcessesCore;
 
-public abstract class RegularProcessBase<TProcess> : IRegularProcess
+public abstract class RegularProcessBase<TProcess>(ILog<TProcess> log) : IRegularProcess
 {
-    private readonly ILog<TProcess> _log;
-    private readonly Timer _timer;
-    private readonly object _timerLockObject = new object();
-
-    protected RegularProcessBase(ILog<TProcess> log)
-    {
-        _log = log;
-        _timer = new Timer();
-        _timer.Elapsed += TimerOnElapsed;
-    }
-    protected abstract TimeSpan Timeout { get; }
+    private bool _isRunning;
+    private readonly ILog<TProcess> _log = log;
+    private readonly object _modeLockObject = new();
 
     public abstract string ProcessName { get; }
     public abstract bool IsActiveByDefault { get; }
@@ -24,37 +14,21 @@ public abstract class RegularProcessBase<TProcess> : IRegularProcess
     {
         get
         {
-            lock (_timerLockObject)
+            lock (_modeLockObject)
             {
-                return _timer.Enabled;
+                return _isRunning;
+            }
+        }
+        private set
+        {
+            lock (_modeLockObject)
+            {
+                _isRunning = value;
             }
         }
     }
-
-    public Task StartAsync(bool isRepeatable = true)
-    {
-        lock (_timerLockObject)
-        {
-            _log.Info($"Starting regular process {ProcessName}, IsRepeat: {isRepeatable}");
-            _timer.Interval = Timeout.TotalMilliseconds;
-            _timer.AutoReset = isRepeatable;
-            _timer.Start();
-        }
-
-        return Task.CompletedTask;
-    }
-
-    public Task StopAsync()
-    {
-        lock (_timerLockObject)
-        {
-            _log.Info($"Stopping regular process {ProcessName}");
-            _timer.Stop();
-        }
-
-        return Task.CompletedTask;
-    }
-
+    protected abstract TimeSpan Interval { get; }
+    protected virtual TimeSpan CancellationTimeout => TimeSpan.FromMinutes(5);
     protected abstract Task TryRunAsync();
 
     protected virtual Task HandleErrorAsync(Exception exception)
@@ -63,17 +37,52 @@ public abstract class RegularProcessBase<TProcess> : IRegularProcess
         return Task.CompletedTask;
     }
 
-    private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
+    public async Task StartAsync(bool isRepeatable = true)
+    {
+        if (IsRunning)
+        {
+            throw new InvalidOperationException($"Нельзя запустить уже запущенный процесс {ProcessName}");
+        }
+
+        IsRunning = true;
+        _log.Info($"Starting regular process {ProcessName}, IsRepeat: {isRepeatable}");
+
+        do
+        {
+            await SafeRunAsync().ConfigureAwait(false);
+            await Task.Delay(Interval).ConfigureAwait(false);
+        } while (isRepeatable && IsRunning);
+    }
+
+    private async Task SafeRunAsync()
     {
         _log.Info($"Attempt to run regular process {ProcessName}");
+        var cancellationTokenSource = new CancellationTokenSource(CancellationTimeout);
 
         try
         {
-            TryRunAsync().GetAwaiter().GetResult();
+            await TryRunAsync().WaitAsync(cancellationTokenSource.Token).ConfigureAwait(false);
         }
         catch (Exception exception)
         {
-            HandleErrorAsync(exception).GetAwaiter().GetResult();
+            await HandleErrorAsync(exception).ConfigureAwait(false);
         }
+        finally
+        {
+            cancellationTokenSource.Dispose();
+        }
+    }
+
+    public Task StopAsync()
+    {
+        if (!IsRunning)
+        {
+            throw new InvalidOperationException($"Нельзя остановить не запущеннный процесс {ProcessName}");
+        }
+
+        IsRunning = false;
+        _log.Info($"Stopping regular process {ProcessName}");
+
+        return Task.CompletedTask;
     }
 }
