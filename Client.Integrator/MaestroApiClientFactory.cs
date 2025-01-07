@@ -1,6 +1,6 @@
 using Maestro.Core.Logging;
 
-namespace Maestro.Client;
+namespace Maestro.Client.Integrator;
 
 public class MaestroApiClientFactory(ILogFactory logFactory) : IMaestroApiClientFactory
 {

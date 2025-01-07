@@ -25,7 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Client\Client.csproj"/>
+        <ProjectReference Include="..\Client.Integrator\Client.Integrator.csproj" />
         <ProjectReference Include="..\Core\Core.csproj"/>
     </ItemGroup>
 

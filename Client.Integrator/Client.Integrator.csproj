@@ -4,8 +4,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyName>Maestro.Client</AssemblyName>
-        <RootNamespace>Maestro.Client</RootNamespace>
+        <AssemblyName>Maestro.Client.Integrator</AssemblyName>
+        <RootNamespace>Maestro.Client.Integrator</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

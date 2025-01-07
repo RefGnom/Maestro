@@ -116,9 +116,9 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
     }
 
     [HttpPatch("reminderTime")]
-    public async Task<ActionResult> IncrementReminderCount([FromBody] ReminderIdDto reminderIdDto)
+    public async Task<ActionResult> ReminderTime([FromBody] NewReminderDateTimeDto newReminderDateTimeDto)
     {
-        
+        var repositoryResult = await _remindersRepository.
     }
 
     #endregion

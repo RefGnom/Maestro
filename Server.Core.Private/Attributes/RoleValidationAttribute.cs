@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Maestro.Data.Core;
 using Maestro.Server.Private.Services;
 
 namespace Maestro.Server.Private.Attributes;

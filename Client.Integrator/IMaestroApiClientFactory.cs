@@ -1,4 +1,4 @@
-namespace Maestro.Client;
+namespace Maestro.Client.Integrator;
 
 public interface IMaestroApiClientFactory
 {

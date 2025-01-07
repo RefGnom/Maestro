@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using Maestro.Core.Logging;
 using Maestro.Server.Public.Models;
 
-namespace Maestro.Client;
+namespace Maestro.Client.Integrator;
 
 public class MaestroApiClient : IMaestroApiClient, IDisposable
 {

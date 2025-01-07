@@ -1,6 +1,6 @@
 ﻿using Maestro.Server.Public.Models;
 
-namespace Maestro.Client;
+namespace Maestro.Client.Integrator;
 
 public interface IMaestroApiClient
 {

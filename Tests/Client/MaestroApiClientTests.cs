@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Maestro.Client;
+using Maestro.Client.Integrator;
 using Maestro.Core.IO;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
