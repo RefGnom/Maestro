@@ -1,6 +1,5 @@
 ﻿using Maestro.Core.Configuration;
 using Maestro.Core.Logging;
-using Maestro.Core.Providers;
 using Maestro.Operational.ProcessesCore;
 using Maestro.TelegramIntegrator.Implementation;
 using Telegram.Bot;
@@ -10,7 +9,6 @@ using Telegram.Bot.Types.Enums;
 namespace Maestro.TelegramIntegrator;
 
 public class TelegramIntegratorApplication(
-    ISettingsProvider settingsProvider,
     IMaestroCommandHandler maestroCommandHandler,
     ILog<TelegramIntegratorApplication> log,
     IProcessRunner processRunner,

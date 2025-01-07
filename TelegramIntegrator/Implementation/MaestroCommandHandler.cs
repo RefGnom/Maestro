@@ -1,6 +1,7 @@
 ﻿using Maestro.Client.Integrator;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
+using Maestro.Server.Core.Models;
 using Maestro.TelegramIntegrator.Parsers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -44,13 +45,14 @@ public class MaestroCommandHandler(
             }
 
             await _maestroApiClient.CreateReminderAsync(
-                new() // ReminderDto.Create(
-                //     update.Message.Chat.Id,
-                //     message.Description,
-                //     message.ReminderTime,
-                //     TimeSpan.Zero,
-                //     false
-                // )
+                new ReminderDto
+                {
+                    UserId = 0,
+                    Description = null,
+                    ReminderTime = default,
+                    RemindInterval = default,
+                    RemindCount = 0
+                }
             );
             _log.Info("Event created");
             await bot.SendMessage(
