@@ -1,4 +1,4 @@
-namespace Maestro.Server.Services;
+namespace Maestro.Server.Private.Services;
 
 public interface IRolesValidator
 {

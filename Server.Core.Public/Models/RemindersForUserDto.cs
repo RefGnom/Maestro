@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 
-namespace Maestro.Server.Core.Models;
+namespace Maestro.Server.Public.Models;
 
 public class RemindersForUserDto
 {

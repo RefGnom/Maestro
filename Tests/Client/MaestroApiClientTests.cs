@@ -3,7 +3,7 @@ using Maestro.Client;
 using Maestro.Core.IO;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
-using Maestro.Server.Core.Models;
+using Maestro.Server.Public.Models;
 using Maestro.Tests.Extensions;
 
 namespace Maestro.Tests.Client;
@@ -107,11 +107,11 @@ public class MaestroApiClientTests
             }
         };
 
-        var createdRemindersIds = await CreateRemindersAsync(remindersCreateList);
+        var createdReminderIds = await CreateRemindersAsync(remindersCreateList);
         var remindersForUser = await _maestroApiClient.GetRemindersForUserAsync(userId).ToListAsync();
 
         var filteredRemindersForUser = remindersForUser
-            .Where(reminder => createdRemindersIds.Contains(reminder.Id))
+            .Where(reminder => createdReminderIds.Contains(reminder.Id))
             .ToList();
 
         remindersCreateList.Should()
@@ -171,12 +171,12 @@ public class MaestroApiClientTests
             }
         };
 
-        var createdRemindersIds = await CreateRemindersAsync(remindersCreateList);
+        var createdReminderIds = await CreateRemindersAsync(remindersCreateList);
         var exclusiveStartDateTime = new DateTime(2025, 1, 1);
         var remindersForUser = await _maestroApiClient.GetRemindersForUserAsync(userId, exclusiveStartDateTime).ToListAsync();
 
         var filteredRemindersForUser = remindersForUser
-            .Where(reminder => createdRemindersIds.Contains(reminder.Id))
+            .Where(reminder => createdReminderIds.Contains(reminder.Id))
             .ToList();
 
         filteredRemindersForUser.Should().HaveCount(2);
@@ -212,21 +212,21 @@ public class MaestroApiClientTests
             }
         };
 
-        var createdRemindersIds = await CreateRemindersAsync(remindersCreateList);
+        var createdReminderIds = await CreateRemindersAsync(remindersCreateList);
 
-        await _maestroApiClient.MarkRemindersAsCompletedAsync(createdRemindersIds.ToArray());
+        await _maestroApiClient.MarkRemindersAsCompletedAsync(createdReminderIds.ToArray());
     }
 
     private async Task<List<long>> CreateRemindersAsync(List<ReminderDto> remindersCreateList)
     {
-        var createdRemindersIds = new List<long>();
+        var createdReminderIds = new List<long>();
 
         foreach (var reminder in remindersCreateList)
         {
             var createdReminderId = await _maestroApiClient.CreateReminderAsync(reminder);
-            createdRemindersIds.Add(createdReminderId);
+            createdReminderIds.Add(createdReminderId);
         }
 
-        return createdRemindersIds;
+        return createdReminderIds;
     }
 }

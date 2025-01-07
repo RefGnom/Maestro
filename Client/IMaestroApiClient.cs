@@ -1,4 +1,4 @@
-﻿using Maestro.Server.Core.Models;
+﻿using Maestro.Server.Public.Models;
 
 namespace Maestro.Client;
 
@@ -8,5 +8,5 @@ public interface IMaestroApiClient
     public Task<ReminderDto?> GetReminderAsync(long reminderId);
     public IAsyncEnumerable<ReminderWithIdDto> GetAllRemindersAsync(DateTime exclusiveStartDateTime);
     public IAsyncEnumerable<ReminderWithIdDto> GetRemindersForUserAsync(long userId, DateTime? exclusiveStartDateTime);
-    public Task MarkRemindersAsCompletedAsync(params long[] remindersIds);
+    public Task MarkRemindersAsCompletedAsync(params long[] reminderIds);
 }

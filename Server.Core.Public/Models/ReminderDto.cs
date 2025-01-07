@@ -5,7 +5,7 @@ using Maestro.Data.Core;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-namespace Maestro.Server.Core.Models;
+namespace Maestro.Server.Public.Models;
 
 public class ReminderDto
 {

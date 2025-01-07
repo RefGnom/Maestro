@@ -1,8 +1,9 @@
 using AutoMapper;
 using Maestro.Data.Models;
 using Maestro.Server.Authentication;
-using Maestro.Server.Core.Models;
 using Maestro.Server.Extensions;
+using Maestro.Server.Private.Authentication;
+using Maestro.Server.Public.Models;
 using Maestro.Server.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,12 +25,12 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
     [HttpGet("all")]
     public async Task<ActionResult> All([FromBody] AllRemindersDto allRemindersDto)
     {
-        var remindersDbos =
+        var reminderDbos =
             await _remindersRepository.GetAllRemindersAsync(allRemindersDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
 
-        var remindersWithIdsDtos = _mapper.Map<List<ReminderWithIdDto>>(remindersDbos);
+        var reminderWithIdDtos = _mapper.Map<List<ReminderWithIdDto>>(reminderDbos);
 
-        return new OkObjectResult(remindersWithIdsDtos);
+        return new OkObjectResult(reminderWithIdDtos);
     }
 
     [HttpGet("forUser")]
@@ -40,9 +41,9 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
 
         _logger.LogInformation("Fetched RemindersCount: {reminderCount}", remindersDbo.Count);
 
-        var remindersWithIdsDtos = _mapper.Map<List<ReminderWithIdDto>>(remindersDbo);
+        var reminderWithIdsDtos = _mapper.Map<List<ReminderWithIdDto>>(remindersDbo);
 
-        return new OkObjectResult(remindersWithIdsDtos);
+        return new OkObjectResult(reminderWithIdsDtos);
     }
 
     [HttpGet("byId")]
@@ -82,15 +83,19 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
         };
     }
 
+    #endregion
+    
+    #region Patch
+    
     [HttpPatch("markAsCompleted")]
-    public async Task<ActionResult> MarkAsCompleted([FromBody] RemindersIdsDto remindersIds)
+    public async Task<ActionResult> MarkAsCompleted([FromBody] ReminderIdsDto reminderIds)
     {
-        var notFoundRemindersIds =
-            await _remindersRepository.MarkAsCompleted(remindersIds, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
+        var notFoundReminderIds =
+            await _remindersRepository.MarkAsCompleted(reminderIds, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
 
-        if (notFoundRemindersIds is not null)
+        if (notFoundReminderIds is not null)
         {
-            return new NotFoundObjectResult(new RemindersIdsDto { RemindersIds = notFoundRemindersIds });
+            return new NotFoundObjectResult(new ReminderIdsDto { ReminderIds = notFoundReminderIds });
         }
 
         return new OkResult();
@@ -108,6 +113,12 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
         }
 
         return new OkObjectResult(new ReminderCountDto { ReminderCount = reminderCount.Value });
+    }
+
+    [HttpPatch("reminderTime")]
+    public async Task<ActionResult> IncrementReminderCount([FromBody] ReminderIdDto reminderIdDto)
+    {
+        
     }
 
     #endregion

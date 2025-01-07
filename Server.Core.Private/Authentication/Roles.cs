@@ -1,4 +1,4 @@
-namespace Maestro.Server.Authentication;
+namespace Maestro.Server.Private.Authentication;
 
 public static class Roles
 {

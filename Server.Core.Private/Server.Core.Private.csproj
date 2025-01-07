@@ -4,12 +4,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyName>Maestro.Server.Core</AssemblyName>
-        <RootNamespace>Maestro.Server.Core</RootNamespace>
+        <AssemblyName>Maestro.Server.Private</AssemblyName>
+        <RootNamespace>Maestro.Server.Private</RootNamespace>
     </PropertyGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\Data.Core\Data.Core.csproj"/>
-    </ItemGroup>
 
 </Project>

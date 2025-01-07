@@ -1,4 +1,6 @@
 using Maestro.Server.Authentication;
+using Maestro.Server.Private.Authentication;
+using Maestro.Server.Private.Services;
 
 namespace Maestro.Server.Services;
 

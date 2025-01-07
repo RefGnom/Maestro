@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Maestro.Core.Logging;
-using Maestro.Server.Core.Models;
+using Maestro.Server.Public.Models;
 
 namespace Maestro.Client;
 
@@ -185,32 +185,32 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         return createdReminderId;
     }
 
-    public async Task MarkRemindersAsCompletedAsync(params long[] remindersIds)
+    public async Task MarkRemindersAsCompletedAsync(params long[] reminderIds)
     {
         const string requestEndpoint = "reminders/markAsCompleted";
 
         var iteration = 0;
-        var remindersIdsChunks = remindersIds.Chunk(RemindersIdsDto.LimitMaxValue);
-        foreach (var remindersIdsChunk in remindersIdsChunks)
+        var reminderIdsChunks = reminderIds.Chunk(ReminderIdsDto.LimitMaxValue);
+        foreach (var reminderIdsChunk in reminderIdsChunks)
         {
             var request = new HttpRequestMessage(HttpMethod.Patch, requestEndpoint)
             {
-                Content = JsonContent.Create(new RemindersIdsDto
+                Content = JsonContent.Create(new ReminderIdsDto
                 {
-                    RemindersIds = remindersIdsChunk
+                    ReminderIds = reminderIdsChunk
                 })
             };
 
             _log.Info(
-                $"Sending request to {requestEndpoint}. Offset: {iteration * RemindersIdsDto.LimitMaxValue}. ItemsCount: {remindersIds.Length}");
+                $"Sending request to {requestEndpoint}. Offset: {iteration * ReminderIdsDto.LimitMaxValue}. ItemsCount: {reminderIds.Length}");
 
             var response = await _httpClient.SendAsync(request);
 
             if (response.StatusCode is HttpStatusCode.NotFound)
             {
-                var notFoundRemindersIds = await response.Content.ReadFromJsonAsync<RemindersIdsDto>();
-                throw new ArgumentException($"Reminder(s) with Id(s) was not found: [{string.Join(',', notFoundRemindersIds!.RemindersIds)}]",
-                    nameof(remindersIds));
+                var notFoundReminderIds = await response.Content.ReadFromJsonAsync<ReminderIdsDto>();
+                throw new ArgumentException($"Reminder(s) with Id(s) was not found: [{string.Join(',', notFoundReminderIds!.ReminderIds)}]",
+                    nameof(reminderIds));
             }
 
             response.EnsureSuccessStatusCode();

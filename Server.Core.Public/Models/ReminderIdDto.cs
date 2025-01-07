@@ -2,7 +2,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Maestro.Server.Core.Models;
+namespace Maestro.Server.Public.Models;
 
 public class ReminderIdDto
 {

@@ -1,5 +1,7 @@
 using Maestro.Server.Authentication;
-using Maestro.Server.Core.Models;
+using Maestro.Server.Private.Authentication;
+using Maestro.Server.Private.Models;
+using Maestro.Server.Private.Services;
 using Maestro.Server.Repositories;
 using Maestro.Server.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -37,11 +39,6 @@ public class AdminController(
             if (apiKeyId is null)
             {
                 return new ConflictResult();
-            }
-
-            if (!_rolesValidator.Validate(newIntegratorDto.Role))
-            {
-                return new BadRequestResult();
             }
 
             _integratorsRolesRepository.AddIntegratorRoleAsync(newIntegratorId, newIntegratorDto.Role, HttpContext.RequestAborted).Wait();

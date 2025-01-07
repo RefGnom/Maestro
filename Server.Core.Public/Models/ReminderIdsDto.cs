@@ -1,16 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Maestro.Server.Core.Attributes;
+using Maestro.Server.Public.Attributes;
 
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
-namespace Maestro.Server.Core.Models;
+namespace Maestro.Server.Public.Models;
 
-public class RemindersIdsDto
+public class ReminderIdsDto
 {
     public const int LimitMaxValue = 50;
 
     [MaxLength(LimitMaxValue)]
     [UniqueValues]
-    public IList<long> RemindersIds { get; set; }
+    public IList<long> ReminderIds { get; set; }
 }

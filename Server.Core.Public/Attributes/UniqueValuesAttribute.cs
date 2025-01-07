@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Maestro.Server.Core.Attributes;
+namespace Maestro.Server.Public.Attributes;
 
 public class UniqueValuesAttribute() : ValidationAttribute("List values should be unique")
 {

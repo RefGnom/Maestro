@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Maestro.Server.Core.Models;
+namespace Maestro.Server.Public.Models;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 // ReSharper disable PropertyCanBeMadeInitOnly.Global

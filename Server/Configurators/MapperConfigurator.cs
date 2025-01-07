@@ -1,6 +1,6 @@
 using AutoMapper;
 using Maestro.Data.Models;
-using Maestro.Server.Core.Models;
+using Maestro.Server.Public.Models;
 
 namespace Maestro.Server.Configurators;
 
