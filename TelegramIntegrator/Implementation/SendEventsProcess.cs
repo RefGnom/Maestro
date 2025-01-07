@@ -1,47 +1,66 @@
 ﻿using Maestro.Client;
-using Maestro.Core.Extensions;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
 using Maestro.Operational.ProcessesCore;
+using Maestro.Operational.TimestampProvider;
 
 namespace Maestro.TelegramIntegrator.Implementation;
 
 public class SendEventsProcess(
     ILog<SendEventsProcess> log,
-    IEventsApiClient eventsApiClient,
+    IMaestroApiClient maestroApiClient,
     IDateTimeProvider dateTimeProvider,
-    ITelegramBotWrapper telegramBotWrapper
+    ITelegramBotWrapper telegramBotWrapper,
+    ITimestampProviderFactory timestampProviderFactory
 ) : RegularProcessBase<SendEventsProcess>(log)
 {
+    private const string TimestampKey = "SendEventsProcessTimestamp";
+    private static readonly TimeSpan RemindSendingEpsilon = TimeSpan.FromSeconds(30);
+
+    private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
+    private readonly ITimestampProvider _timestampProvider = timestampProviderFactory.Create();
+
     public override string ProcessName => "Чтение пользовательских событий";
     public override bool IsActiveByDefault => true;
-    protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
+    protected override TimeSpan Timeout => RemindSendingEpsilon;
+
+    protected override void SetUpBeforeFirstRun()
+    {
+        var processStartDate = new DateTime(2025, 1, 1);
+        _timestampProvider.Set(TimestampKey, processStartDate);
+    }
+
     protected async override Task TryRunAsync()
     {
         var currentDate = dateTimeProvider.GetCurrentDateTime();
-        var inclusiveStartDate = currentDate.AddMinutes(-2); // почему 2? Хз. Нужно умно определять это число
-        var exclusiveEndDate = currentDate.AddMinutes(2);
+        var exclusiveStartDate = _timestampProvider.Get(TimestampKey);
+        var maxReminderTime = exclusiveStartDate;
 
-        int eventsReadCount;
-        do
+        var reminders = _maestroApiClient.GetRemindersForUserAsync(exclusiveStartDate);
+        await foreach (var reminder in reminders)
         {
-            var events = await eventsApiClient.SelectEvents(inclusiveStartDate, exclusiveEndDate);
-            var eventsToSend = events
-                .Where(x => !x.IsCompleted)
-                .Where(x => x.ReminderTime < currentDate)
-                .ToArray();
+            if (reminder.RemindCount == 0 || reminder.ReminderTime - currentDate > RemindSendingEpsilon)
+            {
+                continue;
+            }
 
-            await eventsToSend.ForEachAsync(async x => await telegramBotWrapper.SendMessageAsync(
-                x.UserId, $"Напоминание: {x.Description}")
-            );
+            await telegramBotWrapper.SendMessageAsync(reminder.UserId, $"Напоминание: {reminder.Description}");
+            if (reminder.RemindCount == 1)
+            {
+                await _maestroApiClient.MarkRemindersAsCompletedAsync(reminder.UserId);
+            }
+            else
+            {
+                await _maestroApiClient.SetReminderTimeAsync(reminder.Id, reminder.ReminderTime + reminder.RemindInterval);
+                await _maestroApiClient.DecrementRemindCountAsync(reminder.Id);
+            }
 
-            var sentUserEventIds = eventsToSend
-                .Where(x => !x.IsRepeatable)
-                .Select(x => x.Id)
-                .ToArray();
+            if (reminder.ReminderTime > maxReminderTime)
+            {
+                maxReminderTime = reminder.ReminderTime;
+            }
+        }
 
-            await eventsApiClient.MarkEventsAsCompletedAsync(sentUserEventIds);
-            eventsReadCount = events.Length;
-        } while (eventsReadCount == 100);
+        _timestampProvider.Set(TimestampKey, maxReminderTime);
     }
 }
