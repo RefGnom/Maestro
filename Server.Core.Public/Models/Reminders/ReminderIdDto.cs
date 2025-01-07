@@ -2,9 +2,9 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Maestro.Server.Public.Models;
+namespace Maestro.Server.Public.Models.Reminders;
 
 public class ReminderIdDto
 {
-    [Required] public long Id { get; set; }
+    [Required] public long ReminderId { get; set; }
 }

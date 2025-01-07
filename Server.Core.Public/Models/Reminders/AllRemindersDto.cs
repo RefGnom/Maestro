@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Maestro.Server.Public.Models;
+namespace Maestro.Server.Public.Models.Reminders;
 
 public class AllRemindersDto
 {

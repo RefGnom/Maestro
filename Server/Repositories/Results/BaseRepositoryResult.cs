@@ -1,6 +1,6 @@
 namespace Maestro.Server.Repositories.Results;
 
-public abstract class BaseRepositoryResult
+public abstract class BaseRepositoryResult(bool isSuccessful)
 {
-    public abstract bool IsSuccessful { get; }
+    public bool IsSuccessful { get; } = isSuccessful;
 }

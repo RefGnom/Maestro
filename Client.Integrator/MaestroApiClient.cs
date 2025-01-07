@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Maestro.Core.Logging;
-using Maestro.Server.Public.Models;
+using Maestro.Server.Public.Models.Reminders;
 
 namespace Maestro.Client.Integrator;
 
@@ -52,7 +52,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         {
             Content = JsonContent.Create(new ReminderIdDto
             {
-                Id = reminderId
+                ReminderId = reminderId
             })
         };
 
@@ -178,47 +178,83 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
 
         _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
 
-        var createdReminderId = (await response.Content.ReadFromJsonAsync<ReminderIdDto>())!.Id;
+        var createdReminderId = (await response.Content.ReadFromJsonAsync<ReminderIdDto>())!.ReminderId;
 
         _log.Info($"Created ReminderId: {createdReminderId}");
 
         return createdReminderId;
     }
 
-    public async Task MarkRemindersAsCompletedAsync(params long[] reminderIds)
+    #endregion
+
+    #region Patch
+
+    public async Task SetReminderCompletedAsync(long reminderId)
     {
-        const string requestEndpoint = "reminders/markAsCompleted";
+        const string requestEndpoint = "reminders/setCompleted";
 
-        var iteration = 0;
-        var reminderIdsChunks = reminderIds.Chunk(ReminderIdsDto.LimitMaxValue);
-        foreach (var reminderIdsChunk in reminderIdsChunks)
+        var request = new HttpRequestMessage(HttpMethod.Patch, requestEndpoint)
         {
-            var request = new HttpRequestMessage(HttpMethod.Patch, requestEndpoint)
+            Content = JsonContent.Create(new ReminderIdDto
             {
-                Content = JsonContent.Create(new ReminderIdsDto
-                {
-                    ReminderIds = reminderIdsChunk
-                })
-            };
+                ReminderId = reminderId,
+            })
+        };
 
-            _log.Info(
-                $"Sending request to {requestEndpoint}. Offset: {iteration * ReminderIdsDto.LimitMaxValue}. ItemsCount: {reminderIds.Length}");
+        _log.Info($"Sending request to {requestEndpoint}. ReminderId: {reminderId}");
 
-            var response = await _httpClient.SendAsync(request);
+        var response = await _httpClient.SendAsync(request);
 
-            if (response.StatusCode is HttpStatusCode.NotFound)
+        response.EnsureSuccessStatusCode();
+
+        _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
+    }
+
+    public async Task<int> DecrementRemindCountAsync(long reminderId)
+    {
+        const string requestEndpoint = "reminders/decrementRemindCount";
+
+        var request = new HttpRequestMessage(HttpMethod.Patch, requestEndpoint)
+        {
+            Content = JsonContent.Create(new ReminderIdDto
             {
-                var notFoundReminderIds = await response.Content.ReadFromJsonAsync<ReminderIdsDto>();
-                throw new ArgumentException($"Reminder(s) with Id(s) was not found: [{string.Join(',', notFoundReminderIds!.ReminderIds)}]",
-                    nameof(reminderIds));
-            }
+                ReminderId = reminderId
+            })
+        };
 
-            response.EnsureSuccessStatusCode();
+        _log.Info($"Sending request to {requestEndpoint}. ReminderId: {reminderId}");
 
-            _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
+        var response = await _httpClient.SendAsync(request);
 
-            iteration++;
-        }
+        response.EnsureSuccessStatusCode();
+
+        _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
+
+        var remainRemindCountDto = await response.Content.ReadFromJsonAsync<RemainRemindCountDto>();
+
+        return remainRemindCountDto!.RemainRemindCount;
+    }
+
+    public async Task SetReminderDateTimeAsync(long reminderId, DateTime dateTime)
+    {
+        const string requestEndpoint = "reminders/setReminderDateTime";
+
+        var request = new HttpRequestMessage(HttpMethod.Patch, requestEndpoint)
+        {
+            Content = JsonContent.Create(new SetReminderDateTimeDto
+            {
+                ReminderId = reminderId,
+                DateTime = dateTime
+            })
+        };
+
+        _log.Info($"Sending request to {requestEndpoint}. ReminderId: {reminderId}");
+
+        var response = await _httpClient.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
     }
 
     #endregion
