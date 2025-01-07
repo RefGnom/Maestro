@@ -22,13 +22,7 @@ public class SendEventsProcess(
 
     public override string ProcessName => "Чтение пользовательских событий";
     public override bool IsActiveByDefault => true;
-    protected override TimeSpan Timeout => RemindSendingEpsilon;
-
-    protected override void SetUpBeforeFirstRun()
-    {
-        var processStartDate = new DateTime(2025, 1, 1);
-        _timestampProvider.Set(TimestampKey, processStartDate);
-    }
+    protected override TimeSpan Interval => RemindSendingEpsilon;
 
     protected async override Task TryRunAsync()
     {
