@@ -33,13 +33,13 @@ public class CommandParser(IDateTimeParser dateTimeParser) : ICommandParser
         {
             return !_dateTimeProvider.TryParse(time, date, out var dateTimeParseResult)
                 ? ParseResult.CreateFailure("Не удалось распарсить дату напоминания") // Напиши сюда формат
-                : ParseResult.CreateSuccess(new ReminderCommand(telegramCommand, parts.Last(), dateTimeParseResult!.Value));
+                : ParseResult.CreateSuccess(new CreateReminderCommand(telegramCommand, parts.Last(), dateTimeParseResult!.Value));
         }
         else
         {
             return !_dateTimeProvider.TryParse(date, null, out var dateTimeParseResult)
                 ? ParseResult.CreateFailure("Не удалось распарсить дату напоминания") // Напиши сюда формат
-                : ParseResult.CreateSuccess(new ReminderCommand(telegramCommand, parts.Last(), dateTimeParseResult!.Value));
+                : ParseResult.CreateSuccess(new CreateReminderCommand(telegramCommand, parts.Last(), dateTimeParseResult!.Value));
         }
     }
 
@@ -64,7 +64,7 @@ public class CommandParser(IDateTimeParser dateTimeParser) : ICommandParser
             _dateTimeProvider.TryParse(endTime, endDate, out var endDateTime))
         {
             return ParseResult.CreateSuccess(
-                new ScheduleCommand(
+                new CreateScheduleCommand(
                     telegremCommand,
                     description,
                     startDateTime!.Value,
