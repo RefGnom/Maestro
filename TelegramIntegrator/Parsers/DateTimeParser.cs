@@ -8,6 +8,7 @@ public class DateTimeParser(IDateTimeProvider dateTimeProvider) : IDateTimeParse
     private const string TimeFormat = "HH:mm";
 
     private const string DateTimeFormat = $"yyyy.MM.dd {TimeFormat}";
+
     public bool TryParse(string time, string? date, out DateTime? dateTimeResult)
     {
         if (date is not null && DateTime.TryParseExact(
@@ -15,15 +16,21 @@ public class DateTimeParser(IDateTimeProvider dateTimeProvider) : IDateTimeParse
                 DateTimeFormat,
                 CultureInfo.InvariantCulture,
                 DateTimeStyles.None,
-                out var result)
+                out var result
+            )
            )
         {
             dateTimeResult = result;
             return true;
         }
 
-        if (!DateTime.TryParseExact(time, TimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None,
-                out var timeResult))
+        if (!DateTime.TryParseExact(
+                time,
+                TimeFormat,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var timeResult
+            ))
         {
             dateTimeResult = null;
             return false;
