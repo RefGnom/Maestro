@@ -6,55 +6,44 @@ public class CommandParser(IDateTimeParser dateTimeParser) : ICommandParser
 {
     private readonly IDateTimeParser _dateTimeProvider = dateTimeParser;
 
-    public bool TryParseCommand(string command, out ICommand? commandResult)
+    public ParseResult ParseCommand(string command)
     {
-        if(command.StartsWith("/reminder"))
+        if (command.StartsWith("/reminder"))
         {
-            return TryParseReminderCommand(command, out commandResult);
-        }
-        else if (command.StartsWith("/schedule"))
-        {
-            return TryParseScheduleCommand(command, out commandResult);
+            return TryParseReminderCommand(command);
         }
 
-        commandResult = null;
+        if (command.StartsWith("/schedule"))
+        {
+            return TryParseScheduleCommand(command);
+        }
 
-        return false;
+        return ParseResult.CreateFailure("Неизвестная комманда");
     }
 
-    public bool TryParseReminderCommand(string command, out ICommand? commandResult)
+    public ParseResult TryParseReminderCommand(string command)
     {
         var parts = command.Split(" ");
         var telegramCommand = parts[0];
         var date = parts[1];
         var time = parts[2];
         var hasDate = time.All(c => !char.IsLetter(c));
+
         if (hasDate)
         {
-            if (!_dateTimeProvider.TryParse(time, date, out var dateTimeParseResult))
-            {
-                commandResult = null;
-                return false;
-            }
-
-            commandResult = new ReminderCommand(telegramCommand, parts.Last(), dateTimeParseResult!.Value);
-            return true;
+            return !_dateTimeProvider.TryParse(time, date, out var dateTimeParseResult)
+                ? ParseResult.CreateFailure("Не удалось распарсить дату напоминания") // Напиши сюда формат
+                : ParseResult.CreateSuccess(new ReminderCommand(telegramCommand, parts.Last(), dateTimeParseResult!.Value));
         }
         else
         {
-            if (_dateTimeProvider.TryParse(date, null, out var dateTimeParseResult))
-            {
-                commandResult = new ReminderCommand(telegramCommand, parts.Last(), dateTimeParseResult!.Value);
-                return true;
-            }
+            return !_dateTimeProvider.TryParse(date, null, out var dateTimeParseResult)
+                ? ParseResult.CreateFailure("Не удалось распарсить дату напоминания") // Напиши сюда формат
+                : ParseResult.CreateSuccess(new ReminderCommand(telegramCommand, parts.Last(), dateTimeParseResult!.Value));
         }
-
-        commandResult = null;
-
-        return false;
     }
 
-    public bool TryParseScheduleCommand(string command, out ICommand? commandResult)
+    public ParseResult TryParseScheduleCommand(string command)
     {
         var parts = command.Split(" ");
         var telegremCommand = parts[0];
@@ -74,12 +63,17 @@ public class CommandParser(IDateTimeParser dateTimeParser) : ICommandParser
         if (_dateTimeProvider.TryParse(startTime, startDate, out var startDateTime) &&
             _dateTimeProvider.TryParse(endTime, endDate, out var endDateTime))
         {
-            commandResult = new ScheduleCommand(telegremCommand, description,
-                startDateTime!.Value, endDateTime!.Value, canOverlap);
-            return true;
+            return ParseResult.CreateSuccess(
+                new ScheduleCommand(
+                    telegremCommand,
+                    description,
+                    startDateTime!.Value,
+                    endDateTime!.Value,
+                    canOverlap
+                )
+            );
         }
 
-        commandResult = null;
-        return false;
+        return ParseResult.CreateFailure("Не удалось распарсить дату расписания"); // Напиши сюда формат
     }
 }
