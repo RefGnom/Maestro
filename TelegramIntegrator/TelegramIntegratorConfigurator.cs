@@ -1,4 +1,4 @@
-﻿using Maestro.Client.Integrator;
+﻿using Maestro.Client;
 using Maestro.Core.Configuration;
 using Maestro.Core.Providers;
 using Microsoft.Extensions.DependencyInjection;
