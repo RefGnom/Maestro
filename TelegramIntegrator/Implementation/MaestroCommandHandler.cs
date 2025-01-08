@@ -1,7 +1,8 @@
 ﻿using Maestro.Client.Integrator;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
-using Maestro.Server.Public.Models.Reminders;
+using Maestro.Server.Core.Models;
+using Maestro.TelegramIntegrator.Models;
 using Maestro.TelegramIntegrator.Parsers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -11,16 +12,18 @@ namespace Maestro.TelegramIntegrator.Implementation;
 
 public class MaestroCommandHandler(
     ILog<MaestroCommandHandler> log,
-    IMaestroApiClient maestroApiClient,
-    IMessageParser messageParser,
-    IDateTimeProvider dateTimeProvider
+    //IMaestroApiClient maestroApiClient,
+    ICommandParser commandParser,
+    IDateTimeProvider dateTimeProvider,
+    ICommandHandler[] commandHandlers
 )
     : IMaestroCommandHandler
 {
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
     private readonly ILog<MaestroCommandHandler> _log = log;
-    private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
-    private readonly IMessageParser _messageParser = messageParser;
+    //private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
+    private readonly ICommandParser _commandParser = commandParser;
+    private readonly ICommandHandler[] _commandHandlers = commandHandlers;
 
     public async Task UpdateHandler(ITelegramBotClient bot, Update update, CancellationToken cancellationToken)
     {
@@ -29,44 +32,33 @@ public class MaestroCommandHandler(
             return;
         }
 
-        if (_messageParser.TryParse(update.Message.Text!, out var message))
+        if (_commandParser.TryParseCommand(update.Message.Text!, out var parsedCommand))
         {
-            if (message!.ReminderTime < _dateTimeProvider.GetCurrentDateTime())
+            var executed = false; 
+            foreach (var handler in _commandHandlers)
             {
-                var errorMessage = "Reminder time is less than current time";
-                _log.Warn(errorMessage);
-
-
-                await bot.SendMessage(
-                    update.Message.Chat.Id,
-                    errorMessage,
-                    cancellationToken: cancellationToken
-                );
-            }
-
-            await _maestroApiClient.CreateReminderAsync(
-                new ReminderDto
+                if (handler.CanExecute(parsedCommand))
                 {
-                    UserId = 0,
-                    Description = null,
-                    RemindDateTime = default,
-                    RemindInterval = default,
-                    RemindCount = 0
+                    await handler.ExecuteAsync(bot, update.Message.Chat.Id, parsedCommand, cancellationToken);
+                    executed = true;
+                    break;
                 }
-            );
-            _log.Info("Event created");
-            await bot.SendMessage(
-                update.Message.Chat.Id,
-                $"Напоминание \"{message.Description}\" создано на время {message.ReminderTime: yyyy-MM-dd HH:mm}",
-                cancellationToken: cancellationToken
-            );
+            }
+            if (!executed)
+            {
+                await bot.SendMessage(update.Message.Chat.Id,
+                        "Не удалось распознать команду.",
+                        cancellationToken: cancellationToken);                
+            }
+                }
         }
         else
         {
             _log.Warn("Failed to parse message");
             await bot.SendMessage(
                 update.Message.Chat.Id,
-                "Чтобы создать новое напоминание используйте команду /create {время напоминания} {описание}.",
+                "Чтобы создать напоминание или расписание используйте команду /reminder {время напоминания} {описание}" +
+                "или /schedule {время напоминания} {описание}.",
                 cancellationToken: cancellationToken
             );
         }

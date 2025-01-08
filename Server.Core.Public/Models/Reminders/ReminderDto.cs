@@ -14,7 +14,7 @@ public class ReminderDto
     [Required] public long UserId { get; set; }
 
     [Required]
-    [MaxLength(DataConstraints.ReminderDescriptionMaxLength)]
+    [MaxLength(DataConstraints.DescriptionMaxLength)]
     public string Description { get; set; }
 
     [Required] public DateTime RemindDateTime { get; set; }
