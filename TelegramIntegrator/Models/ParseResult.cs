@@ -1,11 +1,11 @@
 ﻿namespace Maestro.TelegramIntegrator.Models;
 
-public class ParseResult(bool isSuccessful, string parseFailureMessage, ICommand command)
+public class ParseResult<T>(bool isSuccessful, T Value, string parseFailureMessage)
 {
     public bool IsSuccessful { get; } = isSuccessful;
+    public T Value { get; } = Value;
     public string ParseFailureMessage { get; } = parseFailureMessage;
-    public ICommand Command { get; } = command;
 
-    public static ParseResult CreateSuccess(ICommand command) => new(true, null!, command);
-    public static ParseResult CreateFailure(string parseFailureMessage) => new(false, parseFailureMessage, null!);
+    public static ParseResult<T> CreateSuccess(T value) => new(true, value, null!);
+    public static ParseResult<T> CreateFailure(string parseFailureMessage) => new(false, default!, parseFailureMessage);
 }
