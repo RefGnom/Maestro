@@ -33,13 +33,13 @@ public class CommandParser(IDateTimeParser dateTimeParser) : ICommandParser
         {
             return !_dateTimeProvider.TryParse(time, date, out var dateTimeParseResult)
                 ? ParseResult.CreateFailure("Не удалось распарсить дату или время напоминания. Напишите дату в формате день.месяц.год, а время в формате часы:минуты.")
-                : ParseResult.CreateSuccess(new CreateReminderCommand(telegramCommand, string.Join(" ", parts.Skip(3)), dateTimeParseResult!.Value));
+                : ParseResult.CreateSuccess(new CreateReminderCommand(telegramCommand, parts[3], dateTimeParseResult!.Value));
         }
         else
         {
             return !_dateTimeProvider.TryParse(date, null, out var dateTimeParseResult)
                 ? ParseResult.CreateFailure("Не удалось распарсить время напоминания. Напишите время в формате часы:минуты.")
-                : ParseResult.CreateSuccess(new CreateReminderCommand(telegramCommand, string.Join(" ", parts.Skip(2)), dateTimeParseResult!.Value));
+                : ParseResult.CreateSuccess(new CreateReminderCommand(telegramCommand, parts[2], dateTimeParseResult!.Value));
         }
     }
 
@@ -50,14 +50,11 @@ public class CommandParser(IDateTimeParser dateTimeParser) : ICommandParser
         var startDate = parts[1];
         var startTime = parts[2];
         var endTime = parts[3];
-        var description = string.Join(" ", parts.Skip(4));
+        var description = parts[4];
         bool canOverlap = false;
 
         if (description.EndsWith("overlap", StringComparison.OrdinalIgnoreCase))
-        {
             canOverlap = true;
-            description = description.Substring(0, description.Length - "overlap".Length).Trim();
-        }
 
         if (_dateTimeProvider.TryParse(startTime, startDate, out var startDateTime) &&
             _dateTimeProvider.TryParse(endTime, null, out var endDateTime))

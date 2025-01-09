@@ -52,11 +52,10 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
             //);
 
             _log.Info("Reminder created.");
-            await _telegramBotClient.SendMessage(
-                chatId,
-                $"Напоминание \"{reminderCommand.Description}\" создано на время {reminderCommand.ReminderTime:yyyy-MM-dd HH:mm}",
-                cancellationToken: cancellationToken
-            );
+            
+            await MaestroCommandHandler.SendMainMenu(_telegramBotClient, chatId,
+                $"Напоминание \"{reminderCommand.Description}\" создано на время {reminderCommand.ReminderTime:dd.MM.yyyy HH:mm}.",
+                cancellationToken);
         }
     }
 }
