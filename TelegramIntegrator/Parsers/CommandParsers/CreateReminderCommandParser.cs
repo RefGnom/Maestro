@@ -24,7 +24,7 @@ public class CreateReminderCommandParser(IDateTimeParser dateTimeParser) : IComm
         var description = parts[2];
         var remindCount = 1;
 
-        if (parts.Length == 4)
+        if (parts.Length > 3)
             {
                 var parserIntResult = ParserHelper.ParseInt(parts[3]);
                 if (!parserIntResult.IsSuccessful)
