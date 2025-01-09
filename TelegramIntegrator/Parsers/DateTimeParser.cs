@@ -7,7 +7,7 @@ public class DateTimeParser(IDateTimeProvider dateTimeProvider) : IDateTimeParse
 {
     private const string TimeFormat = "HH:mm";
 
-    private const string DateTimeFormat = $"yyyy.MM.dd {TimeFormat}";
+    private const string DateTimeFormat = $"dd.MM.yyyy {TimeFormat}";
 
     public bool TryParse(string time, string? date, out DateTime? dateTimeResult)
     {

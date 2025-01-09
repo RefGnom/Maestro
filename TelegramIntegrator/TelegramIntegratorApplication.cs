@@ -23,7 +23,8 @@ public class TelegramIntegratorApplication(
     {
         AllowedUpdates =
         [
-            UpdateType.Message
+            UpdateType.Message,
+            UpdateType.CallbackQuery
         ],
         DropPendingUpdates = true
     };
