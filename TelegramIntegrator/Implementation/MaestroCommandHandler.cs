@@ -84,7 +84,7 @@ public class MaestroCommandHandler(
         }
     }
 
-    public async Task SendMainMenu(ITelegramBotClient bot, long chatId, string message, CancellationToken cancellationToken)
+    public static async Task SendMainMenu(ITelegramBotClient bot, long chatId, string message, CancellationToken cancellationToken)
     {
         var inlineKeyboardMarkup = new InlineKeyboardMarkup(
         [
