@@ -32,7 +32,7 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
             var scheduleCommand = (CreateScheduleCommand)command;
             if (scheduleCommand.StartDateTime < _dateTimeProvider.GetCurrentDateTime() || scheduleCommand.EndDateTime < _dateTimeProvider.GetCurrentDateTime())
             {
-                var errorMessage = "Start or end time of the schedule is less than the current time";
+                var errorMessage = "Даты начала и конца расписания не могут быть раньше текущей даты";
                 _log.Warn(errorMessage);
 
                 await _telegramBotClient.SendMessage(
@@ -40,6 +40,19 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
                     errorMessage,
                     cancellationToken: cancellationToken
                 );
+                return;
+            }
+            else if (scheduleCommand.StartDateTime > scheduleCommand.EndDateTime)
+            {
+                var errorMessage = "Дата конца раписание не может быть раньше даты начала расписания.";
+                _log.Warn(errorMessage);
+
+                await _telegramBotClient.SendMessage(
+                    chatId,
+                    errorMessage,
+                    cancellationToken: cancellationToken
+                );
+                return;
             }
 
             // await _maestroApiClient.CreateScheduleAsync(
@@ -56,7 +69,7 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
             _log.Info("Schedule created");
             
             await MaestroCommandHandler.SendMainMenu(_telegramBotClient, chatId,
-                $"Расписание \"{scheduleCommand.Description}\" создано на время с {scheduleCommand.StartDateTime:dd.MM.yyyy HH:mm}" +
+                $"Расписание \"{scheduleCommand.Description}\" создано на время с {scheduleCommand.StartDateTime:dd.MM.yyyy HH:mm} " +
                 $"по {scheduleCommand.EndDateTime:dd.MM.yyyy HH:mm}.",
                 cancellationToken);
         }
