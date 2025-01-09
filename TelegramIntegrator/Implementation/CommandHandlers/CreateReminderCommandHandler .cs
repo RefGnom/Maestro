@@ -29,7 +29,7 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
             var reminderCommand = (CreateReminderCommand)command;
             if (reminderCommand.ReminderTime < _dateTimeProvider.GetCurrentDateTime())
             {
-                var errorMessage = "Reminder time is less than current time";
+                var errorMessage = "Дата напоминания не может быть раньше текущей даты";
                 _log.Warn(errorMessage);
 
                 await _telegramBotClient.SendMessage(
@@ -47,7 +47,7 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
             //        Description = reminderCommand.Description,
             //        ReminderTime = reminderCommand.ReminderTime,
             //        RemindInterval = TimeSpan.Zero,
-            //        RemindCount = 1
+            //        RemindCount = reminderCommand.RemindCount
             //    }
             //);
 
