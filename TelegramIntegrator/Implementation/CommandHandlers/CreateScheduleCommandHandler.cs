@@ -8,14 +8,14 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
 {
     public class CreateScheduleCommandHandler(
         ILog<CreateScheduleCommandHandler> log,
-        IMaestroApiClient maestroApiClient,
+        //IMaestroApiClient maestroApiClient,
         IDateTimeProvider dateTimeProvider,
         ITelegramBotClient telegramBotClient
     ) : ICommandHandler
     {
         private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
         private readonly ILog<CreateScheduleCommandHandler> _log = log;
-        private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
+        //private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
         private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
 
         public bool CanExecute(ICommand command)
@@ -30,7 +30,7 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
         )
         {
             var scheduleCommand = (CreateScheduleCommand)command;
-            if (scheduleCommand.StartDateTime < _dateTimeProvider.GetCurrentDateTime() || scheduleCommand.StartDateTime < _dateTimeProvider.GetCurrentDateTime())
+            if (scheduleCommand.StartDateTime < _dateTimeProvider.GetCurrentDateTime() || scheduleCommand.EndDateTime < _dateTimeProvider.GetCurrentDateTime())
             {
                 var errorMessage = "Start or end time of the schedule is less than the current time";
                 _log.Warn(errorMessage);
