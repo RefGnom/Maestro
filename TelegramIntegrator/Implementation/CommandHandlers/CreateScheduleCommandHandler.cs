@@ -54,11 +54,11 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
             // );
 
             _log.Info("Schedule created");
-            await _telegramBotClient.SendMessage(
-                chatId,
-                $"Расписание \"{scheduleCommand.Description}\" создано на время с {scheduleCommand.StartDateTime:yyyy-MM-dd HH:mm} по {scheduleCommand.EndDateTime:yyyy-MM-dd HH:mm}",
-                cancellationToken: cancellationToken
-            );
+            
+            await MaestroCommandHandler.SendMainMenu(_telegramBotClient, chatId,
+                $"Расписание \"{scheduleCommand.Description}\" создано на время с {scheduleCommand.StartDateTime:dd.MM.yyyy HH:mm}" +
+                $"по {scheduleCommand.EndDateTime:dd.MM.yyyy HH:mm}.",
+                cancellationToken);
         }
     }
 }
