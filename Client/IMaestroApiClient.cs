@@ -9,4 +9,5 @@ public interface IMaestroApiClient
     public IAsyncEnumerable<ReminderWithIdDto> GetRemindersForUserAsync(long userId, DateTime? exclusiveStartDateTime);
     public Task MarkRemindersAsCompletedAsync(params long[] remindersId);
     //public Task<long> CreateScheduleAsync(ScheduleDto schedule);
+    //public IAsyncEnumerable<ScheduleDto> GetSchedulesForUserAsync(long userId, DateTime? exclusiveStartDateTime);
 }
