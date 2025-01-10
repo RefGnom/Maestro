@@ -24,7 +24,7 @@ public class SendEventsProcess(
     public override bool IsActiveByDefault => true;
     protected override TimeSpan Interval => RemindSendingEpsilon;
 
-    protected async override Task TryRunAsync()
+    protected async override Task UnsafeRunAsync()
     {
         var currentDate = dateTimeProvider.GetCurrentDateTime();
         var exclusiveStartDate = _timestampProvider.Get(TimestampKey);
