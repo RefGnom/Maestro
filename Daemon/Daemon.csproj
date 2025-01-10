@@ -11,9 +11,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Client.Daemon\Client.Daemon.csproj" />
       <ProjectReference Include="..\Core\Core.csproj" />
       <ProjectReference Include="..\Operational\Operational.csproj" />
-      <ProjectReference Include="..\Server.Core\Server.Core.csproj" />
     </ItemGroup>
 
 </Project>
