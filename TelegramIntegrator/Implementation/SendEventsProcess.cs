@@ -27,7 +27,7 @@ public class SendEventsProcess(
     protected async override Task UnsafeRunAsync()
     {
         var currentDate = dateTimeProvider.GetCurrentDateTime();
-        var exclusiveStartDate = _timestampProvider.Get(TimestampKey);
+        var exclusiveStartDate = _timestampProvider.Read(TimestampKey);
         var maxReminderTime = exclusiveStartDate;
 
         var reminders = _maestroApiClient.GetAllRemindersAsync(exclusiveStartDate);

@@ -2,6 +2,7 @@
 
 public interface ITimestampProvider
 {
-    DateTime Get(string key);
+    DateTime Read(string key);
+    DateTime? Find(string key);
     void Set(string key, DateTime timestamp);
 }

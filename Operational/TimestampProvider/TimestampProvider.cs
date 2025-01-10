@@ -4,7 +4,9 @@ public class TimestampProvider(TimestampProviderOptions timestampProviderOptions
 {
     private readonly TimestampProviderOptions _timestampProviderOptions = timestampProviderOptions;
 
-    public DateTime Get(string key)
+    public DateTime Read(string key) => Find(key) ?? throw new ArgumentException($"Не нашли timestamp по ключу {key}");
+
+    public DateTime? Find(string key)
     {
         var timestamps = ReadTimestampDictionary();
         if (timestamps.TryGetValue(key, out var timestamp))
@@ -12,7 +14,7 @@ public class TimestampProvider(TimestampProviderOptions timestampProviderOptions
             return timestamp;
         }
 
-        throw new ArgumentException($"Не нашли timestamp по ключу {key}");
+        return null;
     }
 
     public void Set(string key, DateTime timestamp)
