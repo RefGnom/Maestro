@@ -8,9 +8,9 @@ public class CreateScheduleCommand(
     bool canOverlap
 ) : ICommand
 {
-    public string Command { get; } = command;
-    public string Description { get; } = description;
     public DateTime StartDateTime { get; } = startDateTime;
     public DateTime EndDateTime { get; } = endDateTime;
     public bool CanOverlap { get; } = canOverlap;
+    public string Command { get; } = command;
+    public string Description { get; } = description;
 }

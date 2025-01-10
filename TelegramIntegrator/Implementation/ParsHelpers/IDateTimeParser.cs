@@ -1,4 +1,4 @@
-﻿namespace Maestro.TelegramIntegrator.Parsers;
+﻿namespace Maestro.TelegramIntegrator.Implementation.ParsHelpers;
 
 public interface IDateTimeParser
 {
