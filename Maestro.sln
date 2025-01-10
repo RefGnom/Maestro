@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.Core.Private", "Serv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.Daemon", "Client.Daemon\Client.Daemon.csproj", "{E66E6255-4535-40FB-84A5-C3DBEC9A6A06}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Daemon", "Daemon\Daemon.csproj", "{8ADD07A5-AE0C-4257-86FB-355A26F13EC5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,5 +78,9 @@ Global
 		{E66E6255-4535-40FB-84A5-C3DBEC9A6A06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E66E6255-4535-40FB-84A5-C3DBEC9A6A06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E66E6255-4535-40FB-84A5-C3DBEC9A6A06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8ADD07A5-AE0C-4257-86FB-355A26F13EC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8ADD07A5-AE0C-4257-86FB-355A26F13EC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8ADD07A5-AE0C-4257-86FB-355A26F13EC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8ADD07A5-AE0C-4257-86FB-355A26F13EC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

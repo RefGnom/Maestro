@@ -14,4 +14,8 @@
       <ProjectReference Include="..\Server.Core\Server.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Implementation\" />
+    </ItemGroup>
+
 </Project>
