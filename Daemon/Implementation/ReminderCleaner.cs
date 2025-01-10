@@ -1,7 +1,7 @@
 ﻿using Maestro.Core.Logging;
 using Maestro.Operational.ProcessesCore;
 
-namespace Daemon;
+namespace Maestro.Daemon.Implementation;
 
 public class ReminderCleaner(ILog<ReminderCleaner> log) : RegularProcessBase<ReminderCleaner>(log)
 {

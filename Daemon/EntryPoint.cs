@@ -1,7 +1,7 @@
-﻿using Daemon.Configuration;
-using Maestro.Core.Configuration;
+﻿using Maestro.Core.Configuration;
+using Maestro.Daemon.Configuration;
 
-namespace Daemon;
+namespace Maestro.Daemon;
 
 public static class EntryPoint
 {

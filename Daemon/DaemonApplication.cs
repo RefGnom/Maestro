@@ -1,7 +1,7 @@
 ﻿using Maestro.Core.Configuration;
 using Maestro.Operational.ProcessesCore;
 
-namespace Daemon;
+namespace Maestro.Daemon;
 
 public class DaemonApplication(IProcessRunner processRunner) : IApplication
 {

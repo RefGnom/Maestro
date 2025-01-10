@@ -6,16 +6,14 @@
         <LangVersion>default</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AssemblyName>Maestro.Daemon</AssemblyName>
+        <RootNamespace>Maestro.Daemon</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Core\Core.csproj" />
       <ProjectReference Include="..\Operational\Operational.csproj" />
       <ProjectReference Include="..\Server.Core\Server.Core.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Implementation\" />
     </ItemGroup>
 
 </Project>
