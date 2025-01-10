@@ -1,5 +1,7 @@
-﻿using Maestro.Core.Logging;
+﻿using Maestro.Client.Integrator;
+using Maestro.Core.Logging;
 using Maestro.Core.Providers;
+using Maestro.Server.Public.Models.Reminders;
 using Maestro.TelegramIntegrator.Models;
 using Telegram.Bot;
 
@@ -7,7 +9,7 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
 {
     public class CreateReminderCommandHandler(
         ILog<CreateReminderCommandHandler> log,
-        //IMaestroApiClient maestroApiClient,
+        IMaestroApiClient maestroApiClient,
         ITelegramBotWrapper telegramBotWrapper,
         IDateTimeProvider dateTimeProvider,
         ITelegramBotClient telegramBotClient
@@ -15,7 +17,7 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
     {
         private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
         private readonly ILog<CreateReminderCommandHandler> _log = log;
-        //private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
+        private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
         private readonly ITelegramBotWrapper _telegramBotWrapper = telegramBotWrapper;
         private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
 
@@ -40,23 +42,25 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
                 return;
             }
 
-            //await _maestroApiClient.CreateReminderAsync(
-            //    new ReminderDto
-            //    {
-            //        UserId = chatId,
-            //        Description = reminderCommand.Description,
-            //        ReminderTime = reminderCommand.ReminderTime,
-            //        RemindInterval = reminderCommand.RemindInterval,
-            //        RemindCount = reminderCommand.RemindCount
-            //    }
-            //);
+            await _maestroApiClient.CreateReminderAsync(
+                new ReminderDto
+                {
+                    UserId = chatId,
+                    Description = reminderCommand.Description,
+                    RemindDateTime = reminderCommand.ReminderTime,
+                    RemindInterval = reminderCommand.RemindInterval,
+                    RemindCount = reminderCommand.RemindCount
+                }
+            );
 
             _log.Info("Reminder created.");
 
-            await _telegramBotWrapper.SendMainMenu(chatId,
+            await _telegramBotWrapper.SendMainMenu(
+                chatId,
                 $"Напоминание \"{reminderCommand.Description}\" создано на время {reminderCommand.ReminderTime:dd.MM.yyyy HH:mm}, " +
                 $"повторная отправка напоминания (если есть): {reminderCommand.RemindCount} раз(а) через {reminderCommand.RemindInterval.TotalMinutes} мин.",
-                cancellationToken);
+                cancellationToken
+            );
         }
     }
 }

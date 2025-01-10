@@ -1,5 +1,7 @@
-﻿using Maestro.Core.Logging;
+﻿using Maestro.Client.Integrator;
+using Maestro.Core.Logging;
 using Maestro.Core.Providers;
+using Maestro.Server.Public.Models.Reminders;
 using Maestro.TelegramIntegrator.Models;
 using Telegram.Bot;
 
@@ -7,7 +9,7 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
 {
     public class CreateScheduleCommandHandler(
         ILog<CreateScheduleCommandHandler> log,
-        //IMaestroApiClient maestroApiClient,
+        IMaestroApiClient maestroApiClient,
         ITelegramBotWrapper telegramBotWrapper,
         IDateTimeProvider dateTimeProvider,
         ITelegramBotClient telegramBotClient
@@ -15,7 +17,7 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
     {
         private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
         private readonly ILog<CreateScheduleCommandHandler> _log = log;
-        //private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
+        private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
         private readonly ITelegramBotWrapper _telegramBotWrapper = telegramBotWrapper;
         private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
 
@@ -57,16 +59,16 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
                 return;
             }
 
-            // await _maestroApiClient.CreateScheduleAsync(
-            //     new ScheduleDto
-            //     {
-            //         UserId = chatId,
-            //         Description = scheduleCommand.Description,
-            //         StartDateTime = scheduleCommand.StartDateTime,
-            //         EndDateTime = scheduleCommand.EndDateTime,
-            //         CanOverlap = scheduleCommand.CanOverlap
-            //     }
-            // );
+            await _maestroApiClient.CreateScheduleAsync(
+                new ScheduleDto
+                {
+                    UserId = chatId,
+                    Description = scheduleCommand.Description,
+                    StartDateTime = scheduleCommand.StartDateTime,
+                    EndDateTime = scheduleCommand.EndDateTime,
+                    CanOverlap = scheduleCommand.CanOverlap
+                }
+            );
 
             _log.Info("Schedule created");
 

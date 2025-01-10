@@ -185,6 +185,11 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         return createdReminderId;
     }
 
+    public Task<long> CreateScheduleAsync(ScheduleDto schedule)
+    {
+        throw new NotImplementedException("Запрос в сервер");
+    }
+
     #endregion
 
     #region Patch
