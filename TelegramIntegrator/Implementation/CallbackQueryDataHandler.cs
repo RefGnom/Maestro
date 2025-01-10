@@ -1,5 +1,4 @@
-﻿using Maestro.Client;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 
 namespace Maestro.TelegramIntegrator.Implementation
 {
@@ -58,9 +57,15 @@ namespace Maestro.TelegramIntegrator.Implementation
         public async Task HandleCallbackData(string callbackData, long chatId, CancellationToken cancellationToken)
         {
             if (CallbackDataHandlers.TryGetValue(callbackData, out var handler))
+            {
                 await handler(chatId, cancellationToken);
+            }
             else
-                throw new Exception($"Не нашли подходящего хэндлера для команды {callbackData}"); ;
+            {
+                throw new Exception($"Не нашли подходящего хэндлера для команды {callbackData}");
+            }
+
+            ;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Maestro.Client.Integrator;
-using Maestro.Core.Configuration;
+﻿using Maestro.Core.Configuration;
 using Maestro.Core.Providers;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;

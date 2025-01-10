@@ -1,6 +1,4 @@
-﻿using Telegram.Bot;
-
-namespace Maestro.TelegramIntegrator.Implementation;
+﻿namespace Maestro.TelegramIntegrator.Implementation;
 
 public interface ITelegramBotWrapper
 {

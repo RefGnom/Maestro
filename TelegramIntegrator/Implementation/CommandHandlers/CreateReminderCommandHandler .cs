@@ -1,7 +1,5 @@
-﻿using Maestro.Client;
-using Maestro.Core.Logging;
+﻿using Maestro.Core.Logging;
 using Maestro.Core.Providers;
-using Maestro.Server.Core.Models;
 using Maestro.TelegramIntegrator.Models;
 using Telegram.Bot;
 
@@ -54,7 +52,7 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
             //);
 
             _log.Info("Reminder created.");
-            
+
             await _telegramBotWrapper.SendMainMenu(chatId,
                 $"Напоминание \"{reminderCommand.Description}\" создано на время {reminderCommand.ReminderTime:dd.MM.yyyy HH:mm}, " +
                 $"повторная отправка напоминания (если есть): {reminderCommand.RemindCount} раз(а) через {reminderCommand.RemindInterval.TotalMinutes} мин.",

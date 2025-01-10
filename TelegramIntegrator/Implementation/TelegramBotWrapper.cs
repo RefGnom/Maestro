@@ -26,7 +26,7 @@ namespace Maestro.TelegramIntegrator.Implementation
             //    InlineKeyboardButton.WithCallbackData("Посмотреть мои напоминания", "get_reminders")
             //],
             //[
-                
+
             //    InlineKeyboardButton.WithCallbackData("Посмотреть мои расписания", "get_schedules")
             //]
         ]);

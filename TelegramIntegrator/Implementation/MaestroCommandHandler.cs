@@ -26,39 +26,36 @@ public class MaestroCommandHandler(
     {
         if (update.Type == UpdateType.Message && update.Message is not null)
         {
-            foreach (var parser in _commandParsers)
+            var messageText = update.Message.Text!;
+            var parser = _commandParsers.FirstOrDefault(x => x.CanParse(messageText));
+            if (parser is null)
             {
-                if (parser.CanParse(update.Message.Text!))
-                {
-                    var commandParseResult = parser.ParseCommand(update.Message.Text!);
-
-                    if (!commandParseResult.IsSuccessful)
-                }
-                    {
-                        _log.Warn("Failed to parse message");
-                        await bot.SendMessage(update.Message.Chat.Id, commandParseResult.ParseFailureMessage, cancellationToken: cancellationToken);
-                        return;
-                    }
-
-                    var command = commandParseResult.Value;
-
-                    foreach (var handler in _commandHandlers)
-                    {
-                        if (handler.CanExecute(command))
-                        {
-                            await handler.ExecuteAsync(update.Message.Chat.Id, command, cancellationToken);
-                            return;
-                        }
-                    }
-
-                    throw new Exception($"Не нашли подходящего CommandHandler для команды {command}");
-                }
+                throw new Exception($"Не нашли подходящего парсера для сообщения {messageText}");
             }
 
+            var commandParseResult = parser.ParseCommand(messageText);
+
+            if (!commandParseResult.IsSuccessful)
+            {
+                _log.Warn("Failed to parse message");
+                await bot.SendMessage(update.Message.Chat.Id, commandParseResult.ParseFailureMessage, cancellationToken: cancellationToken);
+                return;
+            }
+
+            var command = commandParseResult.Value;
+
+            var commandHandler = _commandHandlers.FirstOrDefault(x => x.CanExecute(command));
+            if (commandHandler is null)
+            {
+                throw new Exception($"Не нашли подходящего CommandHandler для команды {command}");
+            }
+
+            await commandHandler.ExecuteAsync(update.Message.Chat.Id, command, cancellationToken);
             await _telegramBotWrapper.SendMainMenu(update.Message.Chat.Id, "Неизвестная команда.", cancellationToken);
+            return;
         }
 
-        else if (update.Type == UpdateType.CallbackQuery && update.CallbackQuery is not null)
+        if (update.Type == UpdateType.CallbackQuery && update.CallbackQuery is not null)
         {
             var callbackQuery = update.CallbackQuery;
             var callbackQueryHandler = new CallbackQueryHandler(_telegramBotClient);
