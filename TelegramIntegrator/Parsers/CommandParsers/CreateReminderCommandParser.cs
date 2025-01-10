@@ -1,12 +1,9 @@
 ﻿using Maestro.TelegramIntegrator.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Maestro.TelegramIntegrator.Parsers.CommandParsers;
 
-public class CreateReminderCommandParser(IDateTimeParser dateTimeParser) : ICommandParser
+public class CreateReminderCommandParser() : ICommandParser
 {
-    private readonly IDateTimeParser _dateTimeProvider = dateTimeParser;
-
     public bool CanParse(string command)
     {
         return command.StartsWith("/reminder");
@@ -16,22 +13,32 @@ public class CreateReminderCommandParser(IDateTimeParser dateTimeParser) : IComm
     {
         var parts = command.Split(",", StringSplitOptions.TrimEntries);
         var telegramCommand = parts[0];
-        var dateTime = ParserHelper.ParseDateTime(parts[1]);
+        var dateTimeParseResult = ParserHelper.ParseDateTime(parts[1]);
 
-        if (!dateTime.IsSuccessful)
-            return ParseResult<ICommand>.CreateFailure(dateTime.ParseFailureMessage);
+        if (!dateTimeParseResult.IsSuccessful)
+            return ParseResult<ICommand>.CreateFailure(dateTimeParseResult.ParseFailureMessage);
 
         var description = parts[2];
         var remindCount = 1;
 
         if (parts.Length > 3)
-            {
-                var parserIntResult = ParserHelper.ParseInt(parts[3]);
-                if (!parserIntResult.IsSuccessful)
-                    return ParseResult<ICommand>.CreateFailure(parserIntResult.ParseFailureMessage);
-                remindCount = parserIntResult.Value;
+        {
+            var parserIntResult = ParserHelper.ParseInt(parts[3]);
+            if (!parserIntResult.IsSuccessful)
+                return ParseResult<ICommand>.CreateFailure(parserIntResult.ParseFailureMessage);
+            remindCount = parserIntResult.Value;
         }
 
-        return ParseResult<ICommand>.CreateSuccess(new CreateReminderCommand(telegramCommand, description, dateTime.Value!.Value, remindCount));
+        var remindInterval = TimeSpan.FromMinutes(5);
+
+        if (parts.Length > 4)
+        {
+            var parserTimeSpanResult = ParserHelper.ParseTimeSpan(parts[4]);
+            if (!parserTimeSpanResult.IsSuccessful)
+                return ParseResult<ICommand>.CreateFailure(parserTimeSpanResult.ParseFailureMessage);
+            remindInterval = parserTimeSpanResult.Value;
+        }
+
+        return ParseResult<ICommand>.CreateSuccess(new CreateReminderCommand(telegramCommand, description, dateTimeParseResult.Value!.Value, remindCount, remindInterval));
     }
 }

@@ -9,6 +9,7 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
     public class CreateScheduleCommandHandler(
         ILog<CreateScheduleCommandHandler> log,
         //IMaestroApiClient maestroApiClient,
+        ITelegramBotWrapper telegramBotWrapper,
         IDateTimeProvider dateTimeProvider,
         ITelegramBotClient telegramBotClient
     ) : ICommandHandler
@@ -16,6 +17,7 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
         private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
         private readonly ILog<CreateScheduleCommandHandler> _log = log;
         //private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
+        private readonly ITelegramBotWrapper _telegramBotWrapper = telegramBotWrapper;
         private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
 
         public bool CanExecute(ICommand command)
@@ -30,7 +32,8 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
         )
         {
             var scheduleCommand = (CreateScheduleCommand)command;
-            if (scheduleCommand.StartDateTime < _dateTimeProvider.GetCurrentDateTime() || scheduleCommand.EndDateTime < _dateTimeProvider.GetCurrentDateTime())
+            var currentDateTime = _dateTimeProvider.GetCurrentDateTime();
+            if (scheduleCommand.StartDateTime < currentDateTime || scheduleCommand.EndDateTime < currentDateTime)
             {
                 var errorMessage = "Даты начала и конца расписания не могут быть раньше текущей даты";
                 _log.Warn(errorMessage);
@@ -68,7 +71,7 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
 
             _log.Info("Schedule created");
             
-            await MaestroCommandHandler.SendMainMenu(_telegramBotClient, chatId,
+            await _telegramBotWrapper.SendMainMenu(chatId,
                 $"Расписание \"{scheduleCommand.Description}\" создано на время с {scheduleCommand.StartDateTime:dd.MM.yyyy HH:mm} " +
                 $"по {scheduleCommand.EndDateTime:dd.MM.yyyy HH:mm}.",
                 cancellationToken);
