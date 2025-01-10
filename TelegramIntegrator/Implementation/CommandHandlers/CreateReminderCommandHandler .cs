@@ -10,6 +10,7 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
     public class CreateReminderCommandHandler(
         ILog<CreateReminderCommandHandler> log,
         //IMaestroApiClient maestroApiClient,
+        ITelegramBotWrapper telegramBotWrapper,
         IDateTimeProvider dateTimeProvider,
         ITelegramBotClient telegramBotClient
     ) : ICommandHandler
@@ -17,6 +18,7 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
         private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
         private readonly ILog<CreateReminderCommandHandler> _log = log;
         //private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
+        private readonly ITelegramBotWrapper _telegramBotWrapper = telegramBotWrapper;
         private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
 
         public bool CanExecute(ICommand command)
@@ -46,15 +48,16 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
             //        UserId = chatId,
             //        Description = reminderCommand.Description,
             //        ReminderTime = reminderCommand.ReminderTime,
-            //        RemindInterval = TimeSpan.Zero,
+            //        RemindInterval = reminderCommand.RemindInterval,
             //        RemindCount = reminderCommand.RemindCount
             //    }
             //);
 
             _log.Info("Reminder created.");
             
-            await MaestroCommandHandler.SendMainMenu(_telegramBotClient, chatId,
-                $"Напоминание \"{reminderCommand.Description}\" создано на время {reminderCommand.ReminderTime:dd.MM.yyyy HH:mm}.",
+            await _telegramBotWrapper.SendMainMenu(chatId,
+                $"Напоминание \"{reminderCommand.Description}\" создано на время {reminderCommand.ReminderTime:dd.MM.yyyy HH:mm}, " +
+                $"повторная отправка напоминания (если есть): {reminderCommand.RemindCount} раз(а) через {reminderCommand.RemindInterval.TotalMinutes} мин.",
                 cancellationToken);
         }
     }
