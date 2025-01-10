@@ -1,5 +1,4 @@
-﻿using Maestro.Client;
-using Maestro.Core.Logging;
+﻿using Maestro.Core.Logging;
 using Maestro.Core.Providers;
 using Maestro.TelegramIntegrator.Models;
 using Telegram.Bot;
@@ -70,7 +69,7 @@ namespace Maestro.TelegramIntegrator.Implementation.CommandHandlers
             // );
 
             _log.Info("Schedule created");
-            
+
             await _telegramBotWrapper.SendMainMenu(chatId,
                 $"Расписание \"{scheduleCommand.Description}\" создано на время с {scheduleCommand.StartDateTime:dd.MM.yyyy HH:mm} " +
                 $"по {scheduleCommand.EndDateTime:dd.MM.yyyy HH:mm}.",

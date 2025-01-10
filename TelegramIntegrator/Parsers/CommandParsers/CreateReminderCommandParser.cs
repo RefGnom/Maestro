@@ -2,7 +2,7 @@
 
 namespace Maestro.TelegramIntegrator.Parsers.CommandParsers;
 
-public class CreateReminderCommandParser() : ICommandParser
+public class CreateReminderCommandParser : ICommandParser
 {
     public bool CanParse(string command)
     {
@@ -16,7 +16,9 @@ public class CreateReminderCommandParser() : ICommandParser
         var dateTimeParseResult = ParserHelper.ParseDateTime(parts[1]);
 
         if (!dateTimeParseResult.IsSuccessful)
+        {
             return ParseResult<ICommand>.CreateFailure(dateTimeParseResult.ParseFailureMessage);
+        }
 
         var description = parts[2];
         var remindCount = 1;
@@ -25,7 +27,10 @@ public class CreateReminderCommandParser() : ICommandParser
         {
             var parserIntResult = ParserHelper.ParseInt(parts[3]);
             if (!parserIntResult.IsSuccessful)
+            {
                 return ParseResult<ICommand>.CreateFailure(parserIntResult.ParseFailureMessage);
+            }
+
             remindCount = parserIntResult.Value;
         }
 
@@ -35,7 +40,10 @@ public class CreateReminderCommandParser() : ICommandParser
         {
             var parserTimeSpanResult = ParserHelper.ParseTimeSpan(parts[4]);
             if (!parserTimeSpanResult.IsSuccessful)
+            {
                 return ParseResult<ICommand>.CreateFailure(parserTimeSpanResult.ParseFailureMessage);
+            }
+
             remindInterval = parserTimeSpanResult.Value;
         }
 
