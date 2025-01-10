@@ -1,6 +1,6 @@
 ﻿using Maestro.Core.Configuration;
 using Maestro.Core.Logging;
-using Maestro.Core.Providers;
+using Maestro.Operational.ProcessesCore;
 using Maestro.TelegramIntegrator.Implementation;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
@@ -9,15 +9,15 @@ using Telegram.Bot.Types.Enums;
 namespace Maestro.TelegramIntegrator;
 
 public class TelegramIntegratorApplication(
-    ISettingsProvider settingsProvider,
     IMaestroCommandHandler maestroCommandHandler,
-    ILog<TelegramIntegratorApplication> log
+    ILog<TelegramIntegratorApplication> log,
+    IProcessRunner processRunner,
+    ITelegramBotClient botClient
 ) : IApplication
 {
-    private readonly ITelegramBotClient _botClient = new TelegramBotClient(settingsProvider.Get("TelegramBotToken"));
     private readonly ILog<TelegramIntegratorApplication> _log = log;
-
     private readonly IMaestroCommandHandler _maestroCommandHandler = maestroCommandHandler;
+    private readonly ITelegramBotClient _botClient = botClient;
 
     private readonly ReceiverOptions _receiverOptions = new()
     {
@@ -32,7 +32,7 @@ public class TelegramIntegratorApplication(
     {
     }
 
-    public Task RunAsync()
+    public async Task RunAsync()
     {
         _botClient.StartReceiving(
             _maestroCommandHandler.UpdateHandler,
@@ -40,6 +40,6 @@ public class TelegramIntegratorApplication(
             _receiverOptions
         );
         _log.Info("Telegram client started");
-        return Task.CompletedTask;
+        await processRunner.RunAsync();
     }
 }
