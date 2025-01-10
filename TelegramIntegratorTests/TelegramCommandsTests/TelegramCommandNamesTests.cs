@@ -1,15 +1,10 @@
 using FluentAssertions;
 using Maestro.TelegramIntegrator.Implementation.Commands;
 
-namespace TelegramIntegratorTests;
+namespace Maestro.TelegramIntegratorTests.TelegramCommandsTests;
 
 public class TelegramCommandNamesTests
 {
-    [SetUp]
-    public void Setup()
-    {
-    }
-
     [Test]
     public void TestGetCommandNames()
     {
