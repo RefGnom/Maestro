@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>Maestro.Client.Integrator</AssemblyName>
+        <RootNamespace>Maestro.Client.Integrator</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Core\Core.csproj"/>
+        <ProjectReference Include="..\Server.Core.Public\Server.Core.Public.csproj"/>
+    </ItemGroup>
+</Project>

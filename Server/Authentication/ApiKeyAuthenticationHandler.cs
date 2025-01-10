@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using Maestro.Server.Helpers;
 using Maestro.Server.Repositories;
 using Maestro.Server.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -47,16 +48,21 @@ public class ApiKeyAuthenticationHandler(
             return AuthenticateResult.Success(authenticationTicket);
         }
 
-        var integratorId = await _apiKeysRepository.GetApiKeyIntegratorIdAsync(apiKeyHash, Context.RequestAborted);
+        var repositoryResult = await _apiKeysRepository.GetApiKeyIntegratorIdAsync(apiKeyHash, Context.RequestAborted);
 
-        if (integratorId is null)
+        if (!repositoryResult.IsSuccessful)
         {
-            return AuthenticateResult.Fail("Unable to resolve ApiKey");
+            if (repositoryResult.IsApiKeyFound is false)
+            {
+                return AuthenticateResult.Fail("Unable to resolve ApiKey");
+            }
+
+            RepositoryThrowHelper.ThrowUnexpectedRepositoryResult();
         }
 
-        _logger.LogInformation("ApiKey resolved. IntegratorId: {integratorId}", integratorId);
-        _apiKeysIntegratorsCache.Set(apiKey, integratorId.Value);
-        authenticationTicket = await CreateAuthenticationTicketAsync(integratorId.Value);
+        _logger.LogInformation("ApiKey resolved. IntegratorId: {integratorId}", repositoryResult);
+        _apiKeysIntegratorsCache.Set(apiKey, repositoryResult.Data!.Value);
+        authenticationTicket = await CreateAuthenticationTicketAsync(repositoryResult.Data!.Value);
 
         return AuthenticateResult.Success(authenticationTicket);
     }
@@ -86,10 +92,16 @@ public class ApiKeyAuthenticationHandler(
         }
         else
         {
-            var integratorRoles = await _integratorsRolesRepository.GetIntegratorRolesAsync(integratorId, Context.RequestAborted);
-            _integratorsRolesCache.Set(integratorId, integratorRoles);
-            _logger.LogInformation("Roles resolved. Roles: {roles}", string.Join(", ", integratorRoles));
-            AddIntegratorRoles(claims, integratorRoles);
+            var repositoryResult = await _integratorsRolesRepository.GetIntegratorRolesAsync(integratorId, Context.RequestAborted);
+
+            if (!repositoryResult.IsSuccessful)
+            {
+                RepositoryThrowHelper.ThrowUnexpectedRepositoryResult();
+            }
+
+            _integratorsRolesCache.Set(integratorId, repositoryResult.Data!);
+            _logger.LogInformation("Roles resolved. Roles: {roles}", string.Join(", ", repositoryResult.Data!));
+            AddIntegratorRoles(claims, repositoryResult.Data!);
         }
     }
 }

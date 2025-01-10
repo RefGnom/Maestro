@@ -1,5 +1,6 @@
 using Maestro.Data;
 using Maestro.Data.Models;
+using Maestro.Server.Repositories.Results.IntegratorsRoles;
 using Microsoft.EntityFrameworkCore;
 
 namespace Maestro.Server.Repositories;
@@ -15,13 +16,13 @@ public class IntegratorsRolesRepository(DataContext dataContext) : IIntegratorsR
         await _dataContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<List<string>> GetIntegratorRolesAsync(long integratorId, CancellationToken cancellationToken)
+    public async Task<GetIntegratorRolesRepositoryResult> GetIntegratorRolesAsync(long integratorId, CancellationToken cancellationToken)
     {
         var integratorRoles = await _dataContext.IntegratorsRolesDbo
             .Where(integratorRoleDbo => integratorRoleDbo.IntegratorId == integratorId)
             .Select(integratorRoleDbo => integratorRoleDbo.Role)
             .ToListAsync(cancellationToken);
 
-        return integratorRoles;
+        return new GetIntegratorRolesRepositoryResult(true, integratorRoles);
     }
 }

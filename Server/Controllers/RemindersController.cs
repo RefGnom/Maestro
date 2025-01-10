@@ -1,8 +1,9 @@
 using AutoMapper;
 using Maestro.Data.Models;
-using Maestro.Server.Authentication;
-using Maestro.Server.Core.Models;
 using Maestro.Server.Extensions;
+using Maestro.Server.Helpers;
+using Maestro.Server.Private.Authentication;
+using Maestro.Server.Public.Models.Reminders;
 using Maestro.Server.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,32 +22,59 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
 
     #region Get
 
+    [HttpGet("all")]
+    public async Task<ActionResult> All([FromBody] AllRemindersDto allRemindersDto)
+    {
+        var repositoryResult =
+            await _remindersRepository.GetAllRemindersAsync(allRemindersDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
+
+        if (!repositoryResult.IsSuccessful)
+        {
+            RepositoryThrowHelper.ThrowUnexpectedRepositoryResult();
+        }
+
+        var reminderWithIdDtos = _mapper.Map<List<ReminderWithIdDto>>(repositoryResult.Data);
+
+        return new OkObjectResult(reminderWithIdDtos);
+    }
+
     [HttpGet("forUser")]
     public async Task<ActionResult> ForUser([FromBody] RemindersForUserDto remindersForUserDto)
     {
-        var remindersDbo =
+        var repositoryResult =
             await _remindersRepository.GetForUserAsync(remindersForUserDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
 
-        _logger.LogInformation("Fetched RemindersCount: {reminderCount}", remindersDbo.Count);
+        if (!repositoryResult.IsSuccessful)
+        {
+            RepositoryThrowHelper.ThrowUnexpectedRepositoryResult();
+        }
 
-        var remindersDto = _mapper.Map<List<ReminderWithIdDto>>(remindersDbo);
+        _logger.LogInformation("Fetched RemindersCount: {remindersCount}", repositoryResult.Data!.Count);
 
-        return new OkObjectResult(remindersDto);
+        var reminderWithIdsDtos = _mapper.Map<List<ReminderWithIdDto>>(repositoryResult.Data);
+
+        return new OkObjectResult(reminderWithIdsDtos);
     }
 
     [HttpGet("byId")]
     public async Task<ActionResult> ById([FromBody] ReminderIdDto reminderIdDto)
     {
-        var reminderDbo = await _remindersRepository.GetByIdAsync(reminderIdDto.Id, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
+        var repositoryResult =
+            await _remindersRepository.GetByIdAsync(reminderIdDto.ReminderId, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
 
-        if (reminderDbo is null)
+        if (!repositoryResult.IsSuccessful)
         {
-            return new NotFoundResult();
+            if (repositoryResult.IsReminderFound is false)
+            {
+                return new NotFoundResult();
+            }
+
+            RepositoryThrowHelper.ThrowUnexpectedRepositoryResult();
         }
 
-        var reminderDto = _mapper.Map<ReminderDto>(reminderDbo);
+        var reminderDto = _mapper.Map<ReminderDto>(repositoryResult.Data);
 
-        _logger.LogInformation("Fetched ReminderId: {reminderId}", reminderDbo.Id);
+        _logger.LogInformation("Fetched ReminderId: {reminderId}", repositoryResult.Data!.Id);
 
         return new OkObjectResult(reminderDto);
     }
@@ -61,21 +89,80 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
         var reminderDbo = _mapper.Map<ReminderDbo>(reminderDto);
         reminderDbo.IntegratorId = HttpContext.GetIntegratorId();
 
-        var createdReminderId = await _remindersRepository.AddAsync(reminderDbo, HttpContext.RequestAborted);
+        var repositoryResult = await _remindersRepository.AddAsync(reminderDbo, HttpContext.RequestAborted);
 
-        _logger.LogInformation("Created ReminderId: {reminderId}", createdReminderId);
+        if (!repositoryResult.IsSuccessful)
+        {
+            RepositoryThrowHelper.ThrowUnexpectedRepositoryResult();
+        }
 
-        return new ObjectResult(new ReminderIdDto { Id = createdReminderId })
+        _logger.LogInformation("Created ReminderId: {reminderId}", repositoryResult.Data);
+
+        return new ObjectResult(new ReminderIdDto { ReminderId = repositoryResult.Data })
         {
             StatusCode = StatusCodes.Status201Created
         };
     }
 
-    [HttpPost("markAsCompleted")]
-    public async Task<ActionResult> MarkAsCompleted([FromBody] RemindersIdDto remindersId)
+    #endregion
+
+    #region Patch
+
+    [HttpPatch("setCompleted")]
+    public async Task<ActionResult> SetCompleted([FromBody] ReminderIdDto reminderIdDto)
     {
-        await _remindersRepository.MarkAsCompleted(remindersId, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
-        return new OkResult();
+        var repositoryResult =
+            await _remindersRepository.SetRemindersCompleted(reminderIdDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
+
+        if (repositoryResult.IsSuccessful) return new OkResult();
+
+        if (repositoryResult.IsReminderFound is false)
+        {
+            return new NotFoundResult();
+        }
+
+        if (repositoryResult.IsCompletedAlreadySet is true)
+        {
+            return new ConflictResult();
+        }
+
+        throw RepositoryThrowHelper.GetUnexpectedRepositoryResultException();
+    }
+
+    [HttpPatch("decrementRemindCount")]
+    public async Task<ActionResult> DecrementRemindCount([FromBody] ReminderIdDto reminderIdDto)
+    {
+        var repositoryResult =
+            await _remindersRepository.DecrementRemindCountAsync(reminderIdDto.ReminderId, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
+
+        if (repositoryResult.IsSuccessful)
+            return new OkObjectResult(new RemainRemindCountDto { RemainRemindCount = repositoryResult.Data!.Value });
+
+        if (repositoryResult.IsReminderFound is false)
+        {
+            return new NotFoundResult();
+        }
+
+        throw RepositoryThrowHelper.GetUnexpectedRepositoryResultException();
+    }
+
+    [HttpPatch("reminderDateTime")]
+    public async Task<ActionResult> ReminderDateTime([FromBody] SetReminderDateTimeDto setReminderDateTimeDto)
+    {
+        var repositoryResult =
+            await _remindersRepository.SetReminderDateTimeAsync(setReminderDateTimeDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
+
+        if (repositoryResult.IsSuccessful)
+        {
+            return new OkResult();
+        }
+
+        if (repositoryResult.IsReminderFound is false)
+        {
+            return new NotFoundResult();
+        }
+
+        throw RepositoryThrowHelper.GetUnexpectedRepositoryResultException();
     }
 
     #endregion

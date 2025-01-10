@@ -1,18 +1,29 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using Maestro.Server.Private.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 
 namespace Maestro.Server.Authentication;
 
-public class AdminApiKeyAuthenticationHandler(
-    IOptionsMonitor<AuthenticationSchemeOptions> options,
-    ILoggerFactory loggerFactory,
-    UrlEncoder encoder,
-    IConfiguration configuration)
-    : AuthenticationHandler<AuthenticationSchemeOptions>(options, loggerFactory, encoder)
+public class AdminApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
-    private readonly string _adminApiKey = configuration.GetValue<string>("AdminApiKey")!;
+    private readonly string _adminApiKey;
+
+    public AdminApiKeyAuthenticationHandler(
+        IOptionsMonitor<AuthenticationSchemeOptions> options,
+        ILoggerFactory loggerFactory,
+        UrlEncoder encoder,
+        IConfiguration configuration) : base(options, loggerFactory, encoder)
+    {
+        var adminApiKey = configuration.GetValue<string>("AdminApiKey");
+        if (string.IsNullOrEmpty(adminApiKey))
+        {
+            throw new ArgumentException(nameof(adminApiKey));
+        }
+
+        _adminApiKey = adminApiKey;
+    }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
