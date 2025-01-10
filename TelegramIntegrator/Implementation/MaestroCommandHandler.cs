@@ -1,7 +1,7 @@
 ﻿using Maestro.Client.Integrator;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
-using Maestro.Server.Core.Models;
+using Maestro.Server.Public.Models.Reminders;
 using Maestro.TelegramIntegrator.Parsers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -49,7 +49,7 @@ public class MaestroCommandHandler(
                 {
                     UserId = 0,
                     Description = null,
-                    ReminderTime = default,
+                    RemindDateTime = default,
                     RemindInterval = default,
                     RemindCount = 0
                 }

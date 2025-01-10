@@ -1,4 +1,4 @@
-﻿using Maestro.Client;
+﻿using Maestro.Client.Integrator;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
 using Maestro.Operational.ProcessesCore;
@@ -30,10 +30,10 @@ public class SendEventsProcess(
         var exclusiveStartDate = _timestampProvider.Get(TimestampKey);
         var maxReminderTime = exclusiveStartDate;
 
-        var reminders = _maestroApiClient.GetRemindersForUserAsync(exclusiveStartDate);
+        var reminders = _maestroApiClient.GetAllRemindersAsync(exclusiveStartDate);
         await foreach (var reminder in reminders)
         {
-            if (reminder.RemindCount == 0 || reminder.ReminderTime - currentDate > RemindSendingEpsilon)
+            if (reminder.RemindCount == 0 || reminder.RemindDateTime - currentDate > RemindSendingEpsilon)
             {
                 continue;
             }
@@ -41,17 +41,17 @@ public class SendEventsProcess(
             await telegramBotWrapper.SendMessageAsync(reminder.UserId, $"Напоминание: {reminder.Description}");
             if (reminder.RemindCount == 1)
             {
-                await _maestroApiClient.MarkRemindersAsCompletedAsync(reminder.UserId);
+                await _maestroApiClient.SetReminderCompletedAsync(reminder.UserId);
             }
             else
             {
-                await _maestroApiClient.SetReminderTimeAsync(reminder.Id, reminder.ReminderTime + reminder.RemindInterval);
-                await _maestroApiClient.DecrementRemindCountAsync(reminder.Id);
+                await _maestroApiClient.SetReminderDateTimeAsync(reminder.ReminderId, reminder.RemindDateTime + reminder.RemindInterval);
+                await _maestroApiClient.DecrementRemindCountAsync(reminder.ReminderId);
             }
 
-            if (reminder.ReminderTime > maxReminderTime)
+            if (reminder.RemindDateTime > maxReminderTime)
             {
-                maxReminderTime = reminder.ReminderTime;
+                maxReminderTime = reminder.RemindDateTime;
             }
         }
 
