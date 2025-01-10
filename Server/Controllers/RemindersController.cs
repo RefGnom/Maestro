@@ -1,12 +1,10 @@
 using AutoMapper;
 using Maestro.Data.Models;
-using Maestro.Server.Authentication;
 using Maestro.Server.Extensions;
+using Maestro.Server.Helpers;
 using Maestro.Server.Private.Authentication;
-using Maestro.Server.Public.Models;
 using Maestro.Server.Public.Models.Reminders;
 using Maestro.Server.Repositories;
-using Maestro.Server.Repositories.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AuthenticationSchemes = Maestro.Server.Authentication.AuthenticationSchemes;
@@ -32,7 +30,7 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
 
         if (!repositoryResult.IsSuccessful)
         {
-            throw new InvalidOperationException(RepositoryResultsErrorMessages.UnexpectedRepositoryResult);
+            RepositoryThrowHelper.ThrowUnexpectedRepositoryResult();
         }
 
         var reminderWithIdDtos = _mapper.Map<List<ReminderWithIdDto>>(repositoryResult.Data);
@@ -48,7 +46,7 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
 
         if (!repositoryResult.IsSuccessful)
         {
-            throw new InvalidOperationException(RepositoryResultsErrorMessages.UnexpectedRepositoryResult);
+            RepositoryThrowHelper.ThrowUnexpectedRepositoryResult();
         }
 
         _logger.LogInformation("Fetched RemindersCount: {remindersCount}", repositoryResult.Data!.Count);
@@ -71,7 +69,7 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
                 return new NotFoundResult();
             }
 
-            throw new InvalidOperationException(RepositoryResultsErrorMessages.UnexpectedRepositoryResult);
+            RepositoryThrowHelper.ThrowUnexpectedRepositoryResult();
         }
 
         var reminderDto = _mapper.Map<ReminderDto>(repositoryResult.Data);
@@ -95,10 +93,10 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
 
         if (!repositoryResult.IsSuccessful)
         {
-            throw new InvalidOperationException(RepositoryResultsErrorMessages.UnexpectedRepositoryResult);
+            RepositoryThrowHelper.ThrowUnexpectedRepositoryResult();
         }
 
-        _logger.LogInformation("Created ReminderId: {reminderId}", repositoryResult);
+        _logger.LogInformation("Created ReminderId: {reminderId}", repositoryResult.Data);
 
         return new ObjectResult(new ReminderIdDto { ReminderId = repositoryResult.Data })
         {
@@ -128,7 +126,7 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
             return new ConflictResult();
         }
 
-        throw new InvalidOperationException(RepositoryResultsErrorMessages.UnexpectedRepositoryResult);
+        throw RepositoryThrowHelper.GetUnexpectedRepositoryResultException();
     }
 
     [HttpPatch("decrementRemindCount")]
@@ -145,11 +143,11 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
             return new NotFoundResult();
         }
 
-        throw new InvalidOperationException(RepositoryResultsErrorMessages.UnexpectedRepositoryResult);
+        throw RepositoryThrowHelper.GetUnexpectedRepositoryResultException();
     }
 
-    [HttpPatch("reminderTime")]
-    public async Task<ActionResult> ReminderTime([FromBody] SetReminderDateTimeDto setReminderDateTimeDto)
+    [HttpPatch("reminderDateTime")]
+    public async Task<ActionResult> ReminderDateTime([FromBody] SetReminderDateTimeDto setReminderDateTimeDto)
     {
         var repositoryResult =
             await _remindersRepository.SetReminderDateTimeAsync(setReminderDateTimeDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
@@ -164,7 +162,7 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
             return new NotFoundResult();
         }
 
-        throw new InvalidOperationException(RepositoryResultsErrorMessages.UnexpectedRepositoryResult);
+        throw RepositoryThrowHelper.GetUnexpectedRepositoryResultException();
     }
 
     #endregion

@@ -56,11 +56,11 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
             })
         };
 
-        _log.Info($"Sending request to {requestEndpoint}. Reminder Id: {reminderId}");
+        _log.Info($"Sending request {request.Method} {requestEndpoint}. Reminder Id: {reminderId}");
 
         var response = await _httpClient.SendAsync(request);
 
-        _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
+        _log.Info($"Received response {request.Method} {requestEndpoint}. StatusCode: {response.StatusCode}");
 
         if (response.StatusCode is HttpStatusCode.NotFound)
         {
@@ -91,7 +91,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
                 })
             };
 
-            _log.Info($"Sending request to {requestEndpoint}. Offset: {offset}. Limit: {AllRemindersDto.LimitMaxValue}");
+            _log.Info($"Sending request {request.Method} {requestEndpoint}. Offset: {offset}. Limit: {AllRemindersDto.LimitMaxValue}");
 
             var response = await _httpClient.SendAsync(request);
 
@@ -99,7 +99,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
 
             var reminders = await response.Content.ReadFromJsonAsync<List<ReminderWithIdDto>>();
 
-            _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}. ItemsCount: {reminders!.Count}");
+            _log.Info($"Received response {request.Method} {requestEndpoint}. StatusCode: {response.StatusCode}. ItemsCount: {reminders!.Count}");
 
             foreach (var reminder in reminders)
             {
@@ -133,7 +133,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
                 })
             };
 
-            _log.Info($"Sending request to {requestEndpoint}. Offset: {offset}. Limit: {RemindersForUserDto.LimitMaxValue}");
+            _log.Info($"Sending request {request.Method} {requestEndpoint}. Offset: {offset}. Limit: {RemindersForUserDto.LimitMaxValue}");
 
             var response = await _httpClient.SendAsync(request);
 
@@ -141,7 +141,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
 
             var reminders = await response.Content.ReadFromJsonAsync<List<ReminderWithIdDto>>();
 
-            _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}. ItemsCount: {reminders!.Count}");
+            _log.Info($"Received response {request.Method} {requestEndpoint}. StatusCode: {response.StatusCode}. ItemsCount: {reminders!.Count}");
 
             foreach (var reminder in reminders)
             {
@@ -170,13 +170,13 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
             Content = JsonContent.Create(reminder)
         };
 
-        _log.Info($"Sending request to {requestEndpoint}");
+        _log.Info($"Sending request {request.Method} {requestEndpoint}");
 
         var response = await _httpClient.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
 
-        _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
+        _log.Info($"Received response {request.Method} {requestEndpoint}. StatusCode: {response.StatusCode}");
 
         var createdReminderId = (await response.Content.ReadFromJsonAsync<ReminderIdDto>())!.ReminderId;
 
@@ -197,17 +197,17 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
         {
             Content = JsonContent.Create(new ReminderIdDto
             {
-                ReminderId = reminderId,
+                ReminderId = reminderId
             })
         };
 
-        _log.Info($"Sending request to {requestEndpoint}. ReminderId: {reminderId}");
+        _log.Info($"Sending request {request.Method} {requestEndpoint}. ReminderId: {reminderId}");
 
         var response = await _httpClient.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
 
-        _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
+        _log.Info($"Received response {request.Method} {requestEndpoint}. StatusCode: {response.StatusCode}");
     }
 
     public async Task<int> DecrementRemindCountAsync(long reminderId)
@@ -222,13 +222,13 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
             })
         };
 
-        _log.Info($"Sending request to {requestEndpoint}. ReminderId: {reminderId}");
+        _log.Info($"Sending request {request.Method} {requestEndpoint}. ReminderId: {reminderId}");
 
         var response = await _httpClient.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
 
-        _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
+        _log.Info($"Received response {request.Method} {requestEndpoint}. StatusCode: {response.StatusCode}");
 
         var remainRemindCountDto = await response.Content.ReadFromJsonAsync<RemainRemindCountDto>();
 
@@ -237,7 +237,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
 
     public async Task SetReminderDateTimeAsync(long reminderId, DateTime dateTime)
     {
-        const string requestEndpoint = "reminders/setReminderDateTime";
+        const string requestEndpoint = "reminders/reminderDateTime";
 
         var request = new HttpRequestMessage(HttpMethod.Patch, requestEndpoint)
         {
@@ -248,13 +248,13 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
             })
         };
 
-        _log.Info($"Sending request to {requestEndpoint}. ReminderId: {reminderId}");
+        _log.Info($"Sending request {request.Method} {requestEndpoint}. ReminderId: {reminderId}");
 
         var response = await _httpClient.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
 
-        _log.Info($"Received response from {requestEndpoint}. StatusCode: {response.StatusCode}");
+        _log.Info($"Received response {request.Method} {requestEndpoint}. StatusCode: {response.StatusCode}");
     }
 
     #endregion

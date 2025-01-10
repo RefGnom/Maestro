@@ -2,6 +2,5 @@ namespace Maestro.Data.Models;
 
 public enum ApiKeyState
 {
-    Active,
-    Inactive
+    Active = 0
 }

@@ -16,7 +16,7 @@ public class RoleValidationAttribute : ValidationAttribute
         {
             throw new InvalidOperationException($"Unable to resolve {nameof(IRolesValidator)} for {nameof(RoleValidationAttribute)}.");
         }
-        
+
         return rolesValidator.Validate(role) ? ValidationResult.Success : new ValidationResult("Role is not valid");
     }
 }

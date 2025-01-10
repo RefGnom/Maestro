@@ -1,10 +1,8 @@
 using FluentAssertions;
-using Maestro.Client;
 using Maestro.Client.Integrator;
 using Maestro.Core.IO;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
-using Maestro.Server.Public.Models;
 using Maestro.Server.Public.Models.Reminders;
 using Maestro.Tests.Extensions;
 
@@ -44,7 +42,7 @@ public class MaestroApiClientTests
             {
                 UserId = userId,
                 Description = "Test1",
-                ReminderTime = new DateTime(2024, 1, 1),
+                RemindDateTime = new DateTime(2024, 1, 1),
                 RemindInterval = TimeSpan.FromMinutes(1),
                 RemindCount = 3
             },
@@ -52,7 +50,7 @@ public class MaestroApiClientTests
             {
                 UserId = userId,
                 Description = "Test2",
-                ReminderTime = new DateTime(2024, 4, 3),
+                RemindDateTime = new DateTime(2024, 4, 3),
                 RemindInterval = TimeSpan.FromMinutes(2),
                 RemindCount = 3
             },
@@ -60,7 +58,7 @@ public class MaestroApiClientTests
             {
                 UserId = userId,
                 Description = "Test3",
-                ReminderTime = new DateTime(2024, 1, 2),
+                RemindDateTime = new DateTime(2024, 1, 2),
                 RemindInterval = TimeSpan.FromMinutes(3),
                 RemindCount = 3
             }
@@ -73,7 +71,7 @@ public class MaestroApiClientTests
 
         foreach (var reminder in reminders)
         {
-            reminder.ReminderTime.Should().BeAfter(exclusiveStartDateTime);
+            reminder.RemindDateTime.Should().BeAfter(exclusiveStartDateTime);
         }
     }
 
@@ -87,7 +85,7 @@ public class MaestroApiClientTests
             {
                 UserId = userId,
                 Description = "Test1",
-                ReminderTime = new DateTime(2024, 1, 1),
+                RemindDateTime = new DateTime(2024, 1, 1),
                 RemindInterval = TimeSpan.FromMinutes(1),
                 RemindCount = 3
             },
@@ -95,7 +93,7 @@ public class MaestroApiClientTests
             {
                 UserId = userId,
                 Description = "Test2",
-                ReminderTime = new DateTime(2024, 4, 3),
+                RemindDateTime = new DateTime(2024, 4, 3),
                 RemindInterval = TimeSpan.FromMinutes(2),
                 RemindCount = 3
             },
@@ -103,7 +101,7 @@ public class MaestroApiClientTests
             {
                 UserId = userId,
                 Description = "Test3",
-                ReminderTime = new DateTime(2024, 1, 2),
+                RemindDateTime = new DateTime(2024, 1, 2),
                 RemindInterval = TimeSpan.FromMinutes(3),
                 RemindCount = 3
             }
@@ -129,7 +127,7 @@ public class MaestroApiClientTests
         {
             UserId = userId,
             Description = "Test",
-            ReminderTime = new DateTime(2024, 1, 2),
+            RemindDateTime = new DateTime(2024, 1, 2),
             RemindInterval = TimeSpan.FromMinutes(1),
             RemindCount = 3
         };
@@ -151,7 +149,7 @@ public class MaestroApiClientTests
             {
                 UserId = userId,
                 Description = "Test1",
-                ReminderTime = new DateTime(2025, 1, 1),
+                RemindDateTime = new DateTime(2025, 1, 1),
                 RemindInterval = TimeSpan.FromMinutes(1),
                 RemindCount = 3
             },
@@ -159,7 +157,7 @@ public class MaestroApiClientTests
             {
                 UserId = userId,
                 Description = "Test2",
-                ReminderTime = new DateTime(2025, 1, 2),
+                RemindDateTime = new DateTime(2025, 1, 2),
                 RemindInterval = TimeSpan.FromMinutes(2),
                 RemindCount = 3
             },
@@ -167,7 +165,7 @@ public class MaestroApiClientTests
             {
                 UserId = userId,
                 Description = "Test3",
-                ReminderTime = new DateTime(2025, 1, 3),
+                RemindDateTime = new DateTime(2025, 1, 3),
                 RemindInterval = TimeSpan.FromMinutes(3),
                 RemindCount = 3
             }
@@ -185,7 +183,7 @@ public class MaestroApiClientTests
 
         foreach (var reminder in filteredRemindersForUser)
         {
-            reminder.ReminderTime.Should().BeAfter(exclusiveStartDateTime);
+            reminder.RemindDateTime.Should().BeAfter(exclusiveStartDateTime);
         }
     }
 
@@ -200,7 +198,7 @@ public class MaestroApiClientTests
             {
                 UserId = userId,
                 Description = "Test1",
-                ReminderTime = new DateTime(2025, 1, 1),
+                RemindDateTime = new DateTime(2025, 1, 1),
                 RemindInterval = TimeSpan.FromMinutes(1),
                 RemindCount = 3
             },
@@ -208,7 +206,7 @@ public class MaestroApiClientTests
             {
                 UserId = userId,
                 Description = "Test2",
-                ReminderTime = new DateTime(2025, 1, 2),
+                RemindDateTime = new DateTime(2025, 1, 2),
                 RemindInterval = TimeSpan.FromMinutes(2),
                 RemindCount = 3
             },
@@ -216,7 +214,7 @@ public class MaestroApiClientTests
             {
                 UserId = userId,
                 Description = "Test3",
-                ReminderTime = new DateTime(2025, 1, 3),
+                RemindDateTime = new DateTime(2025, 1, 3),
                 RemindInterval = TimeSpan.FromMinutes(3),
                 RemindCount = 3
             }
@@ -245,7 +243,7 @@ public class MaestroApiClientTests
         {
             UserId = userId,
             Description = "Test1",
-            ReminderTime = new DateTime(2025, 1, 1),
+            RemindDateTime = new DateTime(2025, 1, 1),
             RemindInterval = TimeSpan.FromMinutes(1),
             RemindCount = remindCount
         };
@@ -260,6 +258,29 @@ public class MaestroApiClientTests
             reminder!.RemindCount.Should().Be(expectedRemainRemindCount);
             remainRemindCount.Should().Be(expectedRemainRemindCount);
         }
+    }
+
+    [Test]
+    public async Task Reminders_should_set_new_remind_date_time()
+    {
+        const long userId = 7;
+
+        var reminderToCreate = new ReminderDto
+        {
+            UserId = userId,
+            Description = "Test1",
+            RemindDateTime = new DateTime(2024, 2, 1, 16, 55, 0),
+            RemindInterval = TimeSpan.FromMinutes(1),
+            RemindCount = 3
+        };
+
+        var createdReminderId = await _maestroApiClient.CreateReminderAsync(reminderToCreate);
+        var newRemindDateTime = new DateTime(2025, 1, 2, 17, 0, 0);
+
+        await _maestroApiClient.SetReminderDateTimeAsync(createdReminderId, newRemindDateTime);
+
+        var reminder = await _maestroApiClient.GetReminderAsync(createdReminderId);
+        reminder!.RemindDateTime.Should().Be(newRemindDateTime);
     }
 
     private async Task<List<long>> CreateRemindersAsync(List<ReminderDto> remindersCreateList)

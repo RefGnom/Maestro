@@ -1,7 +1,5 @@
-using Maestro.Core.Extensions;
 using Maestro.Data;
 using Maestro.Data.Models;
-using Maestro.Server.Public.Models;
 using Maestro.Server.Public.Models.Reminders;
 using Maestro.Server.Repositories.Results.Reminders;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +14,7 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
         CancellationToken cancellationToken)
     {
         var reminderDbos = await _dataContext.Reminders
-            .Where(reminderDbo => reminderDbo.IntegratorId == integratorId && reminderDbo.ReminderTime > allRemindersDto.ExclusiveStartDateTime)
+            .Where(reminderDbo => reminderDbo.IntegratorId == integratorId && reminderDbo.RemindDateTime > allRemindersDto.ExclusiveStartDateTime)
             .OrderBy(reminderDbo => reminderDbo.Id)
             .Skip(allRemindersDto.Offset)
             .Take(allRemindersDto.Limit)
@@ -25,7 +23,7 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
         return new AllRemindersRepositoryResult(true, reminderDbos);
     }
 
-    public async Task<RemindersForUserRepositoryResult> GetForUserAsync(RemindersForUserDto remindersForUserDto, long integratorId,
+    public async Task<GetRemindersForUserRepositoryResult> GetForUserAsync(RemindersForUserDto remindersForUserDto, long integratorId,
         CancellationToken cancellationToken)
     {
         var reminderDbosBaseQuery = _dataContext.Reminders
@@ -34,7 +32,7 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
         if (remindersForUserDto.ExclusiveStartDateTime is not null)
         {
             reminderDbosBaseQuery =
-                reminderDbosBaseQuery.Where(reminderDbo => reminderDbo.ReminderTime > remindersForUserDto.ExclusiveStartDateTime);
+                reminderDbosBaseQuery.Where(reminderDbo => reminderDbo.RemindDateTime > remindersForUserDto.ExclusiveStartDateTime);
         }
 
         var reminderDbos = await reminderDbosBaseQuery
@@ -43,18 +41,18 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
             .Take(remindersForUserDto.Limit)
             .ToListAsync(cancellationToken);
 
-        return new RemindersForUserRepositoryResult(true, reminderDbos);
+        return new GetRemindersForUserRepositoryResult(true, reminderDbos);
     }
 
-    public async Task<ReminderByIdRepositoryResult> GetByIdAsync(long reminderId, long integratorId, CancellationToken cancellationToken)
+    public async Task<GetReminderByIdRepositoryResult> GetByIdAsync(long reminderId, long integratorId, CancellationToken cancellationToken)
     {
         var reminderDbo = await _dataContext.Reminders
             .Where(reminderDbo => reminderDbo.Id == reminderId && reminderDbo.IntegratorId == integratorId && reminderDbo.IsCompleted == false)
             .SingleOrDefaultAsync(cancellationToken);
 
         return reminderDbo is null
-            ? new ReminderByIdRepositoryResult(false, null) { IsReminderFound = false }
-            : new ReminderByIdRepositoryResult(true, reminderDbo);
+            ? new GetReminderByIdRepositoryResult(false, null) { IsReminderFound = false }
+            : new GetReminderByIdRepositoryResult(true, reminderDbo);
     }
 
     public async Task<AddReminderRepositoryResult> AddAsync(ReminderDbo reminderDbo, CancellationToken cancellationToken)
@@ -120,8 +118,13 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
             .Where(reminderDbo => reminderDbo.Id == setReminderDateTimeDto.ReminderId && reminderDbo.IntegratorId == integratorId)
             .SingleOrDefaultAsync(cancellationToken);
 
-        return reminderDbo is null
-            ? new SetReminderDateTimeRepositoryResult(false) { IsReminderFound = false }
-            : new SetReminderDateTimeRepositoryResult(true);
+        if (reminderDbo is null)
+            return new SetReminderDateTimeRepositoryResult(false) { IsReminderFound = false };
+
+        reminderDbo.RemindDateTime = setReminderDateTimeDto.DateTime;
+
+        await _dataContext.SaveChangesAsync(cancellationToken);
+
+        return new SetReminderDateTimeRepositoryResult(true);
     }
 }

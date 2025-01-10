@@ -1,5 +1,4 @@
-﻿using Maestro.Server.Public.Models;
-using Maestro.Server.Public.Models.Reminders;
+﻿using Maestro.Server.Public.Models.Reminders;
 
 namespace Maestro.Client.Integrator;
 

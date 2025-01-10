@@ -10,6 +10,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Core\Core.csproj"/>
-        <ProjectReference Include="..\Server.Core.Public\Server.Core.Public.csproj" />
+        <ProjectReference Include="..\Server.Core.Public\Server.Core.Public.csproj"/>
     </ItemGroup>
 </Project>

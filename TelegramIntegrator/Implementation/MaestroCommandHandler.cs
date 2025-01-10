@@ -1,5 +1,4 @@
-﻿using Maestro.Client;
-using Maestro.Client.Integrator;
+﻿using Maestro.Client.Integrator;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
 using Maestro.TelegramIntegrator.Parsers;

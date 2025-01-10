@@ -1,4 +1,3 @@
-using Maestro.Server.Authentication;
 using Maestro.Server.Private.Authentication;
 using Maestro.Server.Private.Services;
 
