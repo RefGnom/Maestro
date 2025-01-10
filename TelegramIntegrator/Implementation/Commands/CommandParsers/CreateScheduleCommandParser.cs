@@ -1,9 +1,12 @@
-﻿using Maestro.TelegramIntegrator.Models;
+﻿using Maestro.TelegramIntegrator.Implementation.ParsHelpers;
+using Maestro.TelegramIntegrator.Models;
 
-namespace Maestro.TelegramIntegrator.Parsers.CommandParsers;
+namespace Maestro.TelegramIntegrator.Implementation.Commands.CommandParsers;
 
 public class CreateScheduleCommandParser : ICommandParser
 {
+    public string TelegramCommandName => TelegramCommandNames.CreateScheduleTelegramCommand;
+
     public bool CanParse(string command)
     {
         return command.StartsWith("/schedule");

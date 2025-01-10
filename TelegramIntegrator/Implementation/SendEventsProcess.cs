@@ -21,7 +21,7 @@ public class SendEventsProcess(
     private readonly ITimestampProvider _timestampProvider = timestampProviderFactory.Create();
 
     public override string ProcessName => "Чтение пользовательских событий";
-    public override bool IsActiveByDefault => true;
+    public override bool IsActiveByDefault => false;
     protected override TimeSpan Interval => RemindSendingEpsilon;
 
     protected async override Task UnsafeRunAsync()
