@@ -11,8 +11,5 @@ public class DaemonApplication(IProcessRunner processRunner) : IApplication
     {
     }
 
-    public async Task RunAsync()
-    {
-        await _processRunner.RunAsync();
-    }
+    public Task RunAsync() => _processRunner.RunAsync();
 }
