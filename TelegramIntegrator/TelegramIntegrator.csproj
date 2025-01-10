@@ -12,7 +12,6 @@
     <ItemGroup>
         <ProjectReference Include="..\Client.Integrator\Client.Integrator.csproj"/>
         <ProjectReference Include="..\Core\Core.csproj"/>
-        <ProjectReference Include="..\Data\Data.csproj"/>
         <ProjectReference Include="..\Operational\Operational.csproj" />
     </ItemGroup>
 
