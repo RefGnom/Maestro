@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Maestro.Server.Public.Models.Reminders;
 
-public class SetReminderDateTimeDto
+public class ReminderDateTimeDto
 {
     [Required] public long ReminderId { get; set; }
 

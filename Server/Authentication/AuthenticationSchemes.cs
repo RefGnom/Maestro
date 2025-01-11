@@ -4,4 +4,5 @@ public static class AuthenticationSchemes
 {
     public const string ApiKey = "ApiKey";
     public const string AdminApiKey = "AdminApiKey";
+    public const string DaemonApiKey = "DaemonApiKey";
 }

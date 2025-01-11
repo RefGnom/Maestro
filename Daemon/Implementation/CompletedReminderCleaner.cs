@@ -17,8 +17,8 @@ public class CompletedReminderCleaner(
     {
         await foreach (var reminderWithIdDto in daemonMaestroApiClient.GetCompletedRemindersAsync())
         {
-            await daemonMaestroApiClient.DeleteReminder(reminderWithIdDto.ReminderId);
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await daemonMaestroApiClient.DeleteReminderAsync(reminderWithIdDto.ReminderId);
+            await Task.Delay(250);
         }
     }
 }

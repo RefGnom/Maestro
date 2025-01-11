@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace Maestro.Server.Authentication;
 
-public class ApiKeyAuthenticationHandler(
+public class IntegratorApiKeyAuthenticationHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory loggerFactory,
     UrlEncoder encoder,
@@ -19,7 +19,7 @@ public class ApiKeyAuthenticationHandler(
     IApiKeyHasher apiKeyHasher)
     : AuthenticationHandler<AuthenticationSchemeOptions>(options, loggerFactory, encoder)
 {
-    private readonly ILogger _logger = loggerFactory.CreateLogger<ApiKeyAuthenticationHandler>();
+    private readonly ILogger _logger = loggerFactory.CreateLogger<IntegratorApiKeyAuthenticationHandler>();
     private readonly IApiKeysIntegratorsCache _apiKeysIntegratorsCache = apiKeysIntegratorsCache;
     private readonly IIntegratorsRolesCache _integratorsRolesCache = integratorsRolesCache;
     private readonly IIntegratorsRolesRepository _integratorsRolesRepository = integratorsRolesRepository;
