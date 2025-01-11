@@ -1,6 +1,5 @@
 using AutoMapper;
 using Maestro.Server.Authentication;
-using Maestro.Server.Extensions;
 using Maestro.Server.Helpers;
 using Maestro.Server.Private.Authentication;
 using Maestro.Server.Private.Models;
