@@ -11,7 +11,7 @@ using AuthenticationSchemes = Maestro.Server.Authentication.AuthenticationScheme
 
 namespace Maestro.Server.Controllers;
 
-[Authorize(Roles = IntegratorsRoles.Integrator, AuthenticationSchemes = AuthenticationSchemes.ApiKey)]
+[Authorize(Roles = IntegratorsRoles.Base, AuthenticationSchemes = AuthenticationSchemes.ApiKey)]
 [ApiController]
 [Route("api/v1/reminders")]
 public class RemindersController(IRemindersRepository remindersRepository, IMapper mapper, ILoggerFactory loggerFactory) : ControllerBase

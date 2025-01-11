@@ -2,5 +2,5 @@ namespace Maestro.Server.Private.Authentication;
 
 public static class IntegratorsRoles
 {
-    public const string Integrator = "Integrator";
+    public const string Base = "Base";
 }
