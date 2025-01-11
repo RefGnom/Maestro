@@ -7,4 +7,8 @@
         <RootNamespace>Maestro.Client.Daemon</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Server.Core.Public\Server.Core.Public.csproj" />
+    </ItemGroup>
+
 </Project>
