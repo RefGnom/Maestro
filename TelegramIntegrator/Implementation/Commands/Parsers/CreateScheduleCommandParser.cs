@@ -1,7 +1,7 @@
 ﻿using Maestro.TelegramIntegrator.Implementation.Commands.Models;
 using Maestro.TelegramIntegrator.Implementation.ParsHelpers;
-using Maestro.TelegramIntegrator.Implementation.View;
 using Maestro.TelegramIntegrator.Models;
+using Maestro.TelegramIntegrator.View;
 
 namespace Maestro.TelegramIntegrator.Implementation.Commands.Parsers;
 

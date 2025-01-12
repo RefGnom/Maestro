@@ -1,4 +1,4 @@
-﻿namespace Maestro.TelegramIntegrator.Implementation.View;
+﻿namespace Maestro.TelegramIntegrator.View;
 
 public static class TelegramCommandPatterns
 {

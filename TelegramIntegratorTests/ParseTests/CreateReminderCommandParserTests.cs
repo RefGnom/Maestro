@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Maestro.TelegramIntegrator.Implementation.Commands.Models;
 using Maestro.TelegramIntegrator.Implementation.Commands.Parsers;
-using Maestro.TelegramIntegrator.Implementation.View;
+using Maestro.TelegramIntegrator.View;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Maestro.TelegramIntegratorTests.ParseTests

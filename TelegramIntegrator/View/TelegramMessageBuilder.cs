@@ -1,6 +1,6 @@
 ﻿using Maestro.TelegramIntegrator.Implementation.Commands;
 
-namespace Maestro.TelegramIntegrator.Implementation.View;
+namespace Maestro.TelegramIntegrator.View;
 
 public static class TelegramMessageBuilder
 {
