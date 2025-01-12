@@ -1,10 +1,11 @@
-﻿using Maestro.TelegramIntegrator.Models;
+﻿using Maestro.TelegramIntegrator.Implementation.Commands.CommandsModels;
+using Maestro.TelegramIntegrator.Models;
 
 namespace Maestro.TelegramIntegrator.Implementation.Commands.CommandParsers;
 
 public interface ICommandParser
 {
-    string TelegramCommandName { get; }
+    string Name { get; }
     bool CanParse(string command);
-    ParseResult<ICommand> ParseCommand(string command);
+    ParseResult<ICommandModel> ParseCommand(string command);
 }

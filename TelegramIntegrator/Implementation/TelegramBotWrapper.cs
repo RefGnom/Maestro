@@ -12,7 +12,7 @@ public class TelegramBotWrapper(ITelegramBotClient telegramBotClient) : ITelegra
         await _telegramBotClient.SendMessage(userId, message);
     }
 
-    public async Task SendMainMenu(long chatId, string message, CancellationToken cancellationToken)
+    public async Task SendMainMenu(long chatId, string message)
     {
         var inlineKeyboardMarkup = new InlineKeyboardMarkup(
             [
@@ -32,6 +32,6 @@ public class TelegramBotWrapper(ITelegramBotClient telegramBotClient) : ITelegra
             ]
         );
 
-        await _telegramBotClient.SendMessage(chatId, message + " Выберите действие:", replyMarkup: inlineKeyboardMarkup, cancellationToken: cancellationToken);
+        await _telegramBotClient.SendMessage(chatId, message + " Выберите действие:", replyMarkup: inlineKeyboardMarkup);
     }
 }

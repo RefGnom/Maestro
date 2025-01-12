@@ -1,32 +1,27 @@
-﻿using Maestro.TelegramIntegrator.Implementation.ParsHelpers;
+﻿using Maestro.TelegramIntegrator.Implementation.Commands.CommandsModels;
+using Maestro.TelegramIntegrator.Implementation.ParsHelpers;
 using Maestro.TelegramIntegrator.Implementation.View;
 using Maestro.TelegramIntegrator.Models;
 
 namespace Maestro.TelegramIntegrator.Implementation.Commands.CommandParsers;
 
-public class CreateReminderCommandParser : ICommandParser
+public class CreateReminderCommandParser : CommandParserBase
 {
-    public string TelegramCommandName => TelegramCommandNames.CreateReminderTelegramCommand;
+    public override string Name => TelegramCommandNames.CreateReminder;
 
-    public bool CanParse(string command)
-    {
-        return command.StartsWith("/reminder");
-    }
-
-    public ParseResult<ICommand> ParseCommand(string command)
+    public override ParseResult<ICommandModel> ParseCommand(string command)
     {
         var parts = command.Split(",", StringSplitOptions.TrimEntries);
         if (parts.Length < 3)
         {
-            return ParseResult<ICommand>.CreateFailure(TelegramMessageBuilder.BuildByCommandPattern(TelegramCommandPatterns.CreateReminderCommandPattern));
+            return ParseResult.CreateFailure<ICommandModel>(TelegramMessageBuilder.BuildByCommandPattern(TelegramCommandPatterns.CreateReminderCommandPattern));
         }
 
-        var telegramCommand = parts[0];
         var dateTimeParseResult = ParserHelper.ParseDateTime(parts[1]);
 
         if (!dateTimeParseResult.IsSuccessful)
         {
-            return ParseResult<ICommand>.CreateFailure(dateTimeParseResult.ParseFailureMessage);
+            return ParseResult.CreateFailure<ICommandModel>(dateTimeParseResult.ParseFailureMessage);
         }
 
         var description = parts[2];
@@ -38,7 +33,7 @@ public class CreateReminderCommandParser : ICommandParser
             var parserIntResult = ParserHelper.ParseInt(parts[3]);
             if (!parserIntResult.IsSuccessful)
             {
-                return ParseResult<ICommand>.CreateFailure(parserIntResult.ParseFailureMessage);
+                return ParseResult.CreateFailure<ICommandModel>(parserIntResult.ParseFailureMessage);
             }
 
             remindCount = parserIntResult.Value;
@@ -49,12 +44,19 @@ public class CreateReminderCommandParser : ICommandParser
             var parserTimeSpanResult = ParserHelper.ParseTimeSpan(parts[4]);
             if (!parserTimeSpanResult.IsSuccessful)
             {
-                return ParseResult<ICommand>.CreateFailure(parserTimeSpanResult.ParseFailureMessage);
+                return ParseResult.CreateFailure<ICommandModel>(parserTimeSpanResult.ParseFailureMessage);
             }
 
             remindInterval = parserTimeSpanResult.Value;
         }
 
-        return ParseResult<ICommand>.CreateSuccess(new CreateReminderCommand(telegramCommand, description, dateTimeParseResult.Value!.Value, remindCount, remindInterval));
+        return ParseResult.CreateSuccess<ICommandModel>(
+            new CreateReminderCommandModel(
+                dateTimeParseResult.Value!.Value,
+                description,
+                remindCount,
+                remindInterval
+            )
+        );
     }
 }

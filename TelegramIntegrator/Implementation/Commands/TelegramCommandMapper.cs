@@ -1,7 +1,5 @@
 ﻿using Maestro.TelegramIntegrator.Implementation.Commands.CommandHandlers;
 using Maestro.TelegramIntegrator.Implementation.Commands.CommandParsers;
-using Maestro.TelegramIntegrator.Implementation.Commands.TelegramCommandDescriptions;
-using Maestro.TelegramIntegrator.Models;
 
 namespace Maestro.TelegramIntegrator.Implementation.Commands;
 
@@ -11,31 +9,24 @@ public class TelegramCommandMapper : ITelegramCommandMapper
 
     public TelegramCommandMapper(
         IEnumerable<ICommandParser> commandParsers,
-        IEnumerable<ICommandHandler> commandHandlers,
-        IEnumerable<ITelegramCommandDescription> telegramCommandDescriptions
+        IEnumerable<ICommandHandler> commandHandlers
     )
     {
         var parsers = commandParsers.ToArray();
         var handlers = commandHandlers.ToArray();
-        var commandDescriptions = telegramCommandDescriptions.ToArray();
 
-        _commandBundles = commandDescriptions.Select(
-            commandDescription =>
+        _commandBundles = parsers.Select(
+            commandParser =>
             {
-                var telegramCommandName = commandDescription.TelegramCommandName;
-                var commandParser = parsers.FirstOrDefault(x => x.TelegramCommandName == telegramCommandName);
-                if (commandParser is null)
-                {
-                    throw new InvalidTelegramCommandBundleException($"Неправильно определена связка для команды '{telegramCommandName}'. Не смогли найти парсера");
-                }
+                var telegramCommandName = commandParser.Name;
 
-                var commandHandler = handlers.FirstOrDefault(x => x.TelegramCommandName == telegramCommandName);
+                var commandHandler = handlers.FirstOrDefault(x => x.Name == telegramCommandName);
                 if (commandHandler is null)
                 {
                     throw new InvalidTelegramCommandBundleException($"Неправильно определена связка для команды '{telegramCommandName}'. Не смогли найти хэндлера");
                 }
 
-                return new CommandBundle(commandDescription, commandParser, commandHandler);
+                return new CommandBundle(commandParser, commandHandler);
             }
         ).ToArray();
     }
@@ -43,7 +34,7 @@ public class TelegramCommandMapper : ITelegramCommandMapper
     public CommandBundle? MapCommandBundle(string userMessage)
     {
         return _commandBundles.FirstOrDefault(
-            x => userMessage.StartsWith(x.TelegramCommandDescription.TelegramCommandName)
+            x => userMessage.StartsWith(x.CommandParser.Name)
         );
     }
 }

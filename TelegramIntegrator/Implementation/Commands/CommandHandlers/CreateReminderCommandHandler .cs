@@ -2,6 +2,7 @@
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
 using Maestro.Server.Public.Models.Reminders;
+using Maestro.TelegramIntegrator.Implementation.Commands.CommandsModels;
 using Maestro.TelegramIntegrator.Models;
 using Telegram.Bot;
 
@@ -13,7 +14,7 @@ public class CreateReminderCommandHandler(
     ITelegramBotWrapper telegramBotWrapper,
     IDateTimeProvider dateTimeProvider,
     ITelegramBotClient telegramBotClient
-) : ICommandHandler
+) : CommandHandlerBase<CreateReminderCommandModel>
 {
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
     private readonly ILog<CreateReminderCommandHandler> _log = log;
@@ -21,25 +22,21 @@ public class CreateReminderCommandHandler(
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
     private readonly ITelegramBotWrapper _telegramBotWrapper = telegramBotWrapper;
 
-    public string TelegramCommandName => TelegramCommandNames.CreateReminderTelegramCommand;
+    public override string Name => TelegramCommandNames.CreateReminder;
 
-    public bool CanExecute(ICommand command)
+    protected async override Task ExecuteAsync(
+        ChatContext context,
+        CreateReminderCommandModel reminderCommandModel
+    )
     {
-        return command is CreateReminderCommand;
-    }
-
-    public async Task ExecuteAsync(long chatId, ICommand command, CancellationToken cancellationToken)
-    {
-        var reminderCommand = (CreateReminderCommand)command;
-        if (reminderCommand.ReminderTime < _dateTimeProvider.GetCurrentDateTime())
+        if (reminderCommandModel.ReminderTime < _dateTimeProvider.GetCurrentDateTime())
         {
             var errorMessage = "Дата напоминания не может быть раньше текущей даты";
             _log.Warn(errorMessage);
 
             await _telegramBotClient.SendMessage(
-                chatId,
-                errorMessage,
-                cancellationToken: cancellationToken
+                context.ChatId,
+                errorMessage
             );
             return;
         }
@@ -47,21 +44,20 @@ public class CreateReminderCommandHandler(
         await _maestroApiClient.CreateReminderAsync(
             new ReminderDto
             {
-                UserId = chatId,
-                Description = reminderCommand.Description,
-                RemindDateTime = reminderCommand.ReminderTime,
-                RemindInterval = reminderCommand.RemindInterval,
-                RemindCount = reminderCommand.RemindCount
+                UserId = context.UserId,
+                Description = reminderCommandModel.ReminderDescription,
+                RemindDateTime = reminderCommandModel.ReminderTime,
+                RemindInterval = reminderCommandModel.RemindInterval,
+                RemindCount = reminderCommandModel.RemindCount
             }
         );
 
         _log.Info("Reminder created.");
 
         await _telegramBotWrapper.SendMainMenu(
-            chatId,
-            $"Напоминание \"{reminderCommand.Description}\" создано на время {reminderCommand.ReminderTime:dd.MM.yyyy HH:mm}, " +
-            $"повторная отправка напоминания (если есть): {reminderCommand.RemindCount} раз(а) через {reminderCommand.RemindInterval.TotalMinutes} мин.",
-            cancellationToken
+            context.ChatId,
+            $"Напоминание \"{reminderCommandModel.HelpDescription}\" создано на время {reminderCommandModel.ReminderTime:dd.MM.yyyy HH:mm}, " +
+            $"повторная отправка напоминания (если есть): {reminderCommandModel.RemindCount} раз(а) через {reminderCommandModel.RemindInterval.TotalMinutes} мин."
         );
     }
 }

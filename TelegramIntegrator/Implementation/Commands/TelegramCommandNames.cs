@@ -2,8 +2,10 @@
 
 public static class TelegramCommandNames
 {
-    public const string CreateReminderTelegramCommand = "/reminder";
-    public const string CreateScheduleTelegramCommand = "/schedule";
+    public const string CreateReminder = "/reminder";
+    public const string CreateSchedule = "/schedule";
+    public const string CreateReminderHelp = "/reminder_h";
+    public const string CreateScheduleHelp = "/schedule_h";
 
     public static string[] GetCommandNames()
     {

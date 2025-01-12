@@ -1,44 +1,38 @@
-﻿using Maestro.TelegramIntegrator.Implementation.ParsHelpers;
+﻿using Maestro.TelegramIntegrator.Implementation.Commands.CommandsModels;
+using Maestro.TelegramIntegrator.Implementation.ParsHelpers;
 using Maestro.TelegramIntegrator.Models;
 
 namespace Maestro.TelegramIntegrator.Implementation.Commands.CommandParsers;
 
-public class CreateScheduleCommandParser : ICommandParser
+public class CreateScheduleCommandParser : CommandParserBase
 {
-    public string TelegramCommandName => TelegramCommandNames.CreateScheduleTelegramCommand;
+    public override string Name => TelegramCommandNames.CreateSchedule;
 
-    public bool CanParse(string command)
-    {
-        return command.StartsWith("/schedule");
-    }
-
-    public ParseResult<ICommand> ParseCommand(string command)
+    public override ParseResult<ICommandModel> ParseCommand(string command)
     {
         var parts = command.Split(",", StringSplitOptions.TrimEntries);
-        var telegramCommand = parts[0];
         var startDateTime = ParserHelper.ParseDateTime(parts[1]);
 
         if (!startDateTime.IsSuccessful)
         {
-            return ParseResult<ICommand>.CreateFailure(startDateTime.ParseFailureMessage);
+            return ParseResult.CreateFailure<ICommandModel>(startDateTime.ParseFailureMessage);
         }
 
         var endDateTime = ParserHelper.ParseDateTime(parts[2]);
 
         if (!endDateTime.IsSuccessful)
         {
-            return ParseResult<ICommand>.CreateFailure(endDateTime.ParseFailureMessage);
+            return ParseResult.CreateFailure<ICommandModel>(endDateTime.ParseFailureMessage);
         }
 
         var description = parts[3];
         var canOverlap = parts.Length == 5 && parts[4] == "overlap";
 
-        return ParseResult<ICommand>.CreateSuccess(
-            new CreateScheduleCommand(
-                telegramCommand,
-                description,
+        return ParseResult.CreateSuccess<ICommandModel>(
+            new CreateScheduleCommandModel(
                 startDateTime.Value!.Value,
                 endDateTime.Value!.Value,
+                description,
                 canOverlap
             )
         );

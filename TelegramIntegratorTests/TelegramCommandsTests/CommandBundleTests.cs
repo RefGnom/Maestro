@@ -43,10 +43,10 @@ public class CommandBundleTests : TestBase
             .Select(x => x.TelegramCommandName)
             .ToArray();
         var commandParsers = ServiceProvider.GetServices<ICommandParser>()
-            .Select(x => x.TelegramCommandName)
+            .Select(x => x.Name)
             .ToArray();
         var commandHandlers = ServiceProvider.GetServices<ICommandHandler>()
-            .Select(x => x.TelegramCommandName)
+            .Select(x => x.Name)
             .ToArray();
 
         telegramCommandDescriptions.Should().BeEquivalentTo(commandNames);
