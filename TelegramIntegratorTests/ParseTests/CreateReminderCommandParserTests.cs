@@ -1,19 +1,19 @@
 ﻿using FluentAssertions;
-using Maestro.TelegramIntegrator.Implementation.Commands.Parsers;
 using Maestro.TelegramIntegrator.Implementation.Commands.Models;
-using Maestro.TelegramIntegrator.Implementation.View;
-using NUnit.Framework.Internal;
+using Maestro.TelegramIntegrator.Implementation.Commands.Parsers;
+using Maestro.TelegramIntegrator.View;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Maestro.TelegramIntegratorTests.ParseTests
 {
-    public class CreateReminderCommandParserTests
+    public class CreateReminderCommandParserTests : TestBase
     {
         private CreateReminderCommandParser _parser;
 
         [SetUp]
         public void SetUp()
         {
-            _parser = new CreateReminderCommandParser();
+            _parser = ServiceProvider.GetRequiredService<CreateReminderCommandParser>();
         }
 
         [Test]

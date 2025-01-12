@@ -21,17 +21,20 @@ public class CommandBundleTests : TestBase
     public void TestThatAllBundlesSourcesEquivalents()
     {
         var exportedTypes = ServiceAssembly.GetExportedTypes();
-        var commandModels = exportedTypes
+        var telegramCommandModels = exportedTypes
             .Where(x => x.GetInterfaces().Contains(typeof(ICommandModel)))
+            .Where(x => !x.IsAbstract)
             .ToArray();
         var commandParsers = exportedTypes
             .Where(x => x.GetInterfaces().Contains(typeof(ICommandParser)))
+            .Where(x => !x.IsAbstract)
             .ToArray();
         var commandHandlers = exportedTypes
             .Where(x => x.GetInterfaces().Contains(typeof(ICommandHandler)))
+            .Where(x => !x.IsAbstract)
             .ToArray();
 
-        commandModels.Should().HaveCount(commandParsers.Length);
+        telegramCommandModels.Should().HaveCount(commandParsers.Length);
         commandParsers.Should().HaveCount(commandHandlers.Length);
     }
 
@@ -39,9 +42,6 @@ public class CommandBundleTests : TestBase
     public void TestThatForEveryTelegramCommandExistBundle()
     {
         var commandNames = TelegramCommandNames.GetCommandNames();
-        var commandModels = ServiceProvider.GetServices<ICommandModel>()
-            .Select(x => x.TelegramCommand)
-            .ToArray();
         var commandParsers = ServiceProvider.GetServices<ICommandParser>()
             .Select(x => x.CommandName)
             .ToArray();
@@ -49,7 +49,6 @@ public class CommandBundleTests : TestBase
             .Select(x => x.CommandName)
             .ToArray();
 
-        commandModels.Should().BeEquivalentTo(commandNames);
         commandParsers.Should().BeEquivalentTo(commandNames);
         commandHandlers.Should().BeEquivalentTo(commandNames);
     }
@@ -60,12 +59,13 @@ public class CommandBundleTests : TestBase
         var noise = Guid.NewGuid().ToString();
         var commandBundle = _telegramCommandMapper.MapCommandBundle(commandName + " " + noise);
         commandBundle.Should().NotBeNull();
+        commandBundle.CommandParser.CommandName.Should().Be(commandName);
     }
 
     [Test]
     public void TestTelegramCommandMapperShouldReturnNullIfCommandIncorrect()
     {
-        var command = $"/{Guid.NewGuid()}";
+        var command = $"/{Guid.NewGuid()} ";
         var noise = Guid.NewGuid().ToString();
         var commandBundle = _telegramCommandMapper.MapCommandBundle(command + noise);
         commandBundle.Should().BeNull();
