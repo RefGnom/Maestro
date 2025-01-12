@@ -1,7 +1,7 @@
-﻿using Maestro.TelegramIntegrator.Implementation.Commands.CommandsModels;
+﻿using Maestro.TelegramIntegrator.Implementation.Commands.Models;
 using Maestro.TelegramIntegrator.Models;
 
-namespace Maestro.TelegramIntegrator.Implementation.Commands.CommandHandlers;
+namespace Maestro.TelegramIntegrator.Implementation.Commands.Handlers;
 
 public abstract class CommandHandlerBase<TCommand> : ICommandHandler
     where TCommand : class, ICommandModel

@@ -1,7 +1,7 @@
-﻿using Maestro.TelegramIntegrator.Implementation.Commands.CommandsModels;
+﻿using Maestro.TelegramIntegrator.Implementation.Commands.Models;
 using Maestro.TelegramIntegrator.Models;
 
-namespace Maestro.TelegramIntegrator.Implementation.Commands.CommandParsers;
+namespace Maestro.TelegramIntegrator.Implementation.Commands.Parsers;
 
 public abstract class CommandParserBase : ICommandParser
 {
