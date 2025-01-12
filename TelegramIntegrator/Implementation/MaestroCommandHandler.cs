@@ -1,7 +1,7 @@
 ﻿using Maestro.Core.Logging;
 using Maestro.TelegramIntegrator.Implementation.Commands;
-using Maestro.TelegramIntegrator.Implementation.View;
 using Maestro.TelegramIntegrator.Models;
+using Maestro.TelegramIntegrator.View;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
