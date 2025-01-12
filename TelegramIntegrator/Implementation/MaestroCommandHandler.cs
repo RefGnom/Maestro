@@ -1,6 +1,7 @@
 ﻿using Maestro.Core.Logging;
 using Maestro.TelegramIntegrator.Implementation.Commands;
 using Maestro.TelegramIntegrator.Implementation.View;
+using Maestro.TelegramIntegrator.Models;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -41,9 +42,13 @@ public class MaestroCommandHandler(
                 return;
             }
 
+            var chatContext = new ChatContext(update.Message.Chat.Id, update.Message.From!.Id);
             var command = commandParseResult.Value;
-            await telegramCommandBundle.CommandHandler.ExecuteAsync(update.Message.Chat.Id, command, cancellationToken);
-            await _telegramBotWrapper.SendMainMenu(update.Message.Chat.Id, "Неизвестная команда.", cancellationToken);
+            await telegramCommandBundle.CommandHandler.ExecuteAsync(
+                chatContext,
+                command
+            );
+            await _telegramBotWrapper.SendMainMenu(chatContext.ChatId, "Неизвестная команда.");
             return;
         }
 

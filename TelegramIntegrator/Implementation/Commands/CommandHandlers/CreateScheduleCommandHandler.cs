@@ -2,6 +2,7 @@
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
 using Maestro.Server.Public.Models.Reminders;
+using Maestro.TelegramIntegrator.Implementation.Commands.CommandsModels;
 using Maestro.TelegramIntegrator.Models;
 using Telegram.Bot;
 
@@ -13,7 +14,7 @@ public class CreateScheduleCommandHandler(
     ITelegramBotWrapper telegramBotWrapper,
     IDateTimeProvider dateTimeProvider,
     ITelegramBotClient telegramBotClient
-) : ICommandHandler
+) : CommandHandlerBase<CreateScheduleCommandModel>
 {
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
     private readonly ILog<CreateScheduleCommandHandler> _log = log;
@@ -21,43 +22,34 @@ public class CreateScheduleCommandHandler(
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
     private readonly ITelegramBotWrapper _telegramBotWrapper = telegramBotWrapper;
 
-    public string TelegramCommandName => TelegramCommandNames.CreateScheduleTelegramCommand;
+    public override string Name => TelegramCommandNames.CreateSchedule;
 
-    public bool CanExecute(ICommand command)
-    {
-        return command is CreateScheduleCommand;
-    }
-
-    public async Task ExecuteAsync(
-        long chatId,
-        ICommand command,
-        CancellationToken cancellationToken
+    protected async override Task ExecuteAsync(
+        ChatContext context,
+        CreateScheduleCommandModel scheduleCommandModel
     )
     {
-        var scheduleCommand = (CreateScheduleCommand)command;
         var currentDateTime = _dateTimeProvider.GetCurrentDateTime();
-        if (scheduleCommand.StartDateTime < currentDateTime || scheduleCommand.EndDateTime < currentDateTime)
+        if (scheduleCommandModel.StartDateTime < currentDateTime || scheduleCommandModel.EndDateTime < currentDateTime)
         {
             var errorMessage = "Даты начала и конца расписания не могут быть раньше текущей даты";
             _log.Warn(errorMessage);
 
             await _telegramBotClient.SendMessage(
-                chatId,
-                errorMessage,
-                cancellationToken: cancellationToken
+                context.ChatId,
+                errorMessage
             );
             return;
         }
 
-        if (scheduleCommand.StartDateTime > scheduleCommand.EndDateTime)
+        if (scheduleCommandModel.StartDateTime > scheduleCommandModel.EndDateTime)
         {
             var errorMessage = "Дата конца раписание не может быть раньше даты начала расписания.";
             _log.Warn(errorMessage);
 
             await _telegramBotClient.SendMessage(
-                chatId,
-                errorMessage,
-                cancellationToken: cancellationToken
+                context.ChatId,
+                errorMessage
             );
             return;
         }
@@ -65,21 +57,20 @@ public class CreateScheduleCommandHandler(
         await _maestroApiClient.CreateScheduleAsync(
             new ScheduleDto
             {
-                UserId = chatId,
-                Description = scheduleCommand.Description,
-                StartDateTime = scheduleCommand.StartDateTime,
-                EndDateTime = scheduleCommand.EndDateTime,
-                CanOverlap = scheduleCommand.CanOverlap
+                UserId = context.UserId,
+                Description = scheduleCommandModel.ScheduleDescription,
+                StartDateTime = scheduleCommandModel.StartDateTime,
+                EndDateTime = scheduleCommandModel.EndDateTime,
+                CanOverlap = scheduleCommandModel.CanOverlap
             }
         );
 
         _log.Info("Schedule created");
 
         await _telegramBotWrapper.SendMainMenu(
-            chatId,
-            $"Расписание \"{scheduleCommand.Description}\" создано на время с {scheduleCommand.StartDateTime:dd.MM.yyyy HH:mm} " +
-            $"по {scheduleCommand.EndDateTime:dd.MM.yyyy HH:mm}.",
-            cancellationToken
+            context.ChatId,
+            $"Расписание \"{scheduleCommandModel.HelpDescription}\" создано на время с {scheduleCommandModel.StartDateTime:dd.MM.yyyy HH:mm} " +
+            $"по {scheduleCommandModel.EndDateTime:dd.MM.yyyy HH:mm}."
         );
     }
 }

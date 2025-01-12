@@ -1,10 +1,11 @@
-﻿using Maestro.TelegramIntegrator.Models;
+﻿using Maestro.TelegramIntegrator.Implementation.Commands.CommandsModels;
+using Maestro.TelegramIntegrator.Models;
 
 namespace Maestro.TelegramIntegrator.Implementation.Commands.CommandHandlers;
 
 public interface ICommandHandler
 {
-    string TelegramCommandName { get; }
-    bool CanExecute(ICommand command);
-    Task ExecuteAsync(long chatId, ICommand command, CancellationToken cancellationToken);
+    string Name { get; }
+    bool CanExecute(ICommandModel commandModel);
+    Task ExecuteAsync(ChatContext context, ICommandModel commandModel);
 }
