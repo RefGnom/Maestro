@@ -11,4 +11,8 @@ public interface IMaestroApiClient
     public Task SetReminderCompletedAsync(long reminderIds);
     public Task<int> DecrementRemindCountAsync(long reminderId);
     public Task SetReminderDateTimeAsync(long reminderId, DateTime dateTime);
+    public Task<long> CreateScheduleAsync(ScheduleDto reminder);
+    public IAsyncEnumerable<ScheduleWithIdDto> GetAllSchedulesAsync(DateTime exclusiveStartDateTime);
+    public IAsyncEnumerable<ScheduleWithIdDto> GetSchedulesForUserAsync(long userId, DateTime? exclusiveStartDateTime);
+    public Task SetScheduleCompletedAsync(long scheduleIds);
 }
