@@ -6,6 +6,8 @@ namespace Maestro.Data;
 
 public class DataContext(DbContextOptions<DataContext> options) : DbContext(options)
 {
+    public DbSet<IntegratorDbo> Integrators { get; set; }
+
     public DbSet<ReminderDbo> Reminders { get; set; }
 
     public DbSet<IntegratorApiKeyDbo> IntegratorsApiKeys { get; set; }
@@ -21,23 +23,6 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
 
         modelBuilder.Entity<IntegratorRoleDbo>().Property(dbo => dbo.Role).HasMaxLength(16);
         modelBuilder.Entity<IntegratorRoleDbo>().HasAlternateKey(dbo => new { dbo.IntegratorId, dbo.Role });
-
-        modelBuilder.Entity<IntegratorApiKeyDbo>().HasData(
-            new IntegratorApiKeyDbo
-            {
-                Id = 1,
-                IntegratorId = 1,
-                ApiKey = "<no-key>",
-                State = ApiKeyState.Inactive
-            });
-
-        modelBuilder.Entity<IntegratorRoleDbo>().HasData(
-            new IntegratorRoleDbo
-            {
-                Id = 1,
-                IntegratorId = 1,
-                Role = "<no-role>"
-            });
 
         base.OnModelCreating(modelBuilder);
     }

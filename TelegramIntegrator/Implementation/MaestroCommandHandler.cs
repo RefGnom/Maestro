@@ -1,6 +1,6 @@
 ﻿using Maestro.Core.Logging;
-using Maestro.TelegramIntegrator.Implementation.CommandHandlers;
-using Maestro.TelegramIntegrator.Parsers.CommandParsers;
+using Maestro.TelegramIntegrator.Implementation.Commands;
+using Maestro.TelegramIntegrator.Implementation.View;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -11,53 +11,43 @@ public class MaestroCommandHandler(
     ILog<MaestroCommandHandler> log,
     ITelegramBotClient telegramBotClient,
     ITelegramBotWrapper telegramBotWrapper,
-    IEnumerable<ICommandParser> commandParsers,
-    IEnumerable<ICommandHandler> commandHandlers
+    ITelegramCommandMapper telegramCommandMapper
 )
     : IMaestroCommandHandler
 {
     private readonly ILog<MaestroCommandHandler> _log = log;
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
     private readonly ITelegramBotWrapper _telegramBotWrapper = telegramBotWrapper;
-    private readonly ICommandParser[] _commandParsers = commandParsers.ToArray();
-    private readonly ICommandHandler[] _commandHandlers = commandHandlers.ToArray();
+    private readonly ITelegramCommandMapper _telegramCommandMapper = telegramCommandMapper;
 
     public async Task UpdateHandler(ITelegramBotClient bot, Update update, CancellationToken cancellationToken)
     {
-        if (update.Type == UpdateType.Message && update.Message is not null)
+        if (update is { Type: UpdateType.Message, Message: not null } && update.Message.Text!.StartsWith('/'))
         {
-            foreach (var parser in _commandParsers)
+            var messageText = update.Message.Text!;
+            var telegramCommandBundle = _telegramCommandMapper.MapCommandBundle(messageText);
+            if (telegramCommandBundle is null)
             {
-                if (parser.CanParse(update.Message.Text!))
-                {
-                    var commandParseResult = parser.ParseCommand(update.Message.Text!);
-
-                    if (!commandParseResult.IsSuccessful)
-                    {
-                        _log.Warn("Failed to parse message");
-                        await bot.SendMessage(update.Message.Chat.Id, commandParseResult.ParseFailureMessage, cancellationToken: cancellationToken);
-                        return;
-                    }
-
-                    var command = commandParseResult.Value;
-
-                    foreach (var handler in _commandHandlers)
-                    {
-                        if (handler.CanExecute(command))
-                        {
-                            await handler.ExecuteAsync(update.Message.Chat.Id, command, cancellationToken);
-                            return;
-                        }
-                    }
-
-                    throw new Exception($"Не нашли подходящего CommandHandler для команды {command}");
-                }
+                _log.Warn($"Не нашли связку команды телеграмма для сообщения {messageText}");
+                await bot.SendMessage(update.Message.Chat.Id, TelegramMessageBuilder.BuildUnknownCommand(), cancellationToken: cancellationToken);
+                return;
             }
 
+            var commandParseResult = telegramCommandBundle.CommandParser.ParseCommand(messageText);
+            if (!commandParseResult.IsSuccessful)
+            {
+                _log.Warn("Failed to parse message");
+                await bot.SendMessage(update.Message.Chat.Id, commandParseResult.ParseFailureMessage, cancellationToken: cancellationToken);
+                return;
+            }
+
+            var command = commandParseResult.Value;
+            await telegramCommandBundle.CommandHandler.ExecuteAsync(update.Message.Chat.Id, command, cancellationToken);
             await _telegramBotWrapper.SendMainMenu(update.Message.Chat.Id, "Неизвестная команда.", cancellationToken);
+            return;
         }
 
-        else if (update.Type == UpdateType.CallbackQuery && update.CallbackQuery is not null)
+        if (update is { Type: UpdateType.CallbackQuery, CallbackQuery: not null })
         {
             var callbackQuery = update.CallbackQuery;
             var callbackQueryHandler = new CallbackQueryHandler(_telegramBotClient);

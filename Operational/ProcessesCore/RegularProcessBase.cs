@@ -29,7 +29,7 @@ public abstract class RegularProcessBase<TProcess>(ILog<TProcess> log) : IRegula
     }
     protected abstract TimeSpan Interval { get; }
     protected virtual TimeSpan CancellationTimeout => TimeSpan.FromMinutes(5);
-    protected abstract Task TryRunAsync();
+    protected abstract Task UnsafeRunAsync();
 
     protected virtual Task HandleErrorAsync(Exception exception)
     {
@@ -61,7 +61,7 @@ public abstract class RegularProcessBase<TProcess>(ILog<TProcess> log) : IRegula
 
         try
         {
-            await TryRunAsync().WaitAsync(cancellationTokenSource.Token).ConfigureAwait(false);
+            await UnsafeRunAsync().WaitAsync(cancellationTokenSource.Token).ConfigureAwait(false);
         }
         catch (Exception exception)
         {

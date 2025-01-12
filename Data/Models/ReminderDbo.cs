@@ -14,7 +14,7 @@ public class ReminderDbo
 
     public string Description { get; set; }
 
-    public DateTime ReminderTime { get; set; }
+    public DateTime RemindDateTime { get; set; }
 
     public TimeSpan RemindInterval { get; set; }
 

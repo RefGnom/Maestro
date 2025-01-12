@@ -1,12 +1,19 @@
 using Maestro.Data.Models;
-using Maestro.Server.Core.Models;
+using Maestro.Server.Public.Models.Reminders;
+using Maestro.Server.Repositories.Results.Reminders;
 
 namespace Maestro.Server.Repositories;
 
 public interface IRemindersRepository
 {
-    Task<List<ReminderDbo>> GetForUserAsync(RemindersForUserDto remindersForUserDto, long integratorId, CancellationToken cancellationToken);
-    Task<ReminderDbo?> GetByIdAsync(long reminderId, long integratorId, CancellationToken cancellationToken);
-    Task<long> AddAsync(ReminderDbo reminderDbo, CancellationToken cancellationToken);
-    Task MarkAsCompleted(RemindersIdDto remindersId, long integratorId, CancellationToken cancellationToken);
+    Task<AllRemindersRepositoryResult> GetAllRemindersAsync(AllRemindersDto allRemindersDto, long integratorId, CancellationToken cancellationToken);
+    Task<GetRemindersForUserRepositoryResult> GetForUserAsync(RemindersForUserDto remindersForUserDto, long integratorId,
+        CancellationToken cancellationToken);
+    Task<GetReminderByIdRepositoryResult> GetByIdAsync(long reminderId, long integratorId, CancellationToken cancellationToken);
+    Task<AddReminderRepositoryResult> AddAsync(ReminderDbo reminderDbo, CancellationToken cancellationToken);
+    Task<SetRemindersCompletedRepositoryResult> SetRemindersCompleted(ReminderIdDto reminderIdDto, long integratorId,
+        CancellationToken cancellationToken);
+    Task<DecrementRemindCountRepositoryResult> DecrementRemindCountAsync(long reminderId, long integratorId, CancellationToken cancellationToken);
+    Task<SetReminderDateTimeRepositoryResult> SetReminderDateTimeAsync(SetReminderDateTimeDto setReminderDateTimeDto, long integratorId,
+        CancellationToken cancellationToken);
 }

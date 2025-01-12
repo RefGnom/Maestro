@@ -1,5 +1,6 @@
 using Maestro.Core.Providers;
 using Maestro.Server.Authentication;
+using Maestro.Server.Private.Services;
 using Maestro.Server.Services;
 
 namespace Maestro.Server.Configurators;

@@ -8,6 +8,7 @@ public static class RepositoriesConfigurator
     {
         services.AddScoped<IRemindersRepository, RemindersRepository>();
         services.AddScoped<IApiKeysRepository, ApiKeysRepository>();
+        services.AddScoped<IIntegratorsRepository, IntegratorsRepository>();
         services.AddScoped<IIntegratorsRolesRepository, IntegratorsRolesRepository>();
     }
 }
