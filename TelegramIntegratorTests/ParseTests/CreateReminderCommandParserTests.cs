@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
-using Maestro.TelegramIntegrator.Implementation.Commands.CommandParsers;
+using Maestro.TelegramIntegrator.Implementation.Commands.Parsers;
+using Maestro.TelegramIntegrator.Implementation.Commands.Models;
 using Maestro.TelegramIntegrator.Implementation.View;
-using Maestro.TelegramIntegrator.Models;
 using NUnit.Framework.Internal;
 
 namespace Maestro.TelegramIntegratorTests.ParseTests
@@ -25,12 +25,12 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
 
             parseResult.IsSuccessful.Should().BeTrue();
 
-            var values = (CreateReminderCommand)parseResult.Value;
+            var value = (CreateReminderCommandModel)parseResult.Value;
 
-            values.ReminderTime.Should().Be(new DateTime(2025, 5, 19, 10, 0, 0));
-            values.Description.Should().Be("test reminder");
-            values.RemindCount.Should().Be(3);
-            values.RemindInterval.Should().Be(TimeSpan.FromMinutes(3));
+            value.ReminderTime.Should().Be(new DateTime(2025, 5, 19, 10, 0, 0));
+            value.ReminderDescription.Should().Be("test reminder");
+            value.RemindCount.Should().Be(3);
+            value.RemindInterval.Should().Be(TimeSpan.FromMinutes(3));
         }
 
         [Test]
@@ -45,12 +45,12 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
 
             parseResult.IsSuccessful.Should().BeTrue();
 
-            var values = (CreateReminderCommand)parseResult.Value;
+            var value = (CreateReminderCommandModel)parseResult.Value;
 
-            values.ReminderTime.Should().Be(new DateTime(2025, 5, 19, 10, 0, 0));
-            values.Description.Should().Be("test reminder");
-            values.RemindCount.Should().Be(defaultRemindCount);
-            values.RemindInterval.Should().Be(defaultRemindInterval);
+            value.ReminderTime.Should().Be(new DateTime(2025, 5, 19, 10, 0, 0));
+            value.ReminderDescription.Should().Be("test reminder");
+            value.RemindCount.Should().Be(defaultRemindCount);
+            value.RemindInterval.Should().Be(defaultRemindInterval);
         }
 
         [Test]
