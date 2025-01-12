@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Maestro.Server.Repositories;
 
-public class ApiKeysRepository(DataContext dataContext) : IApiKeysRepository
+public class IntegratorApiKeysRepository(DataContext dataContext) : IIntegratorsApiKeysRepository
 {
     private readonly DataContext _dataContext = dataContext;
 

@@ -8,7 +8,7 @@ public class RequestLoggingMiddleware(RequestDelegate next, ILoggerFactory logge
     private readonly ILogger _logger = loggerFactory.CreateLogger(nameof(RequestLoggingMiddleware));
     private readonly RequestDelegate _next = next;
 
-    public async Task InvokeAsync(HttpContext httpContext, IApiKeysRepository apiKeysRepository)
+    public async Task InvokeAsync(HttpContext httpContext, IIntegratorsApiKeysRepository integratorsApiKeysRepository)
     {
         var remoteIpAddress = httpContext.GetRemoteIpAddress();
 

@@ -11,7 +11,9 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
 {
     private readonly DataContext _dataContext = dataContext;
 
-    public async Task<AllRemindersRepositoryResult> GetAllRemindersAsync(AllRemindersDto allRemindersDto, long integratorId,
+    #region Get
+
+    public async Task<GetAllRemindersRepositoryResult> GetAllRemindersAsync(AllRemindersDto allRemindersDto, long integratorId,
         CancellationToken cancellationToken)
     {
         var reminderDbos = await _dataContext.Reminders
@@ -21,7 +23,7 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
             .Take(allRemindersDto.Limit)
             .ToListAsync(cancellationToken);
 
-        return new AllRemindersRepositoryResult(true, reminderDbos);
+        return new GetAllRemindersRepositoryResult(true, reminderDbos);
     }
 
     public async Task<GetRemindersForUserRepositoryResult> GetForUserAsync(RemindersForUserDto remindersForUserDto, long integratorId,
@@ -82,12 +84,20 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
         return new GetOldRemindersRepositoryResult(true, reminderDbos);
     }
 
-    public async Task<AddReminderRepositoryResult> AddAsync(ReminderDbo reminderDbo, CancellationToken cancellationToken)
+    #endregion
+
+    #region Post
+
+    public async Task<AddReminderRepositoryResult> AddAsync(ReminderDbo newReminderDbo, CancellationToken cancellationToken)
     {
-        var createdReminderDbo = (await _dataContext.Reminders.AddAsync(reminderDbo, cancellationToken)).Entity;
+        var createdReminderDbo = (await _dataContext.Reminders.AddAsync(newReminderDbo, cancellationToken)).Entity;
         await _dataContext.SaveChangesAsync(cancellationToken);
         return new AddReminderRepositoryResult(true, createdReminderDbo.Id);
     }
+
+    #endregion
+
+    #region Patch
 
     public async Task<SetReminderCompletedRepositoryResult> SetReminderCompleted(ReminderIdDto reminderIdDto, long integratorId,
         CancellationToken cancellationToken)
@@ -114,6 +124,7 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
 
         reminderDbo.IsCompleted = true;
         await _dataContext.SaveChangesAsync(cancellationToken);
+
         return new SetReminderCompletedRepositoryResult(true);
     }
 
@@ -129,6 +140,14 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
             return new DecrementRemindCountRepositoryResult(false, null)
             {
                 IsReminderFound = false
+            };
+        }
+
+        if (reminderDbo.RemindCount is 0)
+        {
+            return new DecrementRemindCountRepositoryResult(false, null)
+            {
+                IsRemindCountEqualZero = true
             };
         }
 
@@ -155,6 +174,10 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
         return new SetReminderDateTimeRepositoryResult(true);
     }
 
+    #endregion
+
+    #region Delete
+
     public async Task<DeleteReminderByIdRepositoryResult> DeleteReminderByIdAsync(ReminderIdDto reminderIdDto, CancellationToken cancellationToken)
     {
         await _dataContext.Reminders
@@ -165,4 +188,6 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
 
         return new DeleteReminderByIdRepositoryResult(true);
     }
+
+    #endregion
 }

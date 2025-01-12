@@ -1,11 +1,11 @@
 using Maestro.Data;
 using Maestro.Data.Models;
-using Maestro.Server.Repositories.Results.IntegratorsRoles;
+using Maestro.Server.Repositories.Results.IntegratorRoles;
 using Microsoft.EntityFrameworkCore;
 
 namespace Maestro.Server.Repositories;
 
-public class IntegratorsRolesRepository(DataContext dataContext) : IIntegratorsRolesRepository
+public class IntegratorRolesRepository(DataContext dataContext) : IIntegratorRolesRepository
 {
     private readonly DataContext _dataContext = dataContext;
 

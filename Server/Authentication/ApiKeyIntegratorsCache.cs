@@ -3,7 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Maestro.Server.Authentication;
 
-public class ApiKeysIntegratorsCache(IDateTimeProvider dateTimeProvider) : IApiKeysIntegratorsCache
+public class ApiKeyIntegratorsCache(IDateTimeProvider dateTimeProvider) : IApiKeyIntegratorsCache
 {
     private readonly MemoryCache _memoryCache = new(new MemoryCacheOptions());
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;

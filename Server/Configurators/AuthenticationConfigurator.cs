@@ -9,7 +9,7 @@ public static class AuthenticationConfigurator
     {
         services
             .AddAuthentication()
-            .AddScheme<AuthenticationSchemeOptions, IntegratorApiKeyAuthenticationHandler>(AuthenticationSchemes.ApiKey, null)
+            .AddScheme<AuthenticationSchemeOptions, IntegratorApiKeyAuthenticationHandler>(AuthenticationSchemes.IntegratorApiKey, null)
             .AddScheme<AuthenticationSchemeOptions, DaemonApiKeyAuthenticationHandler>(AuthenticationSchemes.DaemonApiKey, null)
             .AddScheme<AuthenticationSchemeOptions, AdminApiKeyAuthenticationHandler>(AuthenticationSchemes.AdminApiKey, null);
     }

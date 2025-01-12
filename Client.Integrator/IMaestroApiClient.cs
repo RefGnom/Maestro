@@ -1,4 +1,5 @@
 ﻿using Maestro.Server.Public.Models.Reminders;
+using Maestro.Server.Public.Models.Schedules;
 
 namespace Maestro.Client.Integrator;
 
@@ -11,8 +12,9 @@ public interface IMaestroApiClient
     public Task SetReminderCompletedAsync(long reminderIds);
     public Task<int> DecrementRemindCountAsync(long reminderId);
     public Task SetReminderDateTimeAsync(long reminderId, DateTime dateTime);
-    public Task<long> CreateScheduleAsync(ScheduleDto reminder);
+    public Task<long?> CreateScheduleAsync(ScheduleDto reminder);
+    public Task<ScheduleDto?> GetScheduleByIdAsync(long scheduleId);
     public IAsyncEnumerable<ScheduleWithIdDto> GetAllSchedulesAsync(DateTime exclusiveStartDateTime);
     public IAsyncEnumerable<ScheduleWithIdDto> GetSchedulesForUserAsync(long userId, DateTime? exclusiveStartDateTime);
-    public Task SetScheduleCompletedAsync(long scheduleIds);
+    public Task SetScheduleCompletedAsync(long scheduleId);
 }
