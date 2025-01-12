@@ -18,9 +18,9 @@ public class TelegramCommandMapper : ITelegramCommandMapper
         _commandBundles = parsers.Select(
             commandParser =>
             {
-                var telegramCommandName = commandParser.Name;
+                var telegramCommandName = commandParser.CommandName;
 
-                var commandHandler = handlers.FirstOrDefault(x => x.Name == telegramCommandName);
+                var commandHandler = handlers.FirstOrDefault(x => x.CommandName == telegramCommandName);
                 if (commandHandler is null)
                 {
                     throw new InvalidTelegramCommandBundleException($"Неправильно определена связка для команды '{telegramCommandName}'. Не смогли найти хэндлера");
@@ -33,8 +33,7 @@ public class TelegramCommandMapper : ITelegramCommandMapper
 
     public CommandBundle? MapCommandBundle(string userMessage)
     {
-        return _commandBundles.FirstOrDefault(
-            x => userMessage.StartsWith(x.CommandParser.Name)
-        );
+        var command = userMessage.Split(' ', ',', ';').First();
+        return _commandBundles.FirstOrDefault(x => x.CommandParser.CommandName == command);
     }
 }

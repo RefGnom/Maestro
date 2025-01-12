@@ -1,6 +1,7 @@
 ﻿namespace Maestro.TelegramIntegrator.Models;
 
-public record ChatContext(
-    long ChatId,
-    long UserId
-);
+public class ChatContext
+{
+    public long ChatId { get; set; }
+    public long UserId { get; set; }
+}

@@ -9,7 +9,7 @@ public class CreateReminderHelpCommandHandler(ITelegramBotClient telegramBotClie
 {
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
 
-    public override string Name => TelegramCommandNames.CreateReminderHelp;
+    public override string CommandName => TelegramCommandNames.CreateReminderHelp;
 
     protected override Task ExecuteAsync(ChatContext context, CreateReminderHelpCommandModel helpCommand)
     {
