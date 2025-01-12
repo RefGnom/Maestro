@@ -1,19 +1,19 @@
 ﻿using FluentAssertions;
-using Maestro.TelegramIntegrator.Implementation.Commands.Parsers;
 using Maestro.TelegramIntegrator.Implementation.Commands.Models;
+using Maestro.TelegramIntegrator.Implementation.Commands.Parsers;
 using Maestro.TelegramIntegrator.Implementation.View;
-using NUnit.Framework.Internal;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Maestro.TelegramIntegratorTests.ParseTests
 {
-    public class CreateReminderCommandParserTests
+    public class CreateReminderCommandParserTests : TestBase
     {
         private CreateReminderCommandParser _parser;
 
         [SetUp]
         public void SetUp()
         {
-            _parser = new CreateReminderCommandParser();
+            _parser = ServiceProvider.GetRequiredService<CreateReminderCommandParser>();
         }
 
         [Test]
@@ -25,12 +25,12 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
 
             parseResult.IsSuccessful.Should().BeTrue();
 
-            var value = (CreateReminderCommandModel)parseResult.Value;
+            var values = (CreateReminderCommandModel)parseResult.Value;
 
-            value.ReminderTime.Should().Be(new DateTime(2025, 5, 19, 10, 0, 0));
-            value.ReminderDescription.Should().Be("test reminder");
-            value.RemindCount.Should().Be(3);
-            value.RemindInterval.Should().Be(TimeSpan.FromMinutes(3));
+            values.ReminderTime.Should().Be(new DateTime(2025, 5, 19, 10, 0, 0));
+            values.ReminderDescription.Should().Be("test reminder");
+            values.RemindCount.Should().Be(3);
+            values.RemindInterval.Should().Be(TimeSpan.FromMinutes(3));
         }
 
         [Test]
@@ -45,12 +45,12 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
 
             parseResult.IsSuccessful.Should().BeTrue();
 
-            var value = (CreateReminderCommandModel)parseResult.Value;
+            var values = (CreateReminderCommandModel)parseResult.Value;
 
-            value.ReminderTime.Should().Be(new DateTime(2025, 5, 19, 10, 0, 0));
-            value.ReminderDescription.Should().Be("test reminder");
-            value.RemindCount.Should().Be(defaultRemindCount);
-            value.RemindInterval.Should().Be(defaultRemindInterval);
+            values.ReminderTime.Should().Be(new DateTime(2025, 5, 19, 10, 0, 0));
+            values.ReminderDescription.Should().Be("test reminder");
+            values.RemindCount.Should().Be(defaultRemindCount);
+            values.RemindInterval.Should().Be(defaultRemindInterval);
         }
 
         [Test]
