@@ -49,8 +49,7 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
         CancellationToken cancellationToken)
     {
         var reminderDbo = await _dataContext.Reminders
-            .Where(reminderDbo => reminderDbo.Id == reminderIdDto.ReminderId && reminderDbo.IntegratorId == integratorId &&
-                                  reminderDbo.IsCompleted == false)
+            .Where(reminderDbo => reminderDbo.Id == reminderIdDto.ReminderId && reminderDbo.IntegratorId == integratorId)
             .SingleOrDefaultAsync(cancellationToken);
 
         return reminderDbo is null
