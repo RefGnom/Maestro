@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using Maestro.Core.Logging;
 using Maestro.Server.Public.Models.Reminders;
+using Maestro.Server.Public.Models.Schedules;
 
 namespace Maestro.Client.Integrator;
 
@@ -155,6 +156,11 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
 
             offset += RemindersForUserDto.LimitMaxValue;
         } while (true);
+    }
+
+    public IAsyncEnumerable<SchedulesForUserDto> GetSchedulesForUserAsync(long userId, DateTime? exclusiveStartDateTime)
+    {
+        throw new NotImplementedException();
     }
 
     #endregion

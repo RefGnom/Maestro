@@ -1,7 +1,7 @@
 ﻿using Maestro.Client.Integrator;
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
-using Maestro.Server.Public.Models.Reminders;
+using Maestro.Server.Public.Models.Schedules;
 using Maestro.TelegramIntegrator.Implementation.Commands.Models;
 using Maestro.TelegramIntegrator.Models;
 using Telegram.Bot;

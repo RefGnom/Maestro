@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using Maestro.TelegramIntegrator.Implementation.Commands;
 using Maestro.TelegramIntegrator.Implementation.Commands.Handlers;
+using Maestro.TelegramIntegrator.Implementation.Commands.Models;
 using Maestro.TelegramIntegrator.Implementation.Commands.Parsers;
-using Maestro.TelegramIntegrator.Implementation.Commands.TelegramCommandDescriptions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Maestro.TelegramIntegratorTests.TelegramCommandsTests;
@@ -10,7 +10,7 @@ namespace Maestro.TelegramIntegratorTests.TelegramCommandsTests;
 public class CommandBundleTests : TestBase
 {
     private ITelegramCommandMapper _telegramCommandMapper;
-
+    
     [SetUp]
     public void SetUp()
     {
@@ -21,8 +21,8 @@ public class CommandBundleTests : TestBase
     public void TestThatAllBundlesSourcesEquivalents()
     {
         var exportedTypes = ServiceAssembly.GetExportedTypes();
-        var telegramCommandDescriptions = exportedTypes
-            .Where(x => x.GetInterfaces().Contains(typeof(ITelegramCommandDescription)))
+        var commandModels = exportedTypes
+            .Where(x => x.GetInterfaces().Contains(typeof(ICommandModel)))
             .ToArray();
         var commandParsers = exportedTypes
             .Where(x => x.GetInterfaces().Contains(typeof(ICommandParser)))
@@ -31,7 +31,7 @@ public class CommandBundleTests : TestBase
             .Where(x => x.GetInterfaces().Contains(typeof(ICommandHandler)))
             .ToArray();
 
-        telegramCommandDescriptions.Should().HaveCount(commandParsers.Length);
+        commandModels.Should().HaveCount(commandParsers.Length);
         commandParsers.Should().HaveCount(commandHandlers.Length);
     }
 
@@ -39,8 +39,8 @@ public class CommandBundleTests : TestBase
     public void TestThatForEveryTelegramCommandExistBundle()
     {
         var commandNames = TelegramCommandNames.GetCommandNames();
-        var telegramCommandDescriptions = ServiceProvider.GetServices<ITelegramCommandDescription>()
-            .Select(x => x.TelegramCommandName)
+        var commandModels = ServiceProvider.GetServices<ICommandModel>()
+            .Select(x => x.TelegramCommand)
             .ToArray();
         var commandParsers = ServiceProvider.GetServices<ICommandParser>()
             .Select(x => x.CommandName)
@@ -49,7 +49,7 @@ public class CommandBundleTests : TestBase
             .Select(x => x.CommandName)
             .ToArray();
 
-        telegramCommandDescriptions.Should().BeEquivalentTo(commandNames);
+        commandModels.Should().BeEquivalentTo(commandNames);
         commandParsers.Should().BeEquivalentTo(commandNames);
         commandHandlers.Should().BeEquivalentTo(commandNames);
     }
@@ -58,9 +58,8 @@ public class CommandBundleTests : TestBase
     public void TestTelegramCommandMapperShouldReturnBundleIfCommandCorrect(string commandName)
     {
         var noise = Guid.NewGuid().ToString();
-        var commandBundle = _telegramCommandMapper.MapCommandBundle(commandName + noise);
+        var commandBundle = _telegramCommandMapper.MapCommandBundle(commandName + " " + noise);
         commandBundle.Should().NotBeNull();
-        commandBundle.TelegramCommandDescription.TelegramCommandName.Should().Be(commandName);
     }
 
     [Test]

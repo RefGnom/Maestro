@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Maestro.Data.Core;
 
-namespace Maestro.Server.Public.Models.Reminders;
+namespace Maestro.Server.Public.Models.Schedules;
 
 public class ScheduleDto
 {
