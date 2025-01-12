@@ -1,5 +1,5 @@
-﻿using Maestro.TelegramIntegrator.Implementation.Commands.CommandHandlers;
-using Maestro.TelegramIntegrator.Implementation.Commands.CommandParsers;
+﻿using Maestro.TelegramIntegrator.Implementation.Commands.Handlers;
+using Maestro.TelegramIntegrator.Implementation.Commands.Parsers;
 
 namespace Maestro.TelegramIntegrator.Implementation.Commands;
 

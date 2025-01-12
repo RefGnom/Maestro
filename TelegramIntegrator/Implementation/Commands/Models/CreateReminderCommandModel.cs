@@ -1,8 +1,18 @@
-﻿namespace Maestro.TelegramIntegrator.Implementation.Commands.CommandsModels;
+﻿namespace Maestro.TelegramIntegrator.Implementation.Commands.Models;
 
-public class CreateReminderHelpCommandModel : ICommandModel
+public class CreateReminderCommandModel(
+    DateTime reminderTime,
+    string description,
+    int remindCount,
+    TimeSpan remindInterval
+) : ICommandModel
 {
-    public string TelegramCommand => TelegramCommandNames.CreateReminderHelp;
+    public DateTime ReminderTime { get; } = reminderTime;
+    public string ReminderDescription { get; } = description;
+    public int RemindCount { get; } = remindCount;
+    public TimeSpan RemindInterval { get; } = remindInterval;
+    public string TelegramCommand => TelegramCommandNames.CreateReminder;
+
     public string HelpDescription => "Введите детали для создания напоминания через запятую:\nОбязательные детали:\n" +
                                      "- команда /reminder,\n- дата и время через пробел в формате \"день.месяц.год часы:минуты\",\n- текст напоминания,\n" +
                                      "Необязательные параметры:\n" +

@@ -2,11 +2,11 @@
 using Maestro.Core.Logging;
 using Maestro.Core.Providers;
 using Maestro.Server.Public.Models.Reminders;
-using Maestro.TelegramIntegrator.Implementation.Commands.CommandsModels;
+using Maestro.TelegramIntegrator.Implementation.Commands.Models;
 using Maestro.TelegramIntegrator.Models;
 using Telegram.Bot;
 
-namespace Maestro.TelegramIntegrator.Implementation.Commands.CommandHandlers;
+namespace Maestro.TelegramIntegrator.Implementation.Commands.Handlers;
 
 public class CreateScheduleCommandHandler(
     ILog<CreateScheduleCommandHandler> log,

@@ -1,4 +1,4 @@
-﻿namespace Maestro.TelegramIntegrator.Implementation.Commands.CommandsModels;
+﻿namespace Maestro.TelegramIntegrator.Implementation.Commands.Models;
 
 public interface ICommandModel
 {
