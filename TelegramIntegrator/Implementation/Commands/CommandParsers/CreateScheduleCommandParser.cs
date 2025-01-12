@@ -1,4 +1,5 @@
 ﻿using Maestro.TelegramIntegrator.Implementation.ParsHelpers;
+using Maestro.TelegramIntegrator.Implementation.View;
 using Maestro.TelegramIntegrator.Models;
 
 namespace Maestro.TelegramIntegrator.Implementation.Commands.CommandParsers;
@@ -9,12 +10,17 @@ public class CreateScheduleCommandParser : ICommandParser
 
     public bool CanParse(string command)
     {
-        return command.StartsWith("/schedule");
+        return command.StartsWith(TelegramCommandName);
     }
 
     public ParseResult<ICommand> ParseCommand(string command)
     {
         var parts = command.Split(",", StringSplitOptions.TrimEntries);
+        if (parts.Length < 4)
+        {
+            return ParseResult<ICommand>.CreateFailure(TelegramMessageBuilder.BuildByCommandPattern(TelegramCommandPatterns.CreateScheduleCommandPattern));
+        }
+
         var telegramCommand = parts[0];
         var startDateTime = ParserHelper.ParseDateTime(parts[1]);
 

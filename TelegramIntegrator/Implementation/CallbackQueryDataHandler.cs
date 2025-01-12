@@ -50,8 +50,7 @@ public class CallbackQueryHandler(ITelegramBotClient telegramBotClient)
         //                cancellationToken: cancellationToken);
         //    }}
     };
-        }
-
+        
     public async Task HandleCallbackData(string callbackData, long chatId, CancellationToken cancellationToken)
     {
         if (CallbackDataHandlers.TryGetValue(callbackData, out var handler))

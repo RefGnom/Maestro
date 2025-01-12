@@ -10,7 +10,7 @@ public class CreateReminderCommandParser : ICommandParser
 
     public bool CanParse(string command)
     {
-        return command.StartsWith("/reminder");
+        return command.StartsWith(TelegramCommandName);
     }
 
     public ParseResult<ICommand> ParseCommand(string command)

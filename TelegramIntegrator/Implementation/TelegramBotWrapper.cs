@@ -35,4 +35,3 @@ public class TelegramBotWrapper(ITelegramBotClient telegramBotClient) : ITelegra
         await _telegramBotClient.SendMessage(chatId, message + " Выберите действие:", replyMarkup: inlineKeyboardMarkup, cancellationToken: cancellationToken);
     }
 }
-}

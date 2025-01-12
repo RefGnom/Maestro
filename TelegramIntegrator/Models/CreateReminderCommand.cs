@@ -13,6 +13,4 @@ public class CreateReminderCommand(
     public DateTime ReminderTime { get; } = reminderTime;
     public int RemindCount { get; } = remindCount;
     public TimeSpan RemindInterval { get; } = remindInterval;
-    public string Command { get; } = command;
-    public string Description { get; } = description;
 }
