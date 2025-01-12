@@ -1,3 +1,4 @@
+using Maestro.Server.Extensions;
 using Maestro.Server.Repositories;
 
 namespace Maestro.Server.Middlewares;
@@ -9,13 +10,12 @@ public class RequestLoggingMiddleware(RequestDelegate next, ILoggerFactory logge
 
     public async Task InvokeAsync(HttpContext httpContext, IApiKeysRepository apiKeysRepository)
     {
-        var remoteIp = httpContext.Request.Headers["X-Remote-Ip"].SingleOrDefault() ??
-                       httpContext.Connection.RemoteIpAddress?.ToString() ?? "<Unknown>";
+        var remoteIpAddress = httpContext.GetRemoteIpAddress();
 
-        _logger.LogInformation("Handled request. Remote Ip: {remoteIp}", remoteIp);
+        _logger.LogInformation("Handled request. Remote Ip: {remoteIp}", remoteIpAddress);
 
         await _next.Invoke(httpContext);
 
-        _logger.LogInformation("Response written. StatusCode: {statusCode}", httpContext.Response.StatusCode);
+        _logger.LogInformation("Request processed. StatusCode: {statusCode}", httpContext.Response.StatusCode);
     }
 }

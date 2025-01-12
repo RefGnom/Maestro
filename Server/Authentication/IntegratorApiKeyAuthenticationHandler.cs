@@ -67,15 +67,10 @@ public class IntegratorApiKeyAuthenticationHandler(
         return AuthenticateResult.Success(authenticationTicket);
     }
 
-    private static void AddIntegratorRoles(List<Claim> claims, IEnumerable<string> roles)
-    {
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
-    }
-
     private async Task<AuthenticationTicket> CreateAuthenticationTicketAsync(long integratorId)
     {
         var claims = new List<Claim> { new(ClaimTypes.NameIdentifier, integratorId.ToString()) };
-        await AddIntegratorRolesAsync(claims, integratorId);
+        await AddIntegratorRoleAsync(claims, integratorId);
 
         var claimsIdentity = new ClaimsIdentity(claims, Scheme.Name);
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -83,16 +78,16 @@ public class IntegratorApiKeyAuthenticationHandler(
         return authenticationTicket;
     }
 
-    private async Task AddIntegratorRolesAsync(List<Claim> claims, long integratorId)
+    private async Task AddIntegratorRoleAsync(List<Claim> claims, long integratorId)
     {
-        if (_integratorsRolesCache.TryGetRoles(integratorId, out var cachedRoles))
+        if (_integratorsRolesCache.TryGetRole(integratorId, out var cachedRole))
         {
-            _logger.LogInformation("Roles resolved. Cached Roles: {roles}", string.Join(", ", cachedRoles!));
-            AddIntegratorRoles(claims, cachedRoles!);
+            _logger.LogInformation("Role resolved. Cached Role: {role}", cachedRole);
+            claims.Add(new Claim(ClaimTypes.Role, cachedRole!));
         }
         else
         {
-            var repositoryResult = await _integratorsRolesRepository.GetIntegratorRolesAsync(integratorId, Context.RequestAborted);
+            var repositoryResult = await _integratorsRolesRepository.GetIntegratorRoleAsync(integratorId, Context.RequestAborted);
 
             if (!repositoryResult.IsSuccessful)
             {
@@ -100,8 +95,8 @@ public class IntegratorApiKeyAuthenticationHandler(
             }
 
             _integratorsRolesCache.Set(integratorId, repositoryResult.Data!);
-            _logger.LogInformation("Roles resolved. Roles: {roles}", string.Join(", ", repositoryResult.Data!));
-            AddIntegratorRoles(claims, repositoryResult.Data!);
+            _logger.LogInformation("Role resolved. Role: {role}", repositoryResult.Data!);
+            claims.Add(new Claim(ClaimTypes.Role, repositoryResult.Data!));
         }
     }
 }

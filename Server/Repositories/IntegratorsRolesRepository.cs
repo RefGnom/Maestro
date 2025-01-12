@@ -11,18 +11,19 @@ public class IntegratorsRolesRepository(DataContext dataContext) : IIntegratorsR
 
     public async Task AddIntegratorRoleAsync(long integratorId, string role, CancellationToken cancellationToken)
     {
-        await _dataContext.IntegratorsRolesDbo.AddAsync(new IntegratorRoleDbo { IntegratorId = integratorId, Role = role },
-            cancellationToken);
+        await _dataContext.IntegratorsRolesDbo.AddAsync(new IntegratorRoleDbo { IntegratorId = integratorId, Role = role }, cancellationToken);
         await _dataContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<GetIntegratorRolesRepositoryResult> GetIntegratorRolesAsync(long integratorId, CancellationToken cancellationToken)
+    public async Task<GetIntegratorRolesRepositoryResult> GetIntegratorRoleAsync(long integratorId, CancellationToken cancellationToken)
     {
-        var integratorRoles = await _dataContext.IntegratorsRolesDbo
+        var integratorRole = await _dataContext.IntegratorsRolesDbo
             .Where(integratorRoleDbo => integratorRoleDbo.IntegratorId == integratorId)
             .Select(integratorRoleDbo => integratorRoleDbo.Role)
-            .ToListAsync(cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken);
 
-        return new GetIntegratorRolesRepositoryResult(true, integratorRoles);
+        return integratorRole is null
+            ? new GetIntegratorRolesRepositoryResult(false, null) { IsIntegratorRoleFound = false }
+            : new GetIntegratorRolesRepositoryResult(true, integratorRole);
     }
 }
