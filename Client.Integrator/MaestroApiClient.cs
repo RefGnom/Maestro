@@ -86,7 +86,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
                 Content = JsonContent.Create(new AllRemindersDto
                 {
                     Offset = offset,
-                    Limit = RemindersForUserDto.LimitMaxValue,
+                    Limit = AllRemindersDto.LimitMaxValue,
                     ExclusiveStartDateTime = exclusiveStartDateTime
                 })
             };
@@ -241,7 +241,7 @@ public class MaestroApiClient : IMaestroApiClient, IDisposable
 
         var request = new HttpRequestMessage(HttpMethod.Patch, requestEndpoint)
         {
-            Content = JsonContent.Create(new SetReminderDateTimeDto
+            Content = JsonContent.Create(new ReminderDateTimeDto
             {
                 ReminderId = reminderId,
                 DateTime = dateTime

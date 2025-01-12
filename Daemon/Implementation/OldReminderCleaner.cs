@@ -23,10 +23,10 @@ public class OldReminderCleaner(
         var currentDateTime = _dateTimeProvider.GetCurrentDateTime();
         var endDateTime = currentDateTime - TimeSpan.FromDays(14);
 
-        await foreach (var reminderWithIdDto in _daemonMaestroApiClient.GetRemindersAsync(endDateTime))
+        await foreach (var reminderWithIdDto in _daemonMaestroApiClient.GetOldRemindersAsync(endDateTime))
         {
-            await _daemonMaestroApiClient.DeleteReminder(reminderWithIdDto.ReminderId);
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await _daemonMaestroApiClient.DeleteReminderAsync(reminderWithIdDto.ReminderId);
+            await Task.Delay(250);
         }
     }
 }

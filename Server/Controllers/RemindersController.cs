@@ -11,7 +11,7 @@ using AuthenticationSchemes = Maestro.Server.Authentication.AuthenticationScheme
 
 namespace Maestro.Server.Controllers;
 
-[Authorize(Roles = Roles.Integrator, AuthenticationSchemes = AuthenticationSchemes.ApiKey)]
+[Authorize(Roles = IntegratorsRoles.Base, AuthenticationSchemes = AuthenticationSchemes.ApiKey)]
 [ApiController]
 [Route("api/v1/reminders")]
 public class RemindersController(IRemindersRepository remindersRepository, IMapper mapper, ILoggerFactory loggerFactory) : ControllerBase
@@ -33,6 +33,8 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
             RepositoryThrowHelper.ThrowUnexpectedRepositoryResult();
         }
 
+        _logger.LogInformation("Fetched RemindersCount: {remindersCount}", repositoryResult.Data!.Count);
+
         var reminderWithIdDtos = _mapper.Map<List<ReminderWithIdDto>>(repositoryResult.Data);
 
         return new OkObjectResult(reminderWithIdDtos);
@@ -51,16 +53,16 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
 
         _logger.LogInformation("Fetched RemindersCount: {remindersCount}", repositoryResult.Data!.Count);
 
-        var reminderWithIdsDtos = _mapper.Map<List<ReminderWithIdDto>>(repositoryResult.Data);
+        var reminderWithIdDtos = _mapper.Map<List<ReminderWithIdDto>>(repositoryResult.Data);
 
-        return new OkObjectResult(reminderWithIdsDtos);
+        return new OkObjectResult(reminderWithIdDtos);
     }
 
     [HttpGet("byId")]
     public async Task<ActionResult> ById([FromBody] ReminderIdDto reminderIdDto)
     {
         var repositoryResult =
-            await _remindersRepository.GetByIdAsync(reminderIdDto.ReminderId, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
+            await _remindersRepository.GetByIdAsync(reminderIdDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
 
         if (!repositoryResult.IsSuccessful)
         {
@@ -112,7 +114,7 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
     public async Task<ActionResult> SetCompleted([FromBody] ReminderIdDto reminderIdDto)
     {
         var repositoryResult =
-            await _remindersRepository.SetRemindersCompleted(reminderIdDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
+            await _remindersRepository.SetReminderCompleted(reminderIdDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
 
         if (repositoryResult.IsSuccessful) return new OkResult();
 
@@ -133,7 +135,7 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
     public async Task<ActionResult> DecrementRemindCount([FromBody] ReminderIdDto reminderIdDto)
     {
         var repositoryResult =
-            await _remindersRepository.DecrementRemindCountAsync(reminderIdDto.ReminderId, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
+            await _remindersRepository.DecrementRemindCountAsync(reminderIdDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
 
         if (repositoryResult.IsSuccessful)
             return new OkObjectResult(new RemainRemindCountDto { RemainRemindCount = repositoryResult.Data!.Value });
@@ -147,10 +149,10 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
     }
 
     [HttpPatch("reminderDateTime")]
-    public async Task<ActionResult> ReminderDateTime([FromBody] SetReminderDateTimeDto setReminderDateTimeDto)
+    public async Task<ActionResult> ReminderDateTime([FromBody] ReminderDateTimeDto reminderDateTimeDto)
     {
         var repositoryResult =
-            await _remindersRepository.SetReminderDateTimeAsync(setReminderDateTimeDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
+            await _remindersRepository.SetReminderDateTimeAsync(reminderDateTimeDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
 
         if (repositoryResult.IsSuccessful)
         {

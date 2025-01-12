@@ -5,6 +5,6 @@ namespace Maestro.Client.Daemon;
 public interface IDaemonMaestroApiClient
 {
     public IAsyncEnumerable<ReminderWithIdDto> GetCompletedRemindersAsync();
-    public IAsyncEnumerable<ReminderWithIdDto> GetRemindersAsync(DateTime endDateTime);
-    public Task DeleteReminder(long reminderId);
+    public IAsyncEnumerable<ReminderWithIdDto> GetOldRemindersAsync(DateTime inclusiveBeforeDateTime);
+    public Task DeleteReminderAsync(long reminderId);
 }

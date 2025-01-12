@@ -5,12 +5,12 @@ using Microsoft.Extensions.Options;
 
 namespace Maestro.Server.Authentication;
 
-public class AdminApiKeyAuthenticationHandler(
+public class DaemonApiKeyAuthenticationHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory loggerFactory,
     UrlEncoder encoder,
     IConfiguration configuration) : ServiceApiKeyAuthenticationHandler(options, loggerFactory, encoder, configuration)
 {
-    protected override string ApiKeyConfigurationName => "AdminApiKey";
-    protected override string ProvideRole => ServiceRoles.Admin;
+    protected override string ApiKeyConfigurationName => "DaemonApiKey";
+    protected override string ProvideRole => ServiceRoles.Daemon;
 }

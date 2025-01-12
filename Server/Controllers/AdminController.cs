@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Maestro.Server.Controllers;
 
-[Authorize(Roles = Roles.Admin, AuthenticationSchemes = AuthenticationSchemes.AdminApiKey)]
+[Authorize(Roles = ServiceRoles.Admin, AuthenticationSchemes = AuthenticationSchemes.AdminApiKey)]
 [ApiController]
 [Route("admin")]
 public class AdminController(
