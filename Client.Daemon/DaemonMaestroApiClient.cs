@@ -1,4 +1,3 @@
-using System.Net;
 using System.Net.Http.Json;
 using Maestro.Core.Logging;
 using Maestro.Server.Private.Models;
@@ -59,7 +58,7 @@ public class DaemonMaestroApiClient : IDaemonMaestroApiClient, IDisposable
                 })
             };
 
-            _log.Info($"Sending request {request.Method} {requestEndpoint}. Offset: {offset}. Limit: {AllRemindersDto.LimitMaxValue}");
+            _log.Info($"Sending request {request.Method} {requestEndpoint}. Offset: {offset}. Limit: {CompletedRemindersDto.LimitMaxValue}");
 
             var response = await _httpClient.SendAsync(request);
 
@@ -127,7 +126,7 @@ public class DaemonMaestroApiClient : IDaemonMaestroApiClient, IDisposable
     public async Task DeleteReminderAsync(long reminderId)
     {
         const string requestEndpoint = "reminder";
-        
+
         var request = new HttpRequestMessage(HttpMethod.Delete, requestEndpoint)
         {
             Content = JsonContent.Create(new ReminderIdDto
@@ -141,7 +140,7 @@ public class DaemonMaestroApiClient : IDaemonMaestroApiClient, IDisposable
         var response = await _httpClient.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
-        
+
         _log.Info($"Received response {request.Method} {requestEndpoint}. StatusCode: {response.StatusCode}.");
     }
 }

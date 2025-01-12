@@ -22,7 +22,7 @@ public class DaemonController(IRemindersRepository remindersRepository, IMapper 
     #region Get
 
     [HttpGet("completedReminders")]
-    public async Task<ActionResult> CompletedReminders([FromQuery] CompletedRemindersDto completedRemindersDto)
+    public async Task<ActionResult> CompletedReminders([FromBody] CompletedRemindersDto completedRemindersDto)
     {
         var repositoryResult =
             await _remindersRepository.GetCompletedRemindersAsync(completedRemindersDto, HttpContext.RequestAborted);
@@ -40,7 +40,7 @@ public class DaemonController(IRemindersRepository remindersRepository, IMapper 
     }
 
     [HttpGet("oldReminders")]
-    public async Task<ActionResult> OldReminders([FromQuery] OldRemindersDto oldRemindersDto)
+    public async Task<ActionResult> OldReminders([FromBody] OldRemindersDto oldRemindersDto)
     {
         var repositoryResult =
             await _remindersRepository.GetOldRemindersAsync(oldRemindersDto, HttpContext.RequestAborted);
@@ -64,17 +64,12 @@ public class DaemonController(IRemindersRepository remindersRepository, IMapper 
     {
         var repositoryResult = await _remindersRepository.DeleteReminderByIdAsync(reminderIdDto, HttpContext.RequestAborted);
 
-        if (repositoryResult.IsSuccessful)
+        if (!repositoryResult.IsSuccessful)
         {
-            return new OkResult();
+            throw RepositoryThrowHelper.GetUnexpectedRepositoryResultException();
         }
 
-        if (repositoryResult.IsReminderFound is false)
-        {
-            return new NotFoundResult();
-        }
-
-        throw RepositoryThrowHelper.GetUnexpectedRepositoryResultException();
+        return new OkResult();
     }
 
     #endregion

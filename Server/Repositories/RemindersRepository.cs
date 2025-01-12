@@ -157,14 +157,12 @@ public class RemindersRepository(DataContext dataContext) : IRemindersRepository
 
     public async Task<DeleteReminderByIdRepositoryResult> DeleteReminderByIdAsync(ReminderIdDto reminderIdDto, CancellationToken cancellationToken)
     {
-        var isReminderFound = await _dataContext.Reminders
+        await _dataContext.Reminders
             .Where(reminderDbo => reminderDbo.Id == reminderIdDto.ReminderId)
-            .ExecuteDeleteAsync(cancellationToken) is not 0;
+            .ExecuteDeleteAsync(cancellationToken);
 
         await _dataContext.SaveChangesAsync(cancellationToken);
 
-        return isReminderFound
-            ? new DeleteReminderByIdRepositoryResult(true)
-            : new DeleteReminderByIdRepositoryResult(false) { IsReminderFound = false };
+        return new DeleteReminderByIdRepositoryResult(true);
     }
 }
