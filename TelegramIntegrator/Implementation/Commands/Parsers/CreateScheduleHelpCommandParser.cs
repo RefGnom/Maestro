@@ -5,7 +5,7 @@ namespace Maestro.TelegramIntegrator.Implementation.Commands.Parsers;
 
 public class CreateScheduleHelpCommandParser : CommandParserBase
 {
-    public override string Name => TelegramCommandNames.CreateScheduleHelp;
+    public override string CommandName => TelegramCommandNames.CreateScheduleHelp;
 
     public override ParseResult<ICommandModel> ParseCommand(string command)
     {

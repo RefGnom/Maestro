@@ -5,7 +5,7 @@ namespace Maestro.TelegramIntegrator.Implementation.Commands.Handlers;
 
 public interface ICommandHandler
 {
-    string Name { get; }
+    string CommandName { get; }
     bool CanExecute(ICommandModel commandModel);
     Task ExecuteAsync(ChatContext context, ICommandModel commandModel);
 }

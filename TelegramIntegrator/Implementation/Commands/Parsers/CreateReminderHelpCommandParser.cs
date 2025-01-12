@@ -5,7 +5,7 @@ namespace Maestro.TelegramIntegrator.Implementation.Commands.Parsers;
 
 public class CreateReminderHelpCommandParser : CommandParserBase
 {
-    public override string Name => TelegramCommandNames.CreateReminderHelp;
+    public override string CommandName => TelegramCommandNames.CreateReminderHelp;
 
     public override ParseResult<ICommandModel> ParseCommand(string command)
     {

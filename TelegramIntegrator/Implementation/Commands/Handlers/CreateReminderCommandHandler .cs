@@ -11,7 +11,6 @@ namespace Maestro.TelegramIntegrator.Implementation.Commands.Handlers;
 public class CreateReminderCommandHandler(
     ILog<CreateReminderCommandHandler> log,
     IMaestroApiClient maestroApiClient,
-    ITelegramBotWrapper telegramBotWrapper,
     IDateTimeProvider dateTimeProvider,
     ITelegramBotClient telegramBotClient
 ) : CommandHandlerBase<CreateReminderCommandModel>
@@ -20,9 +19,8 @@ public class CreateReminderCommandHandler(
     private readonly ILog<CreateReminderCommandHandler> _log = log;
     private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
-    private readonly ITelegramBotWrapper _telegramBotWrapper = telegramBotWrapper;
 
-    public override string Name => TelegramCommandNames.CreateReminder;
+    public override string CommandName => TelegramCommandNames.CreateReminder;
 
     protected async override Task ExecuteAsync(
         ChatContext context,
@@ -54,7 +52,7 @@ public class CreateReminderCommandHandler(
 
         _log.Info("Reminder created.");
 
-        await _telegramBotWrapper.SendMainMenu(
+        await _telegramBotClient.SendMessage(
             context.ChatId,
             $"Напоминание \"{reminderCommandModel.HelpDescription}\" создано на время {reminderCommandModel.ReminderTime:dd.MM.yyyy HH:mm}, " +
             $"повторная отправка напоминания (если есть): {reminderCommandModel.RemindCount} раз(а) через {reminderCommandModel.RemindInterval.TotalMinutes} мин."

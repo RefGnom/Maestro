@@ -11,7 +11,6 @@ namespace Maestro.TelegramIntegrator.Implementation.Commands.Handlers;
 public class CreateScheduleCommandHandler(
     ILog<CreateScheduleCommandHandler> log,
     IMaestroApiClient maestroApiClient,
-    ITelegramBotWrapper telegramBotWrapper,
     IDateTimeProvider dateTimeProvider,
     ITelegramBotClient telegramBotClient
 ) : CommandHandlerBase<CreateScheduleCommandModel>
@@ -20,9 +19,8 @@ public class CreateScheduleCommandHandler(
     private readonly ILog<CreateScheduleCommandHandler> _log = log;
     private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
-    private readonly ITelegramBotWrapper _telegramBotWrapper = telegramBotWrapper;
 
-    public override string Name => TelegramCommandNames.CreateSchedule;
+    public override string CommandName => TelegramCommandNames.CreateSchedule;
 
     protected async override Task ExecuteAsync(
         ChatContext context,
@@ -67,7 +65,7 @@ public class CreateScheduleCommandHandler(
 
         _log.Info("Schedule created");
 
-        await _telegramBotWrapper.SendMainMenu(
+        await _telegramBotClient.SendMessage(
             context.ChatId,
             $"Расписание \"{scheduleCommandModel.HelpDescription}\" создано на время с {scheduleCommandModel.StartDateTime:dd.MM.yyyy HH:mm} " +
             $"по {scheduleCommandModel.EndDateTime:dd.MM.yyyy HH:mm}."

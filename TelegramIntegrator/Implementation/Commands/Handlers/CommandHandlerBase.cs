@@ -6,7 +6,7 @@ namespace Maestro.TelegramIntegrator.Implementation.Commands.Handlers;
 public abstract class CommandHandlerBase<TCommand> : ICommandHandler
     where TCommand : class, ICommandModel
 {
-    public abstract string Name { get; }
+    public abstract string CommandName { get; }
     public bool CanExecute(ICommandModel commandModel) => commandModel is TCommand;
     protected abstract Task ExecuteAsync(ChatContext context, TCommand command);
 
