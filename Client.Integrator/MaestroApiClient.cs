@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Http.Json;
 using Maestro.Core.Logging;
 using Maestro.Server.Public.Models.Reminders;

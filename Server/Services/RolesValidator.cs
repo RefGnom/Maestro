@@ -9,7 +9,7 @@ public class RolesValidator : IRolesValidator
     {
         return role switch
         {
-            Roles.Daemon or Roles.Integrator => true,
+            ServiceRoles.Daemon or IntegratorsRoles.Base => true,
             _ => false
         };
     }

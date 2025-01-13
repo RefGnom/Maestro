@@ -17,6 +17,7 @@ public class Program
         builder.Services.AddMapper();
         builder.Services.AddServices();
         builder.Services.AddAuthenticationWithSchemes();
+        builder.Services.AddRateLimiter();
 
         builder.ConfigureLogging();
 
@@ -29,6 +30,7 @@ public class Program
         app.UseRequestLogging();
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseRateLimiter();
 
         app.Run();
     }

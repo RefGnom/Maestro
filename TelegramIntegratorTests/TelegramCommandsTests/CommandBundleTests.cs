@@ -10,7 +10,7 @@ namespace Maestro.TelegramIntegratorTests.TelegramCommandsTests;
 public class CommandBundleTests : TestBase
 {
     private ITelegramCommandMapper _telegramCommandMapper;
-    
+
     [SetUp]
     public void SetUp()
     {

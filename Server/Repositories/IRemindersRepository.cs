@@ -1,4 +1,5 @@
 using Maestro.Data.Models;
+using Maestro.Server.Private.Models;
 using Maestro.Server.Public.Models.Reminders;
 using Maestro.Server.Repositories.Results.Reminders;
 
@@ -6,14 +7,39 @@ namespace Maestro.Server.Repositories;
 
 public interface IRemindersRepository
 {
-    Task<AllRemindersRepositoryResult> GetAllRemindersAsync(AllRemindersDto allRemindersDto, long integratorId, CancellationToken cancellationToken);
+    #region Get
+
+    Task<GetAllRemindersRepositoryResult> GetAllRemindersAsync(AllRemindersDto allRemindersDto, long integratorId,
+        CancellationToken cancellationToken);
     Task<GetRemindersForUserRepositoryResult> GetForUserAsync(RemindersForUserDto remindersForUserDto, long integratorId,
         CancellationToken cancellationToken);
-    Task<GetReminderByIdRepositoryResult> GetByIdAsync(long reminderId, long integratorId, CancellationToken cancellationToken);
-    Task<AddReminderRepositoryResult> AddAsync(ReminderDbo reminderDbo, CancellationToken cancellationToken);
-    Task<SetRemindersCompletedRepositoryResult> SetRemindersCompleted(ReminderIdDto reminderIdDto, long integratorId,
+    Task<GetReminderByIdRepositoryResult> GetByIdAsync(ReminderIdDto reminderIdDto, long integratorId, CancellationToken cancellationToken);
+    Task<GetCompletedRemindersRepositoryResult> GetCompletedRemindersAsync(CompletedRemindersDto completedRemindersDto,
         CancellationToken cancellationToken);
-    Task<DecrementRemindCountRepositoryResult> DecrementRemindCountAsync(long reminderId, long integratorId, CancellationToken cancellationToken);
-    Task<SetReminderDateTimeRepositoryResult> SetReminderDateTimeAsync(SetReminderDateTimeDto setReminderDateTimeDto, long integratorId,
+    Task<GetOldRemindersRepositoryResult> GetOldRemindersAsync(OldRemindersDto oldRemindersDto, CancellationToken cancellationToken);
+
+    #endregion
+
+    #region Post
+
+    Task<AddReminderRepositoryResult> AddAsync(ReminderDbo newReminderDbo, CancellationToken cancellationToken);
+
+    #endregion
+
+    #region Patch
+
+    Task<SetReminderCompletedRepositoryResult> SetReminderCompleted(ReminderIdDto reminderIdDto, long integratorId,
         CancellationToken cancellationToken);
+    Task<DecrementRemindCountRepositoryResult> DecrementRemindCountAsync(ReminderIdDto reminderIdDto, long integratorId,
+        CancellationToken cancellationToken);
+    Task<SetReminderDateTimeRepositoryResult> SetReminderDateTimeAsync(ReminderDateTimeDto reminderDateTimeDto, long integratorId,
+        CancellationToken cancellationToken);
+
+    #endregion
+
+    #region Delete
+
+    Task<DeleteReminderByIdRepositoryResult> DeleteReminderByIdAsync(ReminderIdDto reminderIdDto, CancellationToken cancellationToken);
+
+    #endregion
 }

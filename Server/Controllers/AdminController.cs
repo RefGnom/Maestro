@@ -8,20 +8,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Maestro.Server.Controllers;
 
-[Authorize(Roles = Roles.Admin, AuthenticationSchemes = AuthenticationSchemes.AdminApiKey)]
+[Authorize(Roles = ServiceRoles.Admin, AuthenticationSchemes = AuthenticationSchemes.AdminApiKey)]
 [ApiController]
 [Route("admin")]
 public class AdminController(
-    IApiKeysRepository apiKeysRepository,
-    IIntegratorsRolesRepository integratorsRolesRepository,
+    IIntegratorsApiKeysRepository integratorsApiKeysRepository,
+    IIntegratorRolesRepository integratorRolesRepository,
     IIntegratorsRepository integratorsRepository,
     IApiKeyHasher apiKeyHasher,
     ILoggerFactory logFactory) : ControllerBase
 {
     private static readonly object Lock = new();
 
-    private readonly IApiKeysRepository _apiKeysRepository = apiKeysRepository;
-    private readonly IIntegratorsRolesRepository _integratorsRolesRepository = integratorsRolesRepository;
+    private readonly IIntegratorsApiKeysRepository _integratorsApiKeysRepository = integratorsApiKeysRepository;
+    private readonly IIntegratorRolesRepository _integratorRolesRepository = integratorRolesRepository;
     private readonly IIntegratorsRepository _integratorsRepository = integratorsRepository;
     private readonly IApiKeyHasher _apiKeyHasher = apiKeyHasher;
     private readonly ILogger _logger = logFactory.CreateLogger<AdminController>();
@@ -33,9 +33,9 @@ public class AdminController(
         {
             var createdIntegratorId = _integratorsRepository.AddIntegratorAsync(HttpContext.RequestAborted).Result.Data;
             var apiKeyHash = _apiKeyHasher.Hash(newIntegratorDto.ApiKey);
-            var apiKeyId = _apiKeysRepository.AddApiKeyAsync(apiKeyHash, createdIntegratorId, HttpContext.RequestAborted).Result;
+            var apiKeyId = _integratorsApiKeysRepository.AddApiKeyAsync(apiKeyHash, createdIntegratorId, HttpContext.RequestAborted).Result;
 
-            _integratorsRolesRepository.AddIntegratorRoleAsync(createdIntegratorId, newIntegratorDto.Role, HttpContext.RequestAborted).Wait();
+            _integratorRolesRepository.AddIntegratorRoleAsync(createdIntegratorId, newIntegratorDto.Role, HttpContext.RequestAborted).Wait();
             _logger.LogInformation("New Integrator created. IntegratorId: {integratorId}. Assigned Role: {role}. Issued ApiKey: {apiKeyId}",
                 createdIntegratorId, newIntegratorDto.Role, apiKeyId);
 

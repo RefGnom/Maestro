@@ -7,4 +7,10 @@
         <RootNamespace>Maestro.Client.Daemon</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\Core\Core.csproj"/>
+        <ProjectReference Include="..\Server.Core.Private\Server.Core.Private.csproj"/>
+        <ProjectReference Include="..\Server.Core.Public\Server.Core.Public.csproj"/>
+    </ItemGroup>
+
 </Project>

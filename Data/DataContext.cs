@@ -10,6 +10,8 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
 
     public DbSet<ReminderDbo> Reminders { get; set; }
 
+    public DbSet<ScheduleDbo> Schedules { get; set; }
+
     public DbSet<IntegratorApiKeyDbo> IntegratorsApiKeys { get; set; }
 
     public DbSet<IntegratorRoleDbo> IntegratorsRolesDbo { get; set; }
