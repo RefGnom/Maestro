@@ -60,7 +60,7 @@ public class IntegratorApiKeyAuthenticationHandler(
             RepositoryThrowHelper.ThrowUnexpectedRepositoryResult();
         }
 
-        _logger.LogInformation("ApiKey resolved. IntegratorId: {integratorId}", repositoryResult);
+        _logger.LogInformation("ApiKey resolved. IntegratorId: {integratorId}", repositoryResult.Data);
         _apiKeyIntegratorsCache.Set(apiKey, repositoryResult.Data!.Value);
         authenticationTicket = await CreateAuthenticationTicketAsync(repositoryResult.Data!.Value);
 
