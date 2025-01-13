@@ -2,17 +2,19 @@
 using Maestro.TelegramIntegrator.Implementation.Commands.Parsers;
 using Maestro.TelegramIntegrator.Implementation.Commands.Models;
 using NUnit.Framework.Internal;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Maestro.TelegramIntegratorTests.ParseTests
 {
-    public class CreateScheduleCommandParserTests
+    public class CreateScheduleCommandParserTests : TestBase
     {
         private CreateScheduleCommandParser _parser;
 
         [SetUp]
         public void SetUp()
         {
-            _parser = new CreateScheduleCommandParser();
+            var commandParsers = ServiceProvider.GetRequiredService<IEnumerable<ICommandParser>>();
+            _parser = (CreateScheduleCommandParser)commandParsers.First(x => x.CommandName == "/schedule");
         }
 
         [Test]

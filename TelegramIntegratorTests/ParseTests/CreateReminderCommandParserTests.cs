@@ -13,7 +13,8 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
         [SetUp]
         public void SetUp()
         {
-            _parser = ServiceProvider.GetRequiredService<CreateReminderCommandParser>();
+            var commandParsers = ServiceProvider.GetRequiredService<IEnumerable<ICommandParser>>();
+            _parser = (CreateReminderCommandParser)commandParsers.First(x => x.CommandName == "/reminder");
         }
 
         [Test]

@@ -1,4 +1,4 @@
-﻿using Maestro.TelegramIntegrator.Implementation.View;
+﻿using Maestro.TelegramIntegrator.View;
 using Maestro.TelegramIntegrator.Models;
 
 namespace Maestro.TelegramIntegrator.Implementation.ParsHelpers;
