@@ -4,7 +4,7 @@ using Maestro.Core.Providers;
 using Maestro.Operational.ProcessesCore;
 using Maestro.Operational.TimestampProvider;
 
-namespace Maestro.TelegramIntegrator.Implementation;
+namespace Maestro.TelegramIntegrator.Implementation.Processes;
 
 public class SendEventsProcess(
     ILog<SendEventsProcess> log,
@@ -33,7 +33,7 @@ public class SendEventsProcess(
         var reminders = _maestroApiClient.GetAllRemindersAsync(exclusiveStartDate);
         await foreach (var reminder in reminders)
         {
-            if (reminder.RemindCount == 0 || reminder.RemindDateTime - currentDate > RemindSendingEpsilon)
+            if (reminder.RemindCount == 0 || reminder.RemindDateTime - currentDate > RemindSendingEpsilon || reminder.IsCompleted)
             {
                 continue;
             }
