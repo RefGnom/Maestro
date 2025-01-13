@@ -21,13 +21,13 @@ public class SendEventsProcess(
     private readonly ITimestampProvider _timestampProvider = timestampProviderFactory.Create();
 
     public override string ProcessName => "Чтение пользовательских событий";
-    public override bool IsActiveByDefault => false;
+    public override bool IsActiveByDefault => true;
     protected override TimeSpan Interval => RemindSendingEpsilon;
 
     protected async override Task UnsafeRunAsync()
     {
         var currentDate = dateTimeProvider.GetCurrentDateTime();
-        var exclusiveStartDate = _timestampProvider.Read(TimestampKey);
+        var exclusiveStartDate = _timestampProvider.Find(TimestampKey) ?? DateTime.Today;
         var maxReminderTime = exclusiveStartDate;
 
         var reminders = _maestroApiClient.GetAllRemindersAsync(exclusiveStartDate);
@@ -41,7 +41,7 @@ public class SendEventsProcess(
             await telegramBotWrapper.SendMessageAsync(reminder.UserId, $"Напоминание: {reminder.Description}");
             if (reminder.RemindCount == 1)
             {
-                await _maestroApiClient.SetReminderCompletedAsync(reminder.UserId);
+                await _maestroApiClient.SetReminderCompletedAsync(reminder.ReminderId);
             }
             else
             {
