@@ -11,7 +11,7 @@ using AuthenticationSchemes = Maestro.Server.Authentication.AuthenticationScheme
 
 namespace Maestro.Server.Controllers;
 
-[Authorize(Roles = IntegratorsRoles.Base, AuthenticationSchemes = AuthenticationSchemes.ApiKey)]
+[Authorize(Roles = IntegratorsRoles.Base, AuthenticationSchemes = AuthenticationSchemes.IntegratorApiKey)]
 [ApiController]
 [Route("api/v1/reminders")]
 public class RemindersController(IRemindersRepository remindersRepository, IMapper mapper, ILoggerFactory loggerFactory) : ControllerBase
@@ -68,6 +68,7 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
         {
             if (repositoryResult.IsReminderFound is false)
             {
+                _logger.LogWarning("Operation failed. Reminder was not found. ReminderId: {reminderId}", reminderIdDto.ReminderId);
                 return new NotFoundResult();
             }
 
@@ -88,10 +89,10 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
     [HttpPost("create")]
     public async Task<ActionResult> Create([FromBody] ReminderDto reminderDto)
     {
-        var reminderDbo = _mapper.Map<ReminderDbo>(reminderDto);
-        reminderDbo.IntegratorId = HttpContext.GetIntegratorId();
+        var newReminderDbo = _mapper.Map<ReminderDbo>(reminderDto);
+        newReminderDbo.IntegratorId = HttpContext.GetIntegratorId();
 
-        var repositoryResult = await _remindersRepository.AddAsync(reminderDbo, HttpContext.RequestAborted);
+        var repositoryResult = await _remindersRepository.AddAsync(newReminderDbo, HttpContext.RequestAborted);
 
         if (!repositoryResult.IsSuccessful)
         {
@@ -120,15 +121,17 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
 
         if (repositoryResult.IsReminderFound is false)
         {
+            _logger.LogWarning("Operation failed. Reminder was not found. ReminderId: {reminderId}", reminderIdDto.ReminderId);
             return new NotFoundResult();
         }
 
-        if (repositoryResult.IsCompletedAlreadySet is true)
+        if (repositoryResult.IsCompletedAlreadySet is not true)
         {
-            return new ConflictResult();
+            throw RepositoryThrowHelper.GetUnexpectedRepositoryResultException();
         }
 
-        throw RepositoryThrowHelper.GetUnexpectedRepositoryResultException();
+        _logger.LogWarning("Operation failed. Completed already set");
+        return new ConflictResult();
     }
 
     [HttpPatch("decrementRemindCount")]
@@ -138,14 +141,24 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
             await _remindersRepository.DecrementRemindCountAsync(reminderIdDto, HttpContext.GetIntegratorId(), HttpContext.RequestAborted);
 
         if (repositoryResult.IsSuccessful)
+        {
+            _logger.LogInformation("Reminder RemindCount decremented");
             return new OkObjectResult(new RemainRemindCountDto { RemainRemindCount = repositoryResult.Data!.Value });
+        }
 
         if (repositoryResult.IsReminderFound is false)
         {
+            _logger.LogWarning("Operation failed. Reminder was not found. ReminderId: {reminderId}", reminderIdDto.ReminderId);
             return new NotFoundResult();
         }
 
-        throw RepositoryThrowHelper.GetUnexpectedRepositoryResultException();
+        if (repositoryResult.IsRemindCountEqualZero is not true)
+        {
+            throw RepositoryThrowHelper.GetUnexpectedRepositoryResultException();
+        }
+
+        _logger.LogWarning("Operation failed. RemindCount is zero");
+        return new ConflictResult();
     }
 
     [HttpPatch("reminderDateTime")]
@@ -156,15 +169,18 @@ public class RemindersController(IRemindersRepository remindersRepository, IMapp
 
         if (repositoryResult.IsSuccessful)
         {
+            _logger.LogInformation("RemindDateTime set");
             return new OkResult();
         }
 
-        if (repositoryResult.IsReminderFound is false)
+        if (repositoryResult.IsReminderFound is not false)
         {
-            return new NotFoundResult();
+            throw RepositoryThrowHelper.GetUnexpectedRepositoryResultException();
         }
 
-        throw RepositoryThrowHelper.GetUnexpectedRepositoryResultException();
+        _logger.LogWarning("Operation failed. Reminder was not found. ReminderId: {reminderId}", reminderDateTimeDto.ReminderId);
+
+        return new NotFoundResult();
     }
 
     #endregion

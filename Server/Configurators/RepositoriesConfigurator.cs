@@ -7,8 +7,9 @@ public static class RepositoriesConfigurator
     public static void AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IRemindersRepository, RemindersRepository>();
-        services.AddScoped<IApiKeysRepository, ApiKeysRepository>();
+        services.AddScoped<IIntegratorsApiKeysRepository, IntegratorApiKeysRepository>();
+        services.AddScoped<ISchedulesRepository, SchedulesRepository>();
         services.AddScoped<IIntegratorsRepository, IntegratorsRepository>();
-        services.AddScoped<IIntegratorsRolesRepository, IntegratorsRolesRepository>();
+        services.AddScoped<IIntegratorRolesRepository, IntegratorRolesRepository>();
     }
 }

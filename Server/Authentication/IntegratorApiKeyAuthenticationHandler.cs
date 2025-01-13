@@ -12,18 +12,18 @@ public class IntegratorApiKeyAuthenticationHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory loggerFactory,
     UrlEncoder encoder,
-    IApiKeysIntegratorsCache apiKeysIntegratorsCache,
+    IApiKeyIntegratorsCache apiKeyIntegratorsCache,
     IIntegratorsRolesCache integratorsRolesCache,
-    IIntegratorsRolesRepository integratorsRolesRepository,
-    IApiKeysRepository apiKeysRepository,
+    IIntegratorRolesRepository integratorRolesRepository,
+    IIntegratorsApiKeysRepository integratorsApiKeysRepository,
     IApiKeyHasher apiKeyHasher)
     : AuthenticationHandler<AuthenticationSchemeOptions>(options, loggerFactory, encoder)
 {
     private readonly ILogger _logger = loggerFactory.CreateLogger<IntegratorApiKeyAuthenticationHandler>();
-    private readonly IApiKeysIntegratorsCache _apiKeysIntegratorsCache = apiKeysIntegratorsCache;
+    private readonly IApiKeyIntegratorsCache _apiKeyIntegratorsCache = apiKeyIntegratorsCache;
     private readonly IIntegratorsRolesCache _integratorsRolesCache = integratorsRolesCache;
-    private readonly IIntegratorsRolesRepository _integratorsRolesRepository = integratorsRolesRepository;
-    private readonly IApiKeysRepository _apiKeysRepository = apiKeysRepository;
+    private readonly IIntegratorRolesRepository _integratorRolesRepository = integratorRolesRepository;
+    private readonly IIntegratorsApiKeysRepository _integratorsApiKeysRepository = integratorsApiKeysRepository;
     private readonly IApiKeyHasher _apiKeyHasher = apiKeyHasher;
 
     protected async override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -41,14 +41,14 @@ public class IntegratorApiKeyAuthenticationHandler(
         var apiKey = apiKeyHeaderValues.Single()!;
         var apiKeyHash = _apiKeyHasher.Hash(apiKey);
 
-        if (_apiKeysIntegratorsCache.TryGetIntegratorId(apiKey, out var cachedIntegratorId))
+        if (_apiKeyIntegratorsCache.TryGetIntegratorId(apiKey, out var cachedIntegratorId))
         {
             _logger.LogInformation("ApiKey resolved. Cached IntegratorId: {integratorId}", cachedIntegratorId);
             authenticationTicket = await CreateAuthenticationTicketAsync(cachedIntegratorId!.Value);
             return AuthenticateResult.Success(authenticationTicket);
         }
 
-        var repositoryResult = await _apiKeysRepository.GetApiKeyIntegratorIdAsync(apiKeyHash, Context.RequestAborted);
+        var repositoryResult = await _integratorsApiKeysRepository.GetApiKeyIntegratorIdAsync(apiKeyHash, Context.RequestAborted);
 
         if (!repositoryResult.IsSuccessful)
         {
@@ -61,7 +61,7 @@ public class IntegratorApiKeyAuthenticationHandler(
         }
 
         _logger.LogInformation("ApiKey resolved. IntegratorId: {integratorId}", repositoryResult);
-        _apiKeysIntegratorsCache.Set(apiKey, repositoryResult.Data!.Value);
+        _apiKeyIntegratorsCache.Set(apiKey, repositoryResult.Data!.Value);
         authenticationTicket = await CreateAuthenticationTicketAsync(repositoryResult.Data!.Value);
 
         return AuthenticateResult.Success(authenticationTicket);
@@ -87,7 +87,7 @@ public class IntegratorApiKeyAuthenticationHandler(
         }
         else
         {
-            var repositoryResult = await _integratorsRolesRepository.GetIntegratorRoleAsync(integratorId, Context.RequestAborted);
+            var repositoryResult = await _integratorRolesRepository.GetIntegratorRoleAsync(integratorId, Context.RequestAborted);
 
             if (!repositoryResult.IsSuccessful)
             {

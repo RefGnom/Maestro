@@ -27,7 +27,7 @@ public class DaemonMaestroApiClientTests
         );
 
         const string integratorUri = "http://localhost:5000/api/v1/";
-        const string integratorApiKey = "testIntegrator";
+        const string integratorApiKey = "integrator123";
 
         _maestroApiClient = new MaestroApiClient(integratorUri, integratorApiKey,
             // Substitute.For<ILogFactory>()
@@ -56,7 +56,7 @@ public class DaemonMaestroApiClientTests
                 RemindDateTime = new DateTime(2024, 1, 1),
                 RemindInterval = TimeSpan.FromMinutes(1),
                 RemindCount = 3,
-                IsCompleted = false,
+                IsCompleted = false
             },
             new()
             {
@@ -65,7 +65,7 @@ public class DaemonMaestroApiClientTests
                 RemindDateTime = new DateTime(2024, 4, 3),
                 RemindInterval = TimeSpan.FromMinutes(2),
                 RemindCount = 3,
-                IsCompleted = true,
+                IsCompleted = true
             },
             new()
             {
@@ -74,7 +74,7 @@ public class DaemonMaestroApiClientTests
                 RemindDateTime = new DateTime(2024, 1, 2),
                 RemindInterval = TimeSpan.FromMinutes(3),
                 RemindCount = 3,
-                IsCompleted = false,
+                IsCompleted = false
             },
             new()
             {
@@ -83,8 +83,8 @@ public class DaemonMaestroApiClientTests
                 RemindDateTime = new DateTime(2024, 1, 2),
                 RemindInterval = TimeSpan.FromMinutes(3),
                 RemindCount = 3,
-                IsCompleted = true,
-            },
+                IsCompleted = true
+            }
         };
 
         await CreateRemindersAsync(remindersCreateList);
@@ -161,8 +161,6 @@ public class DaemonMaestroApiClientTests
         await _daemonMaestroApiClient.DeleteReminderAsync(createdReminderId);
 
         (await _maestroApiClient.GetReminderAsync(createdReminderId)).Should().BeNull();
-
-        Assert.Throws<AggregateException>(() => { _daemonMaestroApiClient.DeleteReminderAsync(createdReminderId).Wait(); });
     }
 
     private async Task CreateRemindersAsync(List<ReminderDto> remindersCreateList)

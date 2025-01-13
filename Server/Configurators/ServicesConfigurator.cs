@@ -11,7 +11,7 @@ public static class ServicesConfigurator
     {
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddSingleton<IIntegratorsRolesCache, IntegratorsRolesCache>();
-        services.AddSingleton<IApiKeysIntegratorsCache, ApiKeysIntegratorsCache>();
+        services.AddSingleton<IApiKeyIntegratorsCache, ApiKeyIntegratorsCache>();
         services.AddSingleton<IApiKeyHasher, ApiKeyHasher>();
         services.AddSingleton<IRolesValidator, RolesValidator>();
     }

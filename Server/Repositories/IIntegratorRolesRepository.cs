@@ -1,8 +1,8 @@
-using Maestro.Server.Repositories.Results.IntegratorsRoles;
+using Maestro.Server.Repositories.Results.IntegratorRoles;
 
 namespace Maestro.Server.Repositories;
 
-public interface IIntegratorsRolesRepository
+public interface IIntegratorRolesRepository
 {
     Task<GetIntegratorRolesRepositoryResult> GetIntegratorRoleAsync(long integratorId, CancellationToken cancellationToken);
     Task AddIntegratorRoleAsync(long integratorId, string role, CancellationToken cancellationToken);

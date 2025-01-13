@@ -4,4 +4,6 @@ public class DecrementRemindCountRepositoryResult(bool isSuccessful, int? remain
     : BaseRepositoryResultWithData<int?>(isSuccessful, remainRemindCount)
 {
     public bool? IsReminderFound { get; init; }
+
+    public bool? IsRemindCountEqualZero { get; init; }
 }
