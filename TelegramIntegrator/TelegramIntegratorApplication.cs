@@ -15,15 +15,16 @@ public class TelegramIntegratorApplication(
     ITelegramBotClient botClient
 ) : IApplication
 {
+    private readonly ITelegramBotClient _botClient = botClient;
     private readonly ILog<TelegramIntegratorApplication> _log = log;
     private readonly IMaestroCommandHandler _maestroCommandHandler = maestroCommandHandler;
-    private readonly ITelegramBotClient _botClient = botClient;
 
     private readonly ReceiverOptions _receiverOptions = new()
     {
         AllowedUpdates =
         [
-            UpdateType.Message
+            UpdateType.Message,
+            UpdateType.CallbackQuery
         ],
         DropPendingUpdates = true
     };

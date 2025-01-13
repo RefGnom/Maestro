@@ -1,8 +1,7 @@
-﻿using Maestro.Client.Integrator;
-using Maestro.Core.Logging;
-using Maestro.Core.Providers;
-using Maestro.Server.Public.Models.Reminders;
-using Maestro.TelegramIntegrator.Parsers;
+﻿using Maestro.Core.Logging;
+using Maestro.TelegramIntegrator.Implementation.Commands;
+using Maestro.TelegramIntegrator.Models;
+using Maestro.TelegramIntegrator.View;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -11,64 +10,72 @@ namespace Maestro.TelegramIntegrator.Implementation;
 
 public class MaestroCommandHandler(
     ILog<MaestroCommandHandler> log,
-    IMaestroApiClient maestroApiClient,
-    IMessageParser messageParser,
-    IDateTimeProvider dateTimeProvider
+    ITelegramCommandMapper telegramCommandMapper
 )
     : IMaestroCommandHandler
 {
-    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
     private readonly ILog<MaestroCommandHandler> _log = log;
-    private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
-    private readonly IMessageParser _messageParser = messageParser;
+    private readonly ITelegramCommandMapper _telegramCommandMapper = telegramCommandMapper;
 
     public async Task UpdateHandler(ITelegramBotClient bot, Update update, CancellationToken cancellationToken)
     {
-        if (update.Type != UpdateType.Message || update.Message is null)
+        if (update is { Type: UpdateType.Message, Message: not null })
         {
+            var messageText = update.Message.Text!;
+            var telegramCommandBundle = _telegramCommandMapper.MapCommandBundle(messageText);
+            if (telegramCommandBundle is null)
+            {
+                _log.Warn($"Не нашли связку команды телеграмма для сообщения {messageText}");
+                await bot.SendMessage(update.Message.Chat.Id, TelegramMessageBuilder.BuildUnknownCommand(), cancellationToken: cancellationToken);
+                return;
+            }
+
+            var commandParseResult = telegramCommandBundle.CommandParser.ParseCommand(messageText);
+            if (!commandParseResult.IsSuccessful)
+            {
+                _log.Warn("Failed to parse message");
+                await bot.SendMessage(update.Message.Chat.Id, commandParseResult.ParseFailureMessage, cancellationToken: cancellationToken);
+                return;
+            }
+
+            var chatContext = new ChatContext()
+            {
+                ChatId = update.Message.Chat.Id,
+                UserId = update.Message.From!.Id
+            };
+            var command = commandParseResult.Value;
+            await telegramCommandBundle.CommandHandler.ExecuteAsync(
+                chatContext,
+                command
+            );
             return;
         }
 
-        if (_messageParser.TryParse(update.Message.Text!, out var message))
+        if (update is { Type: UpdateType.CallbackQuery, CallbackQuery: not null })
         {
-            if (message!.ReminderTime < _dateTimeProvider.GetCurrentDateTime())
+            var callbackQuery = update.CallbackQuery;
+            var message = callbackQuery.Data!;
+            var chatContext = new ChatContext()
             {
-                var errorMessage = "Reminder time is less than current time";
-                _log.Warn(errorMessage);
-
-
-                await bot.SendMessage(
-                    update.Message.Chat.Id,
-                    errorMessage,
-                    cancellationToken: cancellationToken
-                );
+                UserId = callbackQuery.From.Id,
+                ChatId = callbackQuery.From.Id
+            };
+            var telegramCommandBundle = _telegramCommandMapper.MapCommandBundle(message);
+            if (telegramCommandBundle is null)
+            {
+                _log.Warn($"Не нашли связку команды телеграмма для сообщения {message}");
+                await bot.SendMessage(chatContext.ChatId, TelegramMessageBuilder.BuildUnknownCommand(), cancellationToken: cancellationToken);
+                return;
             }
 
-            await _maestroApiClient.CreateReminderAsync(
-                new ReminderDto
-                {
-                    UserId = 0,
-                    Description = null,
-                    RemindDateTime = default,
-                    RemindInterval = default,
-                    RemindCount = 0
-                }
-            );
-            _log.Info("Event created");
-            await bot.SendMessage(
-                update.Message.Chat.Id,
-                $"Напоминание \"{message.Description}\" создано на время {message.ReminderTime: yyyy-MM-dd HH:mm}",
-                cancellationToken: cancellationToken
-            );
-        }
-        else
-        {
-            _log.Warn("Failed to parse message");
-            await bot.SendMessage(
-                update.Message.Chat.Id,
-                "Чтобы создать новое напоминание используйте команду /create {время напоминания} {описание}.",
-                cancellationToken: cancellationToken
-            );
+            var parseResult = telegramCommandBundle.CommandParser.ParseCommand(message);
+            if (!parseResult.IsSuccessful)
+            {
+                _log.Warn("Failed to parse message");
+                await bot.SendMessage(chatContext.ChatId, parseResult.ParseFailureMessage, cancellationToken: cancellationToken);
+                return;
+            }
+            await telegramCommandBundle.CommandHandler.ExecuteAsync(chatContext, parseResult.Value);
         }
     }
 

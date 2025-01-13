@@ -27,7 +27,7 @@ public class SendEventsProcess(
     protected async override Task UnsafeRunAsync()
     {
         var currentDate = dateTimeProvider.GetCurrentDateTime();
-        var exclusiveStartDate = _timestampProvider.Read(TimestampKey);
+        var exclusiveStartDate = _timestampProvider.Find(TimestampKey) ?? DateTime.Today;
         var maxReminderTime = exclusiveStartDate;
 
         var reminders = _maestroApiClient.GetAllRemindersAsync(exclusiveStartDate);
@@ -41,7 +41,7 @@ public class SendEventsProcess(
             await telegramBotWrapper.SendMessageAsync(reminder.UserId, $"Напоминание: {reminder.Description}");
             if (reminder.RemindCount == 1)
             {
-                await _maestroApiClient.SetReminderCompletedAsync(reminder.UserId);
+                await _maestroApiClient.SetReminderCompletedAsync(reminder.ReminderId);
             }
             else
             {

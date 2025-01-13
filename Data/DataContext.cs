@@ -18,7 +18,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ReminderDbo>().Property(dbo => dbo.Description).HasMaxLength(DataConstraints.ReminderDescriptionMaxLength);
+        modelBuilder.Entity<ReminderDbo>().Property(dbo => dbo.Description).HasMaxLength(DataConstraints.DescriptionMaxLength);
 
         modelBuilder.Entity<IntegratorApiKeyDbo>().Property(dbo => dbo.ApiKey).HasMaxLength(DataConstraints.ApiKeyHashMaxLength);
         modelBuilder.Entity<IntegratorApiKeyDbo>().HasIndex(dbo => dbo.ApiKey).IsUnique();
