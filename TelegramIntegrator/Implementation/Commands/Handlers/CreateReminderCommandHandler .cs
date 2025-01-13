@@ -54,7 +54,7 @@ public class CreateReminderCommandHandler(
 
         await _telegramBotClient.SendMessage(
             context.ChatId,
-            $"Напоминание \"{reminderCommandModel.HelpDescription}\" создано на время {reminderCommandModel.ReminderTime:dd.MM.yyyy HH:mm}, " +
+            $"Напоминание \"{reminderCommandModel.ReminderDescription}\" создано на время {reminderCommandModel.ReminderTime:dd.MM.yyyy HH:mm}, " +
             $"повторная отправка напоминания (если есть): {reminderCommandModel.RemindCount} раз(а) через {reminderCommandModel.RemindInterval.TotalMinutes} мин."
         );
     }

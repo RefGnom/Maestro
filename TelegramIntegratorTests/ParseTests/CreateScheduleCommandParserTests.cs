@@ -20,7 +20,7 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
         [Test]
         public void TestParserShouldReturnSuccessResultIfCommandCorrect()
         {
-            var command = "/schedule, 19.05.2025 10:00, 19.05.2025 12:30, test schedule, overlap";
+            var command = "/schedule, 19.05.2025 10:00, 2:00, test schedule, overlap";
 
             var parseResult = _parser.ParseCommand(command);
 
@@ -29,7 +29,7 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
             var value = (CreateScheduleCommandModel)parseResult.Value;
 
             value.StartDateTime.Should().Be(new DateTime(2025, 5, 19, 10, 0, 0));
-            value.EndDateTime.Should().Be(new DateTime(2025, 5, 19, 12, 30, 0));
+            value.Duration.Should().Be(TimeSpan.FromHours(2));
             value.ScheduleDescription.Should().Be("test schedule");
             value.CanOverlap.Should().BeTrue();
         }
@@ -39,9 +39,7 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
         {
             const bool canOverlap = false;
 
-            var defaultRemindInterval = TimeSpan.FromMinutes(5);
-
-            var command = "/schedule, 19.05.2025 10:00, 19.05.2025 12:30, test schedule";
+            var command = "/schedule, 19.05.2025 10:00, 2:00, test schedule";
 
             var parseResult = _parser.ParseCommand(command);
 
@@ -49,9 +47,6 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
 
             var value = (CreateScheduleCommandModel)parseResult.Value;
 
-            value.StartDateTime.Should().Be(new DateTime(2025, 5, 19, 10, 0, 0));
-            value.EndDateTime.Should().Be(new DateTime(2025, 5, 19, 12, 30, 0));
-            value.ScheduleDescription.Should().Be("test schedule");
             value.CanOverlap.Should().Be(canOverlap);
         }
     }

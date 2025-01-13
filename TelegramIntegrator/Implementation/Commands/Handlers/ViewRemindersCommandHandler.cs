@@ -26,11 +26,11 @@ namespace Maestro.TelegramIntegrator.Implementation.Commands.Handlers
         {
             var reminders = _maestroApiClient.GetRemindersForUserAsync(context.UserId, null);
 
-            var remindersList = new List<ReminderWithIdDto>();
+            var remindersList = new List<string>();
 
             await foreach (var reminder in reminders)
             {
-                remindersList.Add(reminder);
+                remindersList.Add(string.Join(", ", reminder.Description, reminder.RemindDateTime));
             }
 
             if (remindersList.Any())

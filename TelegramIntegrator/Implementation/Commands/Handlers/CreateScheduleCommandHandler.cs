@@ -27,22 +27,9 @@ public class CreateScheduleCommandHandler(
         CreateScheduleCommandModel scheduleCommandModel
     )
     {
-        var currentDateTime = _dateTimeProvider.GetCurrentDateTime();
-        if (scheduleCommandModel.StartDateTime < currentDateTime || scheduleCommandModel.EndDateTime < currentDateTime)
+        if (scheduleCommandModel.StartDateTime < _dateTimeProvider.GetCurrentDateTime())
         {
-            var errorMessage = "Даты начала и конца расписания не могут быть раньше текущей даты";
-            _log.Warn(errorMessage);
-
-            await _telegramBotClient.SendMessage(
-                context.ChatId,
-                errorMessage
-            );
-            return;
-        }
-
-        if (scheduleCommandModel.StartDateTime > scheduleCommandModel.EndDateTime)
-        {
-            var errorMessage = "Дата конца раписание не может быть раньше даты начала расписания.";
+            var errorMessage = "Даты начала расписания не может быть раньше текущей даты";
             _log.Warn(errorMessage);
 
             await _telegramBotClient.SendMessage(
@@ -58,8 +45,9 @@ public class CreateScheduleCommandHandler(
                 UserId = context.UserId,
                 Description = scheduleCommandModel.ScheduleDescription,
                 StartDateTime = scheduleCommandModel.StartDateTime,
-                EndDateTime = scheduleCommandModel.EndDateTime,
-                CanOverlap = scheduleCommandModel.CanOverlap
+                Duration = scheduleCommandModel.Duration,
+                CanOverlap = scheduleCommandModel.CanOverlap,
+                IsCompleted = false
             }
         );
 
@@ -67,8 +55,8 @@ public class CreateScheduleCommandHandler(
 
         await _telegramBotClient.SendMessage(
             context.ChatId,
-            $"Расписание \"{scheduleCommandModel.HelpDescription}\" создано на время с {scheduleCommandModel.StartDateTime:dd.MM.yyyy HH:mm} " +
-            $"по {scheduleCommandModel.EndDateTime:dd.MM.yyyy HH:mm}."
+            $"Расписание \"{scheduleCommandModel.ScheduleDescription}\" создано на {scheduleCommandModel.StartDateTime:dd.MM.yyyy HH:mm} " +
+            $"с продолжительностью {scheduleCommandModel.Duration}."
         );
     }
 }

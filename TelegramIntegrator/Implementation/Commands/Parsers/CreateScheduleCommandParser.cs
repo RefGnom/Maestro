@@ -26,11 +26,11 @@ public class CreateScheduleCommandParser : CommandParserBase
             return ParseResult.CreateFailure<ICommandModel>(startDateTime.ParseFailureMessage);
         }
 
-        var endDateTime = ParserHelper.ParseDateTime(parts[2]);
+        var duration = ParserHelper.ParseTimeSpan(parts[2]);
 
-        if (!endDateTime.IsSuccessful)
+        if (!duration.IsSuccessful)
         {
-            return ParseResult.CreateFailure<ICommandModel>(endDateTime.ParseFailureMessage);
+            return ParseResult.CreateFailure<ICommandModel>(duration.ParseFailureMessage);
         }
 
         var description = parts[3];
@@ -39,7 +39,7 @@ public class CreateScheduleCommandParser : CommandParserBase
         return ParseResult.CreateSuccess<ICommandModel>(
             new CreateScheduleCommandModel(
                 startDateTime.Value!.Value,
-                endDateTime.Value!.Value,
+                duration.Value,
                 description,
                 canOverlap
             )

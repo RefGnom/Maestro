@@ -19,7 +19,7 @@ public class MaestroCommandHandler(
 
     public async Task UpdateHandler(ITelegramBotClient bot, Update update, CancellationToken cancellationToken)
     {
-        if (update is { Type: UpdateType.Message, Message: not null } && update.Message.Text!.StartsWith('/'))
+        if (update is { Type: UpdateType.Message, Message: not null })
         {
             var messageText = update.Message.Text!;
             var telegramCommandBundle = _telegramCommandMapper.MapCommandBundle(messageText);

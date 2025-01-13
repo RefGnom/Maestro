@@ -7,5 +7,5 @@ public class ParseFailureMessages
     public const string ParseIntFailureMessage =
         "количество отправки напоминания. Напишите целое натуральное число.";
     public const string ParseTimeSpanFailureMessage =
-        "интервал повторной отправки напоминания. Напишите время в формате \"дни:часы:минуты:секунды\".";
+        "временной интервал. Напишите время в формате \"дни:часы:минуты:секунды\".";
 }

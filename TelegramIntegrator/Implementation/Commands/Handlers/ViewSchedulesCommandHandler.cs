@@ -26,17 +26,17 @@ namespace Maestro.TelegramIntegrator.Implementation.Commands.Handlers
         {
             var schedules = _maestroApiClient.GetSchedulesForUserAsync(context.UserId, null);
 
-            var schedulesList = new List<SchedulesForUserDto>();
+            var schedulesList = new List<string>();
 
-            await foreach (var reminder in schedules)
+            await foreach (var schedule in schedules)
             {
-                schedulesList.Add(reminder);
+                schedulesList.Add(string.Join(", ", schedule.Description, schedule.StartDateTime, schedule.Duration));
             }
 
             if (schedulesList.Any())
             {
                 await _telegramBotClient.SendMessage(context.UserId,
-                $"Ваши напоминания:\n{string.Join("\n", schedulesList)}"
+                $"Ваши расписания:\n{string.Join("\n", schedulesList)}"
                 );
 
                 _log.Info($"Sent schedules to the user");
