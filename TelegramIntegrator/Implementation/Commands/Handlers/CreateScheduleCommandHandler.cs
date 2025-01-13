@@ -39,7 +39,7 @@ public class CreateScheduleCommandHandler(
             return;
         }
 
-        await _maestroApiClient.CreateScheduleAsync(
+        var scheduleId = await _maestroApiClient.CreateScheduleAsync(
             new ScheduleDto
             {
                 UserId = context.UserId,
@@ -50,8 +50,14 @@ public class CreateScheduleCommandHandler(
                 IsCompleted = false
             }
         );
-
-        _log.Info("Schedule created");
+        if (scheduleId is null)
+        {
+            await _telegramBotClient.SendMessage(
+                context.ChatId,
+                $"Невозможно создать расписание \"{scheduleCommandModel.ScheduleDescription}\", потому что оно имеет пересечения"
+            );
+            return;
+        }
 
         await _telegramBotClient.SendMessage(
             context.ChatId,
