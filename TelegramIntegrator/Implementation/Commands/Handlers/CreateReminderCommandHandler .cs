@@ -4,6 +4,7 @@ using Maestro.Core.Providers;
 using Maestro.Server.Public.Models.Reminders;
 using Maestro.TelegramIntegrator.Implementation.Commands.Models;
 using Maestro.TelegramIntegrator.Models;
+using Maestro.TelegramIntegrator.View;
 using Telegram.Bot;
 
 namespace Maestro.TelegramIntegrator.Implementation.Commands.Handlers;
@@ -54,8 +55,7 @@ public class CreateReminderCommandHandler(
 
         await _telegramBotClient.SendMessage(
             context.ChatId,
-            $"Напоминание \"{reminderCommandModel.ReminderDescription}\" создано на время {reminderCommandModel.ReminderTime:dd.MM.yyyy HH:mm}, " +
-            $"повторная отправка напоминания (если есть): {reminderCommandModel.RemindCount} раз(а) через {reminderCommandModel.RemindInterval.TotalMinutes} мин."
+            TelegramMessageBuilder.BuildReminderCreatedMessage(reminderCommandModel)
         );
     }
 }

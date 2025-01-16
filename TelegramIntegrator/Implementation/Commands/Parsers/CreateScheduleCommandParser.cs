@@ -9,7 +9,7 @@ public class CreateScheduleCommandParser : CommandParserBase
 {
     public override string CommandName => TelegramCommandNames.CreateSchedule;
 
-    public override ParseResult<ICommandModel> ParseCommand(string command)
+    public override ParseResult<ICommandModel> ParseCommand(string command, DateTime messageDateTime)
     {
         var parts = command.Split(",", StringSplitOptions.TrimEntries);
         if (parts.Length < 4)
@@ -19,11 +19,48 @@ public class CreateScheduleCommandParser : CommandParserBase
             );
         }
 
-        var startDateTime = ParserHelper.ParseDateTime(parts[1]);
+        DateTime startDateTime;
+        var dateTimePart = parts[1];
 
-        if (!startDateTime.IsSuccessful)
+        var fullDateTimeParseResult = ParserHelper.ParseDateTime(dateTimePart);
+        if (fullDateTimeParseResult.IsSuccessful)
         {
-            return ParseResult.CreateFailure<ICommandModel>(startDateTime.ParseFailureMessage);
+            startDateTime = fullDateTimeParseResult.Value!.Value;
+        }
+        else
+        {
+            var dateParts = dateTimePart.Split(' ');
+            if (dateParts.Length == 2)
+            {
+                var date = dateParts[0];
+                var time = dateParts[1];
+                var parseResult = ParserHelper.ParseDateTime($"{date}.{messageDateTime.Year} {time}");
+
+                if (parseResult.IsSuccessful)
+                {
+                    startDateTime = parseResult.Value!.Value;
+                }
+                else
+                {
+                    return ParseResult.CreateFailure<ICommandModel>(parseResult.ParseFailureMessage);
+                }
+            }
+            else if (dateParts.Length == 1)
+            {
+                var parseResult = ParserHelper.ParseDateTime($"{messageDateTime.Date:dd.MM.yyyy} {dateParts[0]}");
+                if (parseResult.IsSuccessful)
+                {
+                    startDateTime = parseResult.Value!.Value;
+                }
+                else
+                {
+                    return ParseResult.CreateFailure<ICommandModel>(parseResult.ParseFailureMessage);
+                }
+            }
+            else
+            {
+                return ParseResult.CreateFailure<ICommandModel>(TelegramMessageBuilder.BuildParseFailureMessage(ParseFailureMessages.ParseDateTimeFailureMessage));
+            }
         }
 
         var duration = ParserHelper.ParseTimeSpan(parts[2]);
@@ -38,7 +75,7 @@ public class CreateScheduleCommandParser : CommandParserBase
 
         return ParseResult.CreateSuccess<ICommandModel>(
             new CreateScheduleCommandModel(
-                startDateTime.Value!.Value,
+                startDateTime,
                 duration.Value,
                 description,
                 canOverlap

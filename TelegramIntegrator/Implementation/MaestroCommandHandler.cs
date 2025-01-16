@@ -30,7 +30,7 @@ public class MaestroCommandHandler(
                 return;
             }
 
-            var commandParseResult = telegramCommandBundle.CommandParser.ParseCommand(messageText);
+            var commandParseResult = telegramCommandBundle.CommandParser.ParseCommand(messageText, update.Message.Date);
             if (!commandParseResult.IsSuccessful)
             {
                 _log.Warn("Failed to parse message");
@@ -51,32 +51,32 @@ public class MaestroCommandHandler(
             return;
         }
 
-        if (update is { Type: UpdateType.CallbackQuery, CallbackQuery: not null })
-        {
-            var callbackQuery = update.CallbackQuery;
-            var message = callbackQuery.Data!;
-            var chatContext = new ChatContext()
-            {
-                UserId = callbackQuery.From.Id,
-                ChatId = callbackQuery.From.Id
-            };
-            var telegramCommandBundle = _telegramCommandMapper.MapCommandBundle(message);
-            if (telegramCommandBundle is null)
-            {
-                _log.Warn($"Не нашли связку команды телеграмма для сообщения {message}");
-                await bot.SendMessage(chatContext.ChatId, TelegramMessageBuilder.BuildUnknownCommand(), cancellationToken: cancellationToken);
-                return;
-            }
+        //if (update is { Type: UpdateType.CallbackQuery, CallbackQuery: not null })
+        //{
+        //    var callbackQuery = update.CallbackQuery;
+        //    var message = callbackQuery.Data!;
+        //    var chatContext = new ChatContext()
+        //    {
+        //        UserId = callbackQuery.From.Id,
+        //        ChatId = callbackQuery.From.Id
+        //    };
+        //    var telegramCommandBundle = _telegramCommandMapper.MapCommandBundle(message);
+        //    if (telegramCommandBundle is null)
+        //    {
+        //        _log.Warn($"Не нашли связку команды телеграмма для сообщения {message}");
+        //        await bot.SendMessage(chatContext.ChatId, TelegramMessageBuilder.BuildUnknownCommand(), cancellationToken: cancellationToken);
+        //        return;
+        //    }
 
-            var parseResult = telegramCommandBundle.CommandParser.ParseCommand(message);
-            if (!parseResult.IsSuccessful)
-            {
-                _log.Warn("Failed to parse message");
-                await bot.SendMessage(chatContext.ChatId, parseResult.ParseFailureMessage, cancellationToken: cancellationToken);
-                return;
-            }
-            await telegramCommandBundle.CommandHandler.ExecuteAsync(chatContext, parseResult.Value);
-        }
+        //    var parseResult = telegramCommandBundle.CommandParser.ParseCommand(message);
+        //    if (!parseResult.IsSuccessful)
+        //    {
+        //        _log.Warn("Failed to parse message");
+        //        await bot.SendMessage(chatContext.ChatId, parseResult.ParseFailureMessage, cancellationToken: cancellationToken);
+        //        return;
+        //    }
+        //    await telegramCommandBundle.CommandHandler.ExecuteAsync(chatContext, parseResult.Value);
+        //}
     }
 
     public async Task ErrorHandler(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)

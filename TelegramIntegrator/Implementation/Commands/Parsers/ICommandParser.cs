@@ -7,5 +7,5 @@ public interface ICommandParser
 {
     string CommandName { get; }
     bool CanParse(string command);
-    ParseResult<ICommandModel> ParseCommand(string command);
+    ParseResult<ICommandModel> ParseCommand(string command, DateTime messageDateTime);
 }

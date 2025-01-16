@@ -10,14 +10,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Client.Integrator\Client.Integrator.csproj"/>
-        <ProjectReference Include="..\Core\Core.csproj"/>
-        <ProjectReference Include="..\Operational\Operational.csproj"/>
+        <ProjectReference Include="..\Client.Integrator\Client.Integrator.csproj" />
+        <ProjectReference Include="..\Core\Core.csproj" />
+        <ProjectReference Include="..\Operational\Operational.csproj" />
+        <ProjectReference Include="..\Server.Core.Public\Server.Core.Public.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
-        <PackageReference Include="Telegram.Bot" Version="22.0.2"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="Telegram.Bot" Version="22.0.2" />
     </ItemGroup>
 
 </Project>

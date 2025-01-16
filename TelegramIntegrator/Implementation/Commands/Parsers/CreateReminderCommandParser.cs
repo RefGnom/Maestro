@@ -9,7 +9,7 @@ public class CreateReminderCommandParser : CommandParserBase
 {
     public override string CommandName => TelegramCommandNames.CreateReminder;
 
-    public override ParseResult<ICommandModel> ParseCommand(string command)
+    public override ParseResult<ICommandModel> ParseCommand(string command, DateTime messageDateTime)
     {
         var parts = command.Split(",", StringSplitOptions.TrimEntries);
         if (parts.Length < 3)
@@ -17,11 +17,48 @@ public class CreateReminderCommandParser : CommandParserBase
             return ParseResult.CreateFailure<ICommandModel>(TelegramMessageBuilder.BuildByCommandPattern(TelegramCommandPatterns.CreateReminderCommandPattern));
         }
 
-        var dateTimeParseResult = ParserHelper.ParseDateTime(parts[1]);
+        DateTime reminderDateTime;
+        var dateTimePart = parts[1];
 
-        if (!dateTimeParseResult.IsSuccessful)
+        var fullDateTimeParseResult = ParserHelper.ParseDateTime(dateTimePart);
+        if (fullDateTimeParseResult.IsSuccessful)
         {
-            return ParseResult.CreateFailure<ICommandModel>(dateTimeParseResult.ParseFailureMessage);
+            reminderDateTime = fullDateTimeParseResult.Value!.Value;
+        }
+        else
+        {
+            var dateParts = dateTimePart.Split(' ');
+            if (dateParts.Length == 2)
+            {
+                var date = dateParts[0];
+                var time = dateParts[1];
+                var parseResult = ParserHelper.ParseDateTime($"{date}.{messageDateTime.Year} {time}");
+
+                if (parseResult.IsSuccessful)
+                {
+                    reminderDateTime = parseResult.Value!.Value;
+                }
+                else
+                {
+                    return ParseResult.CreateFailure<ICommandModel>(parseResult.ParseFailureMessage);
+                }
+            }
+            else if (dateParts.Length == 1)
+            {
+                var parseResult = ParserHelper.ParseDateTime($"{messageDateTime.Date:dd.MM.yyyy} {dateParts[0]}");
+                if (parseResult.IsSuccessful)
+                {
+                    reminderDateTime = parseResult.Value!.Value;
+                }
+                else
+                {
+                    return ParseResult.CreateFailure<ICommandModel>(parseResult.ParseFailureMessage);
+                }
+            }
+            else
+            {
+                return ParseResult.CreateFailure<ICommandModel>(TelegramMessageBuilder.BuildParseFailureMessage(ParseFailureMessages.ParseDateTimeFailureMessage));
+            }
         }
 
         var description = parts[2];
@@ -52,7 +89,7 @@ public class CreateReminderCommandParser : CommandParserBase
 
         return ParseResult.CreateSuccess<ICommandModel>(
             new CreateReminderCommandModel(
-                dateTimeParseResult.Value!.Value,
+                reminderDateTime,
                 description,
                 remindCount,
                 remindInterval
