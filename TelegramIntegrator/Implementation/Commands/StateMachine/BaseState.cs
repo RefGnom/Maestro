@@ -13,7 +13,7 @@ public abstract class BaseState<TState>(ILog<TState> log) : IState
     protected virtual Task ReceiveEditedMessageAsync(Message message) => ReceiveUpdateBaseAsync();
     protected virtual Task ReceiveCallbackQueryAsync(CallbackQuery callbackQuery) => ReceiveUpdateBaseAsync();
 
-    public abstract Task Initialize(long userId);
+    public virtual Task Initialize(long userId) => Task.CompletedTask;
 
     public Task ReceiveUpdateAsync(Update update)
     {
