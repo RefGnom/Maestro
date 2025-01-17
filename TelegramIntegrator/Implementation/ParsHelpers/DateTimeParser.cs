@@ -1,38 +1,27 @@
 ﻿using Maestro.Core.Providers;
+using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 
 namespace Maestro.TelegramIntegrator.Implementation.ParsHelpers;
 
 public class DateTimeParser : IDateTimeParser
 {
-    private string[] timeFormats = new[] { "HH:mm", "HH.mm", "HH" };
-    private const string DateTimeFormat = $"dd.MM.yyyy HH:mm";
+    private string[] dateTimeFormats = new[] { "dd.MM.yyyy HH:mm", "dd.MM.yyyy HH.mm", "dd.MM.yyyy HH" };
 
     public bool TryParse(string dateTime, DateTime messageDateTime, out DateTime? dateTimeResult)
     {
-        if (DateTime.TryParseExact(
+        foreach (var dateTimeFormat in dateTimeFormats)
+        {
+            if (DateTime.TryParseExact(
                 dateTime,
-                DateTimeFormat,
+                dateTimeFormat,
                 CultureInfo.InvariantCulture,
                 DateTimeStyles.None,
                 out var result
             )
-           )
-        {
-            dateTimeResult = result;
-            return true;
-        }
-
-        foreach ( var timeFormat in timeFormats )
-        {
-            if (DateTime.TryParseExact(
-                dateTime,
-                timeFormat,
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.None,
-                out var timeResult))
+            )
             {
-                dateTimeResult = timeResult > messageDateTime ? timeResult : timeResult.AddDays(1);
+                dateTimeResult = result > messageDateTime ? result : result.AddDays(1);
                 return true;
             }
         }

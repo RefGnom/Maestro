@@ -30,7 +30,7 @@ public class MaestroCommandHandler(
                 return;
             }
 
-            var commandParseResult = telegramCommandBundle.CommandParser.ParseCommand(messageText, update.Message.Date);
+            var commandParseResult = telegramCommandBundle.CommandParser.ParseCommand(messageText, update.Message.Date.ToLocalTime());
             if (!commandParseResult.IsSuccessful)
             {
                 _log.Warn("Failed to parse message");

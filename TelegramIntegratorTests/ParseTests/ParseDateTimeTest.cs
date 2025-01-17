@@ -11,6 +11,7 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
         [TestCase("11:00", "17.01.2025 10:00", "17.01.2025 11:00")]
         [TestCase("11.00", "17.01.2025 10:00", "17.01.2025 11:00")]
         [TestCase("11", "17.01.2025 10:00", "17.01.2025 11:00")]
+        [TestCase("11", "17.01.2025 12:00", "18.01.2025 11:00")]
         public void ParseDateTime_ShouldReturnCorrectParsedDateTime(string stringToParse, string dateTimeNowString, string expectedParsedDateTimeString)
         {
             var dateTimeNow = DateTime.Parse(dateTimeNowString);
