@@ -23,7 +23,6 @@ public class MainState(
         var telegramCommandBundle = _telegramCommandMapper.MapCommandBundle(messageText);
         if (telegramCommandBundle is null)
         {
-            _log.Warn($"Не нашли связку команды телеграмма для сообщения {messageText}");
             await _telegramBotClient.SendMessage(message.Chat.Id, TelegramMessageBuilder.BuildUnknownCommand());
             return;
         }
