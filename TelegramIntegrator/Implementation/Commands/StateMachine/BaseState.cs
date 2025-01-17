@@ -5,13 +5,15 @@ using Telegram.Bot.Types.Enums;
 
 namespace Maestro.TelegramIntegrator.Implementation.Commands.StateMachine;
 
-public abstract class BaseState(ILogFactory logFactory) : IState
+public abstract class BaseState<TState>(ILog<TState> log) : IState
 {
-    private readonly ILog<BaseState> _log = logFactory.CreateLog<BaseState>();
+    private readonly ILog<TState> _log = log;
 
     protected virtual Task ReceiveMessageAsync(Message message) => ReceiveUpdateBaseAsync();
     protected virtual Task ReceiveEditedMessageAsync(Message message) => ReceiveUpdateBaseAsync();
     protected virtual Task ReceiveCallbackQueryAsync(CallbackQuery callbackQuery) => ReceiveUpdateBaseAsync();
+
+    public abstract Task Initialize(long userId);
 
     public Task ReceiveUpdateAsync(Update update)
     {
@@ -26,7 +28,7 @@ public abstract class BaseState(ILogFactory logFactory) : IState
 
     private Task ReceiveUpdateBaseAsync()
     {
-        _log.WarnWithStackTrace("При обработке обновления вызван базовый метод", 5);
+        _log.WarnWithStackTrace("При обработке обновления вызван базовый метод", 4);
         return Task.CompletedTask;
     }
 }

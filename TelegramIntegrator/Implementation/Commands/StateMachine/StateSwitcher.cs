@@ -9,10 +9,11 @@ public class StateSwitcher(Lazy<IStatesProvider> statesProvider) : IStateSwitche
     private readonly MemoryCache _memoryCache = new(new MemoryCacheOptions());
     private readonly Lazy<IStatesProvider> _statesProvider = statesProvider;
 
-    public void SetState<TState>(long userId) where TState : IState
+    public async Task SetStateAsync<TState>(long userId) where TState : IState
     {
         var state = _statesProvider.Value.GetState<TState>();
         _memoryCache.Set(userId, state, CacheExpirationTimeout);
+        await state.Initialize(userId);
     }
 
     public IState GetState(long userId)

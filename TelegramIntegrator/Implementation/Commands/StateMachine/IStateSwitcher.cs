@@ -2,6 +2,6 @@
 
 public interface IStateSwitcher
 {
-    void SetState<TState>(long userId) where TState : IState;
+    Task SetStateAsync<TState>(long userId) where TState : IState;
     IState GetState(long userId);
 }
