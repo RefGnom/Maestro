@@ -2,5 +2,5 @@
 
 public interface IDateTimeParser
 {
-    bool TryParse(string dateTime, out DateTime? dateTimeResult);
+    bool TryParse(string dateTime, DateTime messageDateTime, out DateTime? dateTimeResult);
 }

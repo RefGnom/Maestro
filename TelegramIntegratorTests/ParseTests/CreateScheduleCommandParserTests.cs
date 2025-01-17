@@ -22,7 +22,7 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
         {
             var command = "/schedule, 19.05.2025 10:00, 2:00, test schedule, overlap";
 
-            var parseResult = _parser.ParseCommand(command);
+            var parseResult = _parser.ParseCommand(command, DateTime.Parse("19.05.2025 10:00"));
 
             parseResult.IsSuccessful.Should().BeTrue();
 
@@ -41,7 +41,7 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
 
             var command = "/schedule, 19.05.2025 10:00, 2:00, test schedule";
 
-            var parseResult = _parser.ParseCommand(command);
+            var parseResult = _parser.ParseCommand(command, DateTime.Parse("19.05.2025 10:00"));
 
             parseResult.IsSuccessful.Should().BeTrue();
 

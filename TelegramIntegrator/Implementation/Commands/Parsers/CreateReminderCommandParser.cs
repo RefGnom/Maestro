@@ -17,48 +17,11 @@ public class CreateReminderCommandParser : CommandParserBase
             return ParseResult.CreateFailure<ICommandModel>(TelegramMessageBuilder.BuildByCommandPattern(TelegramCommandPatterns.CreateReminderCommandPattern));
         }
 
-        DateTime reminderDateTime;
-        var dateTimePart = parts[1];
+        var dateTimeParseResult = ParserHelper.ParseDateTime(parts[1], messageDateTime);
 
-        var fullDateTimeParseResult = ParserHelper.ParseDateTime(dateTimePart);
-        if (fullDateTimeParseResult.IsSuccessful)
+        if (!dateTimeParseResult.IsSuccessful)
         {
-            reminderDateTime = fullDateTimeParseResult.Value!.Value;
-        }
-        else
-        {
-            var dateParts = dateTimePart.Split(' ');
-            if (dateParts.Length == 2)
-            {
-                var date = dateParts[0];
-                var time = dateParts[1];
-                var parseResult = ParserHelper.ParseDateTime($"{date}.{messageDateTime.Year} {time}");
-
-                if (parseResult.IsSuccessful)
-                {
-                    reminderDateTime = parseResult.Value!.Value;
-                }
-                else
-                {
-                    return ParseResult.CreateFailure<ICommandModel>(parseResult.ParseFailureMessage);
-                }
-            }
-            else if (dateParts.Length == 1)
-            {
-                var parseResult = ParserHelper.ParseDateTime($"{messageDateTime.Date:dd.MM.yyyy} {dateParts[0]}");
-                if (parseResult.IsSuccessful)
-                {
-                    reminderDateTime = parseResult.Value!.Value;
-                }
-                else
-                {
-                    return ParseResult.CreateFailure<ICommandModel>(parseResult.ParseFailureMessage);
-                }
-            }
-            else
-            {
-                return ParseResult.CreateFailure<ICommandModel>(TelegramMessageBuilder.BuildParseFailureMessage(ParseFailureMessages.ParseDateTimeFailureMessage));
-            }
+            return ParseResult.CreateFailure<ICommandModel>(dateTimeParseResult.ParseFailureMessage);
         }
 
         var description = parts[2];
@@ -89,7 +52,7 @@ public class CreateReminderCommandParser : CommandParserBase
 
         return ParseResult.CreateSuccess<ICommandModel>(
             new CreateReminderCommandModel(
-                reminderDateTime,
+                dateTimeParseResult.Value!.Value,
                 description,
                 remindCount,
                 remindInterval
