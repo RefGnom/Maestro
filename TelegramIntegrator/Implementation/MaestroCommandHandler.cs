@@ -23,7 +23,7 @@ public class MaestroCommandHandler(
 
     public async Task ErrorHandler(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
-        _log.Error(exception.Message);
+        _log.Error(exception.ToString());
         await Task.CompletedTask;
     }
 }

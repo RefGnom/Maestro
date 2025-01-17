@@ -2,16 +2,27 @@
 using Maestro.TelegramIntegrator.Implementation.Extensions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Maestro.TelegramIntegrator.Implementation.Commands.StateMachine;
 
-public abstract class BaseState<TState>(ILog<TState> log) : IState
+public abstract class BaseState<TState>(ILog<TState> log, IStateSwitcher stateSwitcher, IReplyMarkupFactory replyMarkupFactory) : IState
 {
     private readonly ILog<TState> _log = log;
+    private readonly IStateSwitcher _stateSwitcher = stateSwitcher;
+    private readonly IReplyMarkupFactory _replyMarkupFactory = replyMarkupFactory;
+
+    protected IReplyMarkup ExitReplyMarkup => _replyMarkupFactory.CreateExitToMainMenuReplyMarkup();
 
     protected virtual Task ReceiveMessageAsync(Message message) => ReceiveUpdateBaseAsync();
     protected virtual Task ReceiveEditedMessageAsync(Message message) => ReceiveUpdateBaseAsync();
-    protected virtual Task ReceiveCallbackQueryAsync(CallbackQuery callbackQuery) => ReceiveUpdateBaseAsync();
+
+    protected virtual Task ReceiveCallbackQueryAsync(CallbackQuery callbackQuery)
+    {
+        return callbackQuery.Data == "/exit"
+            ? _stateSwitcher.SetStateAsync<MainState>(callbackQuery.From.Id)
+            : ReceiveUpdateBaseAsync();
+    }
 
     public virtual Task Initialize(long userId) => Task.CompletedTask;
 

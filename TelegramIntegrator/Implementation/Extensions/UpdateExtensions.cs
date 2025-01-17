@@ -11,6 +11,7 @@ public static class UpdateExtensions
         {
             UpdateType.Message => update.Message!.From!.Id,
             UpdateType.CallbackQuery => update.CallbackQuery!.From.Id,
+            UpdateType.EditedMessage => update.EditedMessage!.From!.Id,
             _ => throw new NotSupportedException($"Для обновления типа {update.Type} не реализовано получение userId")
         };
     }

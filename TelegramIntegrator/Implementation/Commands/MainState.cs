@@ -1,4 +1,5 @@
 ﻿using Maestro.Core.Logging;
+using Maestro.TelegramIntegrator.Implementation.Commands.CreateReminder;
 using Maestro.TelegramIntegrator.Implementation.Commands.StateMachine;
 using Maestro.TelegramIntegrator.Models;
 using Maestro.TelegramIntegrator.View;
@@ -8,14 +9,26 @@ using Telegram.Bot.Types;
 namespace Maestro.TelegramIntegrator.Implementation.Commands;
 
 public class MainState(
-    ILogFactory logFactory,
+    ILog<MainState> log,
     ITelegramBotClient telegramBotClient,
-    ITelegramCommandMapper telegramCommandMapper
-) : BaseState(logFactory)
+    ITelegramCommandMapper telegramCommandMapper,
+    IStateSwitcher stateSwitcher,
+    IReplyMarkupFactory replyMarkupFactory
+) : BaseState<MainState>(log, stateSwitcher, replyMarkupFactory)
 {
     private readonly ITelegramCommandMapper _telegramCommandMapper = telegramCommandMapper;
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
-    private readonly ILog<MainState> _log = logFactory.CreateLog<MainState>();
+    private readonly ILog<MainState> _log = log;
+    private readonly IStateSwitcher _stateSwitcher = stateSwitcher;
+    private readonly IReplyMarkupFactory _replyMarkupFactory = replyMarkupFactory;
+
+    public override Task Initialize(long userId)
+    {
+        var replyMarkup = _replyMarkupFactory.CreateOptionsReplyMarkup();
+        return _telegramBotClient.SendMessage(userId, "Выберите опцию", replyMarkup: replyMarkup);
+    }
+
+    protected override Task ReceiveEditedMessageAsync(Message message) => ReceiveMessageAsync(message);
 
     protected async override Task ReceiveMessageAsync(Message message)
     {
@@ -45,5 +58,16 @@ public class MainState(
             chatContext,
             command
         );
+    }
+
+    protected async override Task ReceiveCallbackQueryAsync(CallbackQuery callbackQuery)
+    {
+        var callbackQueryCommand = callbackQuery.Data!;
+        var userId = callbackQuery.From.Id;
+
+        if (callbackQueryCommand.StartsWith("/reminder"))
+        {
+            await _stateSwitcher.SetStateAsync<EnterReminderDescriptionState>(userId);
+        }
     }
 }

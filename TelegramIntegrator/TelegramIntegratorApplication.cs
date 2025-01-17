@@ -24,7 +24,8 @@ public class TelegramIntegratorApplication(
         AllowedUpdates =
         [
             UpdateType.Message,
-            UpdateType.CallbackQuery
+            UpdateType.CallbackQuery,
+            UpdateType.EditedMessage
         ],
         DropPendingUpdates = true
     };
@@ -41,6 +42,6 @@ public class TelegramIntegratorApplication(
             _receiverOptions
         );
         _log.Info("Telegram client started");
-        await processRunner.RunAsync();
+        //await processRunner.RunAsync();
     }
 }
