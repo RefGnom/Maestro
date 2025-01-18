@@ -32,7 +32,7 @@ public class EnterReminderDateTimeState(
 
     protected override Task ReceiveEditedMessageAsync(Message message) => ReceiveMessageAsync(message);
 
-    protected async override Task ReceiveMessageAsync(Message message)
+    protected override Task ReceiveMessageAsync(Message message)
     {
         var userId = message.From!.Id;
         var dateTimeMessage = message.Text!;
@@ -40,11 +40,14 @@ public class EnterReminderDateTimeState(
         var parseDateTimeResult = ParserHelper.ParseDateTime(dateTimeMessage, currentDateTime);
         if (!parseDateTimeResult.IsSuccessful)
         {
-            await _telegramBotClient.SendMessage(userId, $"Ошибка ввода, пожалуйста, используйте шаблон\n\n{EnterDataPatterns.DateTimePattern}", replyMarkup: ExitReplyMarkup);
-            return;
+            return _telegramBotClient.SendMessage(
+                userId,
+                $"Ошибка ввода, пожалуйста, используйте шаблон\n\n{EnterDataPatterns.DateTimePattern}",
+                replyMarkup: ExitReplyMarkup
+            );
         }
 
         _reminderBuilder.WithReminderDateTime(userId, parseDateTimeResult.Value!.Value);
-        await StateSwitcher.SetStateAsync<AnswerIsRepeatableReminderState>(userId);
+        return StateSwitcher.SetStateAsync<AnswerIsRepeatableReminderState>(userId);
     }
 }

@@ -25,13 +25,14 @@ public class SendReminderState(
         try
         {
             await _maestroApiClient.CreateReminderAsync(reminderDto);
+            await _telegramBotClient.SendMessage(userId, "Напоминание создано");
         }
         catch (Exception e)
         {
             Log.Error($"Ошибка при создании напоминания {e}");
             await _telegramBotClient.SendMessage(userId, "Что-то пошло не так, приносим свои извинения");
         }
-        await _telegramBotClient.SendMessage(userId, "Напоминание создано");
+
         await _stateSwitcher.SetStateAsync<MainState>(userId);
     }
 }

@@ -38,6 +38,5 @@ public class EnterRemindIntervalState(
 
         _reminderBuilder.WithRemindInterval(userId, parseResult.Value);
         return StateSwitcher.SetStateAsync<SendReminderState>(userId);
-
     }
 }
