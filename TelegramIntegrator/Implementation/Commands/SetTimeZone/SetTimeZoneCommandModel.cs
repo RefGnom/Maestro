@@ -2,8 +2,8 @@
 
 namespace Maestro.TelegramIntegrator.Implementation.Commands.SetTimeZone;
 
-public class SetTimeZoneCommandModel() : ICommandModel
+public class SetTimeZoneCommandModel : ICommandModel
 {
     public string TelegramCommand => TelegramCommandNames.SetTimeZone;
-    public string HelpDescription => "Введите дельту от международного UTC времени. Москва: +3";
+    public string HelpDescription => throw new NotSupportedException("Не поддерживается помощь для этой команды");
 }

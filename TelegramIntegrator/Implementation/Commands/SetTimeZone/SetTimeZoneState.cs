@@ -47,19 +47,29 @@ public class SetTimeZoneState(
         return SetTimeZoneAsync(userId, text);
     }
 
-    private Task SetTimeZoneAsync(long userId, string deltaText)
+    private async Task SetTimeZoneAsync(long userId, string deltaText)
     {
         var deltaParseResult = ParserHelper.ParseInt(deltaText);
         if (!deltaParseResult.IsSuccessful)
         {
-            return _telegramBotClient.SendMessage(userId, deltaParseResult.ParseFailureMessage);
+            await _telegramBotClient.SendMessage(userId, deltaParseResult.ParseFailureMessage);
+            return;
         }
 
         var utcOffset = TimeSpan.FromHours(deltaParseResult.Value);
         var timeZoneInfo = TimeZoneInfo.GetSystemTimeZones()
-            .First(x => x.BaseUtcOffset == utcOffset);
-        _userDateTimeService.SetUserTimeZone(userId, timeZoneInfo);
+            .FirstOrDefault(x => x.BaseUtcOffset == utcOffset);
 
-        return StateSwitcher.SetStateAsync<MainState>(userId);
+        if (timeZoneInfo is null)
+        {
+            await _telegramBotClient.SendMessage(userId, $"Не нашли временную зону для дельты {deltaParseResult.Value}");
+        }
+        else
+        {
+            _userDateTimeService.SetUserTimeZone(userId, timeZoneInfo);
+            await _telegramBotClient.SendMessage(userId, $"Установлена временная зона {timeZoneInfo}");
+        }
+
+        await StateSwitcher.SetStateAsync<MainState>(userId);
     }
 }
