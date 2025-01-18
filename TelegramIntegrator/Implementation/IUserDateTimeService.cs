@@ -6,4 +6,5 @@ public interface IUserDateTimeService
 {
     bool TryGetUserDateTime(long userId, out DateTime? userDateTime);
     void SetUserLocation(long userId, Location location);
+    void SetUserTimeZone(long userId, TimeZoneInfo timeZoneInfo);
 }

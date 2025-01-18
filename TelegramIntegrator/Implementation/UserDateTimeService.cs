@@ -26,4 +26,9 @@ public class UserDateTimeService : IUserDateTimeService
         var timeZoneInfo = TZConvert.GetTimeZoneInfo(timeZone);
         _timeZones[userId] = timeZoneInfo;
     }
+
+    public void SetUserTimeZone(long userId, TimeZoneInfo timeZoneInfo)
+    {
+        _timeZones[userId] = timeZoneInfo;
+    }
 }

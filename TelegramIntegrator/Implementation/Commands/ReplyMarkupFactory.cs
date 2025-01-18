@@ -1,4 +1,4 @@
-﻿ using Telegram.Bot.Types.ReplyMarkups;
+﻿using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Maestro.TelegramIntegrator.Implementation.Commands;
 
@@ -13,12 +13,12 @@ public class ReplyMarkupFactory : IReplyMarkupFactory
     public IReplyMarkup CreateOptionsReplyMarkup()
     {
         return new InlineKeyboardMarkup()
-            .AddButton(InlineKeyboardButton.WithCallbackData("Ввести свой часовой пояс", "/timezone"))
+            .AddButton("Ввести свой часовой пояс", TelegramCommandNames.SetTimeZone)
             .AddNewRow()
-            .AddButton(InlineKeyboardButton.WithCallbackData("Создать напоминание", "/reminder"))
-            .AddButton(InlineKeyboardButton.WithCallbackData("Создать расписание", "/bele"))
+            .AddButton("Создать напоминание", TelegramCommandNames.CreateReminderStepByStep)
+            .AddButton("Создать расписание", TelegramCommandNames.CreateScheduleStepByStep)
             .AddNewRow()
-            .AddButton(InlineKeyboardButton.WithCallbackData("Мои напоминания", "/my1"))
-            .AddButton(InlineKeyboardButton.WithCallbackData("Моё расписание", "/my2"));
+            .AddButton("Мои напоминания", TelegramCommandNames.ViewReminders)
+            .AddButton("Моё расписание", TelegramCommandNames.ViewSchedules);
     }
 }
