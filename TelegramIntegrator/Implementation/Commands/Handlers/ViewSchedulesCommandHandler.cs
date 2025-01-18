@@ -33,20 +33,19 @@ namespace Maestro.TelegramIntegrator.Implementation.Commands.Handlers
                     $"продолжительность: {schedule.Duration.Days} д {schedule.Duration.Hours} ч {schedule.Duration.Minutes} м.");
             }
 
-            if (schedulesList.Any())
+            if (schedulesList.Count != 0)
             {
                 await _telegramBotClient.SendMessage(context.UserId,
                 $"Ваши расписания:\n\n{string.Join("\n", schedulesList)}"
                 );
 
                 _log.Info($"Sent schedules to the user");
+                return;
             }
-            else
-            {
-                await _telegramBotClient.SendMessage(context.UserId,
+
+            await _telegramBotClient.SendMessage(context.UserId,
                 "Расписаний не найдено"
-                );
-            }
+            );
         }
     }
 }

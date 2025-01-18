@@ -2,6 +2,7 @@
 using Maestro.Client.Integrator;
 using Maestro.Core.Configuration.DependencyInjectionConfiguration;
 using Maestro.TelegramIntegrator;
+using Maestro.TelegramIntegrator.Implementation.Commands.StateMachine;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 
@@ -24,7 +25,7 @@ public class TestBase
                 var maestroClientFactory = serviceProvider.GetRequiredService<IMaestroApiClientFactory>();
                 return maestroClientFactory.Create("https://uri", "apiKey");
             }
-        );
+        ).AddSingleton<Lazy<IStatesProvider>>(x => new Lazy<IStatesProvider>(x.GetRequiredService<IStatesProvider>));
         ServiceProvider = serviceCollection.BuildServiceProvider();
     }
 

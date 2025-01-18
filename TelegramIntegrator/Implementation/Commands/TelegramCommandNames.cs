@@ -3,11 +3,12 @@
 public static class TelegramCommandNames
 {
     public const string CreateReminder = "/reminder";
+    public const string CreateReminderStepByStep = "/reminder_sbs";
     public const string CreateSchedule = "/schedule";
-    public const string CreateReminderHelp = "/reminder_h";
-    public const string CreateScheduleHelp = "/schedule_h";
+    public const string CreateScheduleStepByStep = "/schedule_sbs";
     public const string ViewReminders = "/view_reminders";
     public const string ViewSchedules = "/view_schedules";
+    public const string SetTimeZone = "/set_timezone";
 
     public static string[] GetCommandNames()
     {

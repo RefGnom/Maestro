@@ -40,6 +40,11 @@ public class CreateReminderCommandParser(IDateTimeProvider dateTimeProvider) : C
                 return ParseResult.CreateFailure<ICommandModel>(parserIntResult.ParseFailureMessage);
             }
 
+            if (parserIntResult.Value <= 0)
+            {
+                return ParseResult.CreateFailure<ICommandModel>("Количество напоминаний должно быть больше нуля");
+            }
+
             remindCount = parserIntResult.Value;
         }
 

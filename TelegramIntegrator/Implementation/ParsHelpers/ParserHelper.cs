@@ -37,15 +37,27 @@ public class ParserHelper
 
     public static ParseResult<int> ParseInt(string integer)
     {
-        return (int.TryParse(integer, out var parsedInteger) && parsedInteger > 0)
+        return int.TryParse(integer, out var parsedInteger)
             ? ParseResult.CreateSuccess(parsedInteger)
             : ParseResult.CreateFailure<int>(TelegramMessageBuilder.BuildParseFailureMessage(ParseFailureMessages.ParseIntFailureMessage));
     }
 
     public static ParseResult<TimeSpan> ParseTimeSpan(string timeSpan)
     {
-        return TimeSpan.TryParse(timeSpan, out var parsedTimeSpan)
-            ? ParseResult.CreateSuccess(parsedTimeSpan)
-            : ParseResult.CreateFailure<TimeSpan>(TelegramMessageBuilder.BuildParseFailureMessage(ParseFailureMessages.ParseTimeSpanFailureMessage));
+        var parts = timeSpan.Split(':', ';', '.')
+            .Select(ParseInt)
+            .ToArray();
+
+        if (parts.Any(x => !x.IsSuccessful))
+        {
+            return ParseResult.CreateFailure<TimeSpan>($"Ошибка ввода, пожалуйста, используйте шаблон\n\n{EnterDataPatterns.TimeSpanPattern}");
+        }
+
+        var timeSpanDetails = parts.Select(x => x.Value).ToArray();
+        var minutes = timeSpanDetails.Last();
+        var hours = timeSpanDetails.SkipLast(1).LastOrDefault(0);
+        var days = timeSpanDetails.SkipLast(2).LastOrDefault(0);
+
+        return ParseResult.CreateSuccess(new TimeSpan(days, hours, minutes, 0));
     }
 }

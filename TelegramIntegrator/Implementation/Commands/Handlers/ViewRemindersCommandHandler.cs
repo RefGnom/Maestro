@@ -32,20 +32,19 @@ namespace Maestro.TelegramIntegrator.Implementation.Commands.Handlers
                 remindersList.Add($"{reminder.Description},  {reminder.RemindDateTime:dd.mm.yyyy} в {reminder.RemindDateTime.TimeOfDay}");
             }
 
-            if (remindersList.Any())
+            if (remindersList.Count != 0)
             {
                 await _telegramBotClient.SendMessage(context.UserId,
                 $"Ваши напоминания:\n\n{string.Join("\n", remindersList)}"
                 );
 
                 _log.Info($"Sent reminders to the user");
+                return;
             }
-            else
-            {
-                await _telegramBotClient.SendMessage(context.UserId,
+
+            await _telegramBotClient.SendMessage(context.UserId,
                 "Напоминаний не найдено"
-                );
-            }
+            );
         }
     }
 }
