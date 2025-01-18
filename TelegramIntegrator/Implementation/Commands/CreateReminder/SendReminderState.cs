@@ -22,8 +22,16 @@ public class SendReminderState(
     public async override Task Initialize(long userId)
     {
         var reminderDto = _reminderBuilder.Build(userId);
-        await _telegramBotClient.SendMessage(userId, "Типо отправил напоминание в сервер");
+        try
+        {
+            await _maestroApiClient.CreateReminderAsync(reminderDto);
+        }
+        catch (Exception e)
+        {
+            Log.Error($"Ошибка при создании напоминания {e}");
+            await _telegramBotClient.SendMessage(userId, "Что-то пошло не так, приносим свои извинения");
+        }
+        await _telegramBotClient.SendMessage(userId, "Напоминание создано");
         await _stateSwitcher.SetStateAsync<MainState>(userId);
-        await _maestroApiClient.CreateReminderAsync(reminderDto);
     }
 }

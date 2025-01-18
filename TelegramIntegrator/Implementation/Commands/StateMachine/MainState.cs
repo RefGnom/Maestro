@@ -29,42 +29,42 @@ public class MainState(
 
     protected override Task ReceiveEditedMessageAsync(Message message) => ReceiveMessageAsync(message);
 
-    protected async override Task ReceiveMessageAsync(Message message)
-    {
-        var userId = message.From!.Id;
-        var state = _stateSwitcher.GetState(userId);
-        await state.ReceiveUpdateAsync(new Update { Message = message });
-    }
-
     // protected async override Task ReceiveMessageAsync(Message message)
     // {
-    //     var messageText = message.Text!;
-    //     var telegramCommandBundle = _telegramCommandMapper.MapCommandBundle(messageText);
-    //     if (telegramCommandBundle is null)
-    //     {
-    //         await _telegramBotClient.SendMessage(message.Chat.Id, TelegramMessageBuilder.BuildUnknownCommand());
-    //         return;
-    //     }
-    //
-    //     var commandParseResult = telegramCommandBundle.CommandParser.ParseCommand(messageText);
-    //     if (!commandParseResult.IsSuccessful)
-    //     {
-    //         _log.Warn("Failed to parse message");
-    //         await _telegramBotClient.SendMessage(message.Chat.Id, commandParseResult.ParseFailureMessage);
-    //         return;
-    //     }
-    //
-    //     var chatContext = new ChatContext
-    //     {
-    //         ChatId = message.Chat.Id,
-    //         UserId = message.From!.Id
-    //     };
-    //     var command = commandParseResult.Value;
-    //     await telegramCommandBundle.CommandHandler.ExecuteAsync(
-    //         chatContext,
-    //         command
-    //     );
+    //     var userId = message.From!.Id;
+    //     var state = _stateSwitcher.GetState(userId);
+    //     await state.ReceiveUpdateAsync(new Update { Message = message });
     // }
+
+    protected async override Task ReceiveMessageAsync(Message message)
+    {
+        var messageText = message.Text!;
+        var telegramCommandBundle = _telegramCommandMapper.MapCommandBundle(messageText);
+        if (telegramCommandBundle is null)
+        {
+            await _telegramBotClient.SendMessage(message.Chat.Id, TelegramMessageBuilder.BuildUnknownCommand());
+            return;
+        }
+
+        var commandParseResult = telegramCommandBundle.CommandParser.ParseCommand(messageText);
+        if (!commandParseResult.IsSuccessful)
+        {
+            _log.Warn("Failed to parse message");
+            await _telegramBotClient.SendMessage(message.Chat.Id, commandParseResult.ParseFailureMessage);
+            return;
+        }
+
+        var chatContext = new ChatContext
+        {
+            ChatId = message.Chat.Id,
+            UserId = message.From!.Id
+        };
+        var command = commandParseResult.Value;
+        await telegramCommandBundle.CommandHandler.ExecuteAsync(
+            chatContext,
+            command
+        );
+    }
 
     protected async override Task ReceiveCallbackQueryAsync(CallbackQuery callbackQuery)
     {

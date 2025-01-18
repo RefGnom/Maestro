@@ -8,11 +8,11 @@ namespace Maestro.TelegramIntegrator.Implementation.Commands.StateMachine;
 
 public abstract class BaseState<TState>(ILog<TState> log, IStateSwitcher stateSwitcher, IReplyMarkupFactory replyMarkupFactory) : IState
 {
-    private readonly ILog<TState> _log = log;
-    private readonly IStateSwitcher _stateSwitcher = stateSwitcher;
-    private readonly IReplyMarkupFactory _replyMarkupFactory = replyMarkupFactory;
+    protected readonly ILog<TState> Log = log;
+    protected readonly IStateSwitcher StateSwitcher = stateSwitcher;
+    protected readonly IReplyMarkupFactory ReplyMarkupFactory = replyMarkupFactory;
 
-    protected IReplyMarkup ExitReplyMarkup => _replyMarkupFactory.CreateExitToMainMenuReplyMarkup();
+    protected IReplyMarkup ExitReplyMarkup => ReplyMarkupFactory.CreateExitToMainMenuReplyMarkup();
 
     protected virtual Task ReceiveMessageAsync(Message message) => ReceiveUpdateBaseAsync();
     protected virtual Task ReceiveEditedMessageAsync(Message message) => ReceiveUpdateBaseAsync();
@@ -20,7 +20,7 @@ public abstract class BaseState<TState>(ILog<TState> log, IStateSwitcher stateSw
     protected virtual Task ReceiveCallbackQueryAsync(CallbackQuery callbackQuery)
     {
         return callbackQuery.Data == "/exit"
-            ? _stateSwitcher.SetStateAsync<MainState>(callbackQuery.From.Id)
+            ? StateSwitcher.SetStateAsync<MainState>(callbackQuery.From.Id)
             : ReceiveUpdateBaseAsync();
     }
 
@@ -39,7 +39,7 @@ public abstract class BaseState<TState>(ILog<TState> log, IStateSwitcher stateSw
 
     private Task ReceiveUpdateBaseAsync()
     {
-        _log.WarnWithStackTrace("При обработке обновления вызван базовый метод", 4);
+        Log.WarnWithStackTrace("При обработке обновления вызван базовый метод", 4);
         return Task.CompletedTask;
     }
 }
