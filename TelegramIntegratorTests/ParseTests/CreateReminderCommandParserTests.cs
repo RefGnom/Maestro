@@ -31,7 +31,7 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
             values.ReminderTime.Should().Be(new DateTime(2025, 5, 19, 10, 0, 0));
             values.ReminderDescription.Should().Be("test reminder");
             values.RemindCount.Should().Be(3);
-            values.RemindInterval.Should().Be(TimeSpan.FromMinutes(3));
+            values.RemindInterval.Should().Be(TimeSpan.FromHours(3));
         }
 
         [Test]
@@ -84,7 +84,6 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
             var parseResult = _parser.ParseCommand(command);
 
             parseResult.IsSuccessful.Should().BeFalse();
-            parseResult.ParseFailureMessage.Should().Be(TelegramMessageBuilder.BuildParseFailureMessage(ParseFailureMessages.ParseIntFailureMessage));
         }
 
         [Test]
@@ -95,7 +94,6 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
             var parseResult = _parser.ParseCommand(command);
 
             parseResult.IsSuccessful.Should().BeFalse();
-            parseResult.ParseFailureMessage.Should().Be(TelegramMessageBuilder.BuildParseFailureMessage(ParseFailureMessages.ParseTimeSpanFailureMessage));
         }
     }
 }

@@ -37,7 +37,7 @@ public class ParserHelper
 
     public static ParseResult<int> ParseInt(string integer)
     {
-        return (int.TryParse(integer, out var parsedInteger) && parsedInteger > 0)
+        return int.TryParse(integer, out var parsedInteger)
             ? ParseResult.CreateSuccess(parsedInteger)
             : ParseResult.CreateFailure<int>(TelegramMessageBuilder.BuildParseFailureMessage(ParseFailureMessages.ParseIntFailureMessage));
     }
