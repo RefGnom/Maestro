@@ -1,6 +1,5 @@
 ﻿using Maestro.Client.Integrator;
 using Maestro.Core.Logging;
-using Maestro.Server.Public.Models.Schedules;
 using Maestro.TelegramIntegrator.Implementation.Commands.Models;
 using Maestro.TelegramIntegrator.Models;
 using Telegram.Bot;
@@ -30,13 +29,14 @@ namespace Maestro.TelegramIntegrator.Implementation.Commands.Handlers
 
             await foreach (var schedule in schedules)
             {
-                schedulesList.Add(string.Join(", ", schedule.Description, schedule.StartDateTime, schedule.Duration));
+                schedulesList.Add($"{schedule.Description}, начало: {schedule.StartDateTime:dd.mm.yyyy}, " +
+                    $"продолжительность: {schedule.Duration.Days} д {schedule.Duration.Hours} ч {schedule.Duration.Minutes} м.");
             }
 
             if (schedulesList.Any())
             {
                 await _telegramBotClient.SendMessage(context.UserId,
-                $"Ваши расписания:\n{string.Join("\n", schedulesList)}"
+                $"Ваши расписания:\n\n{string.Join("\n", schedulesList)}"
                 );
 
                 _log.Info($"Sent schedules to the user");

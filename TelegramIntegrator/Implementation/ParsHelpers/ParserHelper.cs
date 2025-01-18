@@ -5,11 +5,35 @@ namespace Maestro.TelegramIntegrator.Implementation.ParsHelpers;
 
 public class ParserHelper
 {
-    public static ParseResult<DateTime?> ParseDateTime(string dateTime)
+    private static readonly DateTimeParser _dateTimeParser = new DateTimeParser();
+
+    public static ParseResult<DateTime?> ParseDateTime(string inputDateTime, DateTime messageDateTime)
     {
-        return new DateTimeParser().TryParse(dateTime, out var parsedDateTime)
-            ? ParseResult.CreateSuccess(parsedDateTime)
-            : ParseResult.CreateFailure<DateTime?>(TelegramMessageBuilder.BuildParseFailureMessage(ParseFailureMessages.ParseDateTimeFailureMessage));
+        if (_dateTimeParser.TryParse(inputDateTime, messageDateTime, out var parsedDateTime))
+        {
+            return ParseResult.CreateSuccess(parsedDateTime);
+        }
+        else
+        {
+            var dateParts = inputDateTime.Split(' ');
+            if (dateParts.Length == 2)
+            {
+                var date = dateParts[0];
+                var time = dateParts[1];
+
+                return _dateTimeParser.TryParse($"{date}.{messageDateTime.Year} {time}", messageDateTime, out var dateTime)
+                    ? ParseResult.CreateSuccess(dateTime)
+                    : ParseResult.CreateFailure<DateTime?>(TelegramMessageBuilder.BuildParseFailureMessage(ParseFailureMessages.ParseDateTimeFailureMessage));
+            }
+            else if (dateParts.Length == 1)
+            {
+                return new DateTimeParser().TryParse($"{messageDateTime.Date:dd.MM.yyyy} {dateParts[0]}", messageDateTime, out var dateTime)
+                    ? ParseResult.CreateSuccess(dateTime)
+                    : ParseResult.CreateFailure<DateTime?>(TelegramMessageBuilder.BuildParseFailureMessage(ParseFailureMessages.ParseDateTimeFailureMessage));
+            }
+
+            return ParseResult.CreateFailure<DateTime?>(TelegramMessageBuilder.BuildParseFailureMessage(ParseFailureMessages.ParseDateTimeFailureMessage));
+        }
     }
 
     public static ParseResult<int> ParseInt(string integer)

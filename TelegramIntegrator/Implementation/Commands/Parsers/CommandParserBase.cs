@@ -7,5 +7,5 @@ public abstract class CommandParserBase : ICommandParser
 {
     public abstract string CommandName { get; }
     public bool CanParse(string command) => command.StartsWith(CommandName);
-    public abstract ParseResult<ICommandModel> ParseCommand(string command);
+    public abstract ParseResult<ICommandModel> ParseCommand(string command, DateTime messageDateTime);
 }

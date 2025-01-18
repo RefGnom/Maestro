@@ -9,7 +9,7 @@ public class CreateReminderCommandParser : CommandParserBase
 {
     public override string CommandName => TelegramCommandNames.CreateReminder;
 
-    public override ParseResult<ICommandModel> ParseCommand(string command)
+    public override ParseResult<ICommandModel> ParseCommand(string command, DateTime messageDateTime)
     {
         var parts = command.Split(",", StringSplitOptions.TrimEntries);
         if (parts.Length < 3)
@@ -17,7 +17,7 @@ public class CreateReminderCommandParser : CommandParserBase
             return ParseResult.CreateFailure<ICommandModel>(TelegramMessageBuilder.BuildByCommandPattern(TelegramCommandPatterns.CreateReminderCommandPattern));
         }
 
-        var dateTimeParseResult = ParserHelper.ParseDateTime(parts[1]);
+        var dateTimeParseResult = ParserHelper.ParseDateTime(parts[1], messageDateTime);
 
         if (!dateTimeParseResult.IsSuccessful)
         {

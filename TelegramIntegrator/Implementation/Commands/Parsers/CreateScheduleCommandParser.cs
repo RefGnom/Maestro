@@ -9,7 +9,7 @@ public class CreateScheduleCommandParser : CommandParserBase
 {
     public override string CommandName => TelegramCommandNames.CreateSchedule;
 
-    public override ParseResult<ICommandModel> ParseCommand(string command)
+    public override ParseResult<ICommandModel> ParseCommand(string command, DateTime messageDateTime)
     {
         var parts = command.Split(",", StringSplitOptions.TrimEntries);
         if (parts.Length < 4)
@@ -19,11 +19,11 @@ public class CreateScheduleCommandParser : CommandParserBase
             );
         }
 
-        var startDateTime = ParserHelper.ParseDateTime(parts[1]);
+        var startDateTimeParseResult = ParserHelper.ParseDateTime(parts[1], messageDateTime);
 
-        if (!startDateTime.IsSuccessful)
+        if (!startDateTimeParseResult.IsSuccessful)
         {
-            return ParseResult.CreateFailure<ICommandModel>(startDateTime.ParseFailureMessage);
+            return ParseResult.CreateFailure<ICommandModel>(startDateTimeParseResult.ParseFailureMessage);
         }
 
         var duration = ParserHelper.ParseTimeSpan(parts[2]);
@@ -38,7 +38,7 @@ public class CreateScheduleCommandParser : CommandParserBase
 
         return ParseResult.CreateSuccess<ICommandModel>(
             new CreateScheduleCommandModel(
-                startDateTime.Value!.Value,
+                startDateTimeParseResult.Value!.Value,
                 duration.Value,
                 description,
                 canOverlap

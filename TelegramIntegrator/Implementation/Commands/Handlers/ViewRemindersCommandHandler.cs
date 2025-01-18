@@ -1,6 +1,5 @@
 ﻿using Maestro.Client.Integrator;
 using Maestro.Core.Logging;
-using Maestro.Server.Public.Models.Reminders;
 using Maestro.TelegramIntegrator.Implementation.Commands.Models;
 using Maestro.TelegramIntegrator.Models;
 using Telegram.Bot;
@@ -30,13 +29,13 @@ namespace Maestro.TelegramIntegrator.Implementation.Commands.Handlers
 
             await foreach (var reminder in reminders)
             {
-                remindersList.Add(string.Join(", ", reminder.Description, reminder.RemindDateTime));
+                remindersList.Add($"{reminder.Description},  {reminder.RemindDateTime:dd.mm.yyyy} в {reminder.RemindDateTime.TimeOfDay}");
             }
 
             if (remindersList.Any())
             {
                 await _telegramBotClient.SendMessage(context.UserId,
-                $"Ваши напоминания:\n{string.Join("\n", remindersList)}"
+                $"Ваши напоминания:\n\n{string.Join("\n", remindersList)}"
                 );
 
                 _log.Info($"Sent reminders to the user");
