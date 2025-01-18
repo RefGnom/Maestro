@@ -7,7 +7,7 @@ public class ViewRemindersCommandParser : CommandParserBase
 {
     public override string CommandName => TelegramCommandNames.ViewReminders;
 
-    public override ParseResult<ICommandModel> ParseCommand(string command, DateTime messageDateTime)
+    public override ParseResult<ICommandModel> ParseCommand(string command)
     {
         return ParseResult.CreateSuccess<ICommandModel>(new ViewRemindersCommandModel());
     }

@@ -21,6 +21,7 @@ public class SendSchedulesProcess(
     private readonly ITimestampProvider _timestampProvider = timestampProviderFactory.Create();
     private readonly IMaestroApiClient _maestroApiClient = maestroApiClient;
     private readonly ITelegramBotWrapper _telegramBotWrapper = telegramBotWrapper;
+    private readonly ILog<SendSchedulesProcess> _log = log;
 
     public override string ProcessName => "Чтение пользовательских расписаний";
     public override bool IsActiveByDefault => true;
@@ -28,7 +29,7 @@ public class SendSchedulesProcess(
 
     protected async override Task UnsafeRunAsync()
     {
-        var currentDate = dateTimeProvider.GetCurrentDateTime();
+        var currentDate = _dateTimeProvider.GetCurrentDateTime();
         var exclusiveStartDate = _timestampProvider.Find(TimestampKey) ?? DateTime.Today;
         var maxReminderTime = exclusiveStartDate;
 
@@ -42,11 +43,11 @@ public class SendSchedulesProcess(
 
             try
             {
-                await telegramBotWrapper.SendMessageAsync(schedule.UserId, $"Напоминание о расписании \"{schedule.Description}\"");
+                await _telegramBotWrapper.SendMessageAsync(schedule.UserId, $"Напоминание о расписании \"{schedule.Description}\"");
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                _log.Error(e.Message);
             }
 
             await _maestroApiClient.SetScheduleCompletedAsync(schedule.ScheduleId);

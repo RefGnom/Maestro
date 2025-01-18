@@ -19,8 +19,10 @@ public static class TelegramMessageBuilder
     {
         var reminderRepeatMessage = "";
         if (reminderCommandModel.RemindCount > 1)
+        {
             reminderRepeatMessage = $", повторная отправка напоминания: {reminderCommandModel.RemindCount} раз(а) " +
-                $"через {reminderCommandModel.RemindInterval.Days} д {reminderCommandModel.RemindInterval.Hours} ч {reminderCommandModel.RemindInterval.Minutes} м.";
+                                    $"через {reminderCommandModel.RemindInterval.Days} д {reminderCommandModel.RemindInterval.Hours} ч {reminderCommandModel.RemindInterval.Minutes} м.";
+        }
 
 
         return $"Напоминание \"{reminderCommandModel.ReminderDescription}\" создано на время {reminderCommandModel.ReminderTime:dd.MM.yyyy HH:mm}{reminderRepeatMessage}";

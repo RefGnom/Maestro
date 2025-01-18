@@ -7,7 +7,7 @@ public class CreateReminderHelpCommandParser : CommandParserBase
 {
     public override string CommandName => TelegramCommandNames.CreateReminderHelp;
 
-    public override ParseResult<ICommandModel> ParseCommand(string command, DateTime messageDateTime)
+    public override ParseResult<ICommandModel> ParseCommand(string command)
     {
         return ParseResult.CreateSuccess<ICommandModel>(new CreateReminderHelpCommandModel());
     }

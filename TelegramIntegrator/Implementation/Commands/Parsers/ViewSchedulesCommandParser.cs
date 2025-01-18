@@ -7,7 +7,7 @@ public class ViewSchedulesCommandParser : CommandParserBase
 {
     public override string CommandName => TelegramCommandNames.ViewSchedules;
 
-    public override ParseResult<ICommandModel> ParseCommand(string command, DateTime messageDateTime)
+    public override ParseResult<ICommandModel> ParseCommand(string command)
     {
         return ParseResult.CreateSuccess<ICommandModel>(new ViewSchedulesCommandModel());
     }

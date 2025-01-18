@@ -7,7 +7,7 @@ public class CreateScheduleHelpCommandParser : CommandParserBase
 {
     public override string CommandName => TelegramCommandNames.CreateScheduleHelp;
 
-    public override ParseResult<ICommandModel> ParseCommand(string command, DateTime messageDateTime)
+    public override ParseResult<ICommandModel> ParseCommand(string command)
     {
         return ParseResult.CreateSuccess<ICommandModel>(new CreateScheduleHelpCommandModel());
     }

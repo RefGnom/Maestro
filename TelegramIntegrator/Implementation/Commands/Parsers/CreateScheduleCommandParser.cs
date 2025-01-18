@@ -1,15 +1,18 @@
-﻿using Maestro.TelegramIntegrator.Implementation.Commands.Models;
+﻿using Maestro.Core.Providers;
+using Maestro.TelegramIntegrator.Implementation.Commands.Models;
 using Maestro.TelegramIntegrator.Implementation.ParsHelpers;
 using Maestro.TelegramIntegrator.Models;
 using Maestro.TelegramIntegrator.View;
 
 namespace Maestro.TelegramIntegrator.Implementation.Commands.Parsers;
 
-public class CreateScheduleCommandParser : CommandParserBase
+public class CreateScheduleCommandParser(IDateTimeProvider dateTimeProvider) : CommandParserBase
 {
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
+
     public override string CommandName => TelegramCommandNames.CreateSchedule;
 
-    public override ParseResult<ICommandModel> ParseCommand(string command, DateTime messageDateTime)
+    public override ParseResult<ICommandModel> ParseCommand(string command)
     {
         var parts = command.Split(",", StringSplitOptions.TrimEntries);
         if (parts.Length < 4)
@@ -19,7 +22,8 @@ public class CreateScheduleCommandParser : CommandParserBase
             );
         }
 
-        var startDateTimeParseResult = ParserHelper.ParseDateTime(parts[1], messageDateTime);
+        var currentDateTime = _dateTimeProvider.GetCurrentDateTime();
+        var startDateTimeParseResult = ParserHelper.ParseDateTime(parts[1], currentDateTime);
 
         if (!startDateTimeParseResult.IsSuccessful)
         {

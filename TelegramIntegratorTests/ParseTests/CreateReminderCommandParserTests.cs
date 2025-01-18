@@ -22,7 +22,7 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
         {
             var command = "/reminder, 19.05.2025 10:00, test reminder, 3, 00:03:00";
 
-            var parseResult = _parser.ParseCommand(command, DateTime.Now);
+            var parseResult = _parser.ParseCommand(command);
 
             parseResult.IsSuccessful.Should().BeTrue();
 
@@ -42,7 +42,7 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
 
             var command = "/reminder, 19.05.2025 10:00, test reminder";
 
-            var parseResult = _parser.ParseCommand(command, DateTime.Now);
+            var parseResult = _parser.ParseCommand(command);
 
             parseResult.IsSuccessful.Should().BeTrue();
 
@@ -59,7 +59,7 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
         {
             var command = "/reminder, 19.05.2025 10:00";
 
-            var parseResult = _parser.ParseCommand(command, DateTime.Now);
+            var parseResult = _parser.ParseCommand(command);
 
             parseResult.IsSuccessful.Should().BeFalse();
             parseResult.ParseFailureMessage.Should().Be(TelegramMessageBuilder.BuildByCommandPattern(TelegramCommandPatterns.CreateReminderCommandPattern));
@@ -70,7 +70,7 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
         {
             var command = "/reminder, 19 мая 10:00, test reminder";
 
-            var parseResult = _parser.ParseCommand(command, DateTime.Now);
+            var parseResult = _parser.ParseCommand(command);
 
             parseResult.IsSuccessful.Should().BeFalse();
             parseResult.ParseFailureMessage.Should().Be(TelegramMessageBuilder.BuildParseFailureMessage(ParseFailureMessages.ParseDateTimeFailureMessage));
@@ -81,7 +81,7 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
         {
             var command = "/reminder, 19.05.2025 10:00, test reminder, -1";
 
-            var parseResult = _parser.ParseCommand(command, DateTime.Now);
+            var parseResult = _parser.ParseCommand(command);
 
             parseResult.IsSuccessful.Should().BeFalse();
             parseResult.ParseFailureMessage.Should().Be(TelegramMessageBuilder.BuildParseFailureMessage(ParseFailureMessages.ParseIntFailureMessage));
@@ -92,7 +92,7 @@ namespace Maestro.TelegramIntegratorTests.ParseTests
         {
             var command = "/reminder, 19.05.2025 10:00, test reminder, 3, 1 минута";
 
-            var parseResult = _parser.ParseCommand(command, DateTime.Now);
+            var parseResult = _parser.ParseCommand(command);
 
             parseResult.IsSuccessful.Should().BeFalse();
             parseResult.ParseFailureMessage.Should().Be(TelegramMessageBuilder.BuildParseFailureMessage(ParseFailureMessages.ParseTimeSpanFailureMessage));
