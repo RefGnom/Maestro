@@ -1,6 +1,5 @@
 ﻿using Maestro.Core.Logging;
 using Maestro.TelegramIntegrator.Models;
-using Maestro.TelegramIntegrator.View;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -42,7 +41,7 @@ public class MainState(
     protected override Task ReceiveCallbackQueryAsync(CallbackQuery callbackQuery)
     {
         return ReceiveBase(
-            new ChatContext()
+            new ChatContext
             {
                 ChatId = callbackQuery.From.Id,
                 UserId = callbackQuery.From.Id
@@ -51,25 +50,23 @@ public class MainState(
         );
     }
 
-    private async Task ReceiveBase(ChatContext context, string text)
+    private Task ReceiveBase(ChatContext context, string text)
     {
         var telegramCommandBundle = _telegramCommandMapper.MapCommandBundle(text);
         if (telegramCommandBundle is null)
         {
-            await _telegramBotClient.SendMessage(context.ChatId, TelegramMessageBuilder.BuildUnknownCommand());
-            return;
+            return Initialize(context.UserId);
         }
 
         var commandParseResult = telegramCommandBundle.CommandParser.ParseCommand(text);
         if (!commandParseResult.IsSuccessful)
         {
             _log.Warn("Failed to parse message");
-            await _telegramBotClient.SendMessage(context.ChatId, commandParseResult.ParseFailureMessage);
-            return;
+            return _telegramBotClient.SendMessage(context.ChatId, commandParseResult.ParseFailureMessage);
         }
 
         var command = commandParseResult.Value;
-        await telegramCommandBundle.CommandHandler.ExecuteAsync(
+        return telegramCommandBundle.CommandHandler.ExecuteAsync(
             context,
             command
         );
