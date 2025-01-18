@@ -25,11 +25,11 @@ public class EnterReminderDescriptionState(
 
     protected override Task ReceiveEditedMessageAsync(Message message) => ReceiveMessageAsync(message);
 
-    protected async override Task ReceiveMessageAsync(Message message)
+    protected override Task ReceiveMessageAsync(Message message)
     {
         var userId = message.From!.Id;
         var reminderDescription = message.Text!;
         _reminderBuilder.WithDescription(userId, reminderDescription);
-        await _stateSwitcher.SetStateAsync<EnterReminderDateTimeState>(userId);
+        return _stateSwitcher.SetStateAsync<EnterReminderDateTimeState>(userId);
     }
 }

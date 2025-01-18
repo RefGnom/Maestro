@@ -21,7 +21,6 @@ public class ReminderBuilder : IReminderBuilder
 
         reminder.Description = description;
         return this;
-
     }
 
     public IReminderBuilder WithReminderDateTime(long userId, DateTime dateTime)
