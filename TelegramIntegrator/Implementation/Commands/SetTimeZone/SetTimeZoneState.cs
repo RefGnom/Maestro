@@ -18,7 +18,7 @@ public class SetTimeZoneState(
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
     private readonly IUserDateTimeService _userDateTimeService = userDateTimeService;
 
-    public override Task Initialize(long userId)
+    public override Task InitializeAsync(long userId)
     {
         return _telegramBotClient.SendMessage(
             userId,

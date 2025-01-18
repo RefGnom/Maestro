@@ -20,7 +20,7 @@ public class AnswerCanOverlapScheduleState(
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
     private readonly IScheduleBuilder _scheduleBuilder = scheduleBuilder;
 
-    public override Task Initialize(long userId)
+    public override Task InitializeAsync(long userId)
     {
         var inlineKeyboardMarkup = new InlineKeyboardMarkup()
             .AddButton(InlineKeyboardButton.WithCallbackData("Да", AcceptCommand))

@@ -15,7 +15,7 @@ public class StateSwitcher(Lazy<IStatesProvider> statesProvider, ILog<StateSwitc
     {
         var state = _statesProvider.Value.GetState<TState>();
         _memoryCache.Set(userId, state, CacheExpirationTimeout);
-        await state.Initialize(userId);
+        await state.InitializeAsync(userId);
         _log.Info($"Для юзера {userId} установлено состояние {typeof(TState).Name}");
     }
 

@@ -21,7 +21,7 @@ public class EnterReminderDateTimeState(
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
-    public override Task Initialize(long userId)
+    public override Task InitializeAsync(long userId)
     {
         return _telegramBotClient.SendMessage(
             userId,

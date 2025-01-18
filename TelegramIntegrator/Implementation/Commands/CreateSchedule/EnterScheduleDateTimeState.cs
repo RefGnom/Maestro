@@ -21,7 +21,7 @@ public class EnterScheduleDateTimeState(
     private readonly IScheduleBuilder _scheduleBuilder = scheduleBuilder;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
-    public override Task Initialize(long userId)
+    public override Task InitializeAsync(long userId)
     {
         return _telegramBotClient.SendMessage(
             userId,

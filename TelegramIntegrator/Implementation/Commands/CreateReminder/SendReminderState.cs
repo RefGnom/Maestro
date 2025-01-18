@@ -19,7 +19,7 @@ public class SendReminderState(
     private readonly IStateSwitcher _stateSwitcher = stateSwitcher;
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
 
-    public async override Task Initialize(long userId)
+    public async override Task InitializeAsync(long userId)
     {
         var reminderDto = _reminderBuilder.Build(userId);
         try

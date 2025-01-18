@@ -17,7 +17,7 @@ public class EnterReminderDescriptionState(
     private readonly IStateSwitcher _stateSwitcher = stateSwitcher;
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
 
-    public override Task Initialize(long userId)
+    public override Task InitializeAsync(long userId)
     {
         _reminderBuilder.CreateReminder(userId);
         return _telegramBotClient.SendMessage(userId, "Введите текст напоминания", replyMarkup: ExitReplyMarkup);

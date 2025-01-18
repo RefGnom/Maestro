@@ -4,6 +4,6 @@ namespace Maestro.TelegramIntegrator.Implementation.Commands.StateMachine;
 
 public interface IState
 {
-    Task Initialize(long userId);
+    Task InitializeAsync(long userId);
     Task ReceiveUpdateAsync(Update update);
 }

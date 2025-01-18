@@ -18,7 +18,7 @@ public class AnswerIsRepeatableReminderState(
 
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
 
-    public override Task Initialize(long userId)
+    public override Task InitializeAsync(long userId)
     {
         var inlineKeyboardMarkup = new InlineKeyboardMarkup()
             .AddButton(InlineKeyboardButton.WithCallbackData("Да", AcceptCommand))

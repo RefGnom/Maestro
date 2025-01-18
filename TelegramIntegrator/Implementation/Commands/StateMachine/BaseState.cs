@@ -6,7 +6,11 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Maestro.TelegramIntegrator.Implementation.Commands.StateMachine;
 
-public abstract class BaseState<TState>(ILog<TState> log, IStateSwitcher stateSwitcher, IReplyMarkupFactory replyMarkupFactory) : IState
+public abstract class BaseState<TState>(
+    ILog<TState> log,
+    IStateSwitcher stateSwitcher,
+    IReplyMarkupFactory replyMarkupFactory
+) : IState
 {
     protected readonly ILog<TState> Log = log;
     protected readonly IStateSwitcher StateSwitcher = stateSwitcher;
@@ -24,7 +28,7 @@ public abstract class BaseState<TState>(ILog<TState> log, IStateSwitcher stateSw
             : ReceiveUpdateBaseAsync();
     }
 
-    public virtual Task Initialize(long userId) => Task.CompletedTask;
+    public virtual Task InitializeAsync(long userId) => Task.CompletedTask;
 
     public Task ReceiveUpdateAsync(Update update)
     {

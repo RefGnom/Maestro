@@ -18,7 +18,7 @@ public class SendScheduleState(
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
     private readonly IScheduleBuilder _scheduleBuilder = scheduleBuilder;
 
-    public async override Task Initialize(long userId)
+    public async override Task InitializeAsync(long userId)
     {
         var schedule = _scheduleBuilder.Build(userId);
         try

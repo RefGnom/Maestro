@@ -17,7 +17,7 @@ public class EnterRemindCountState(
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
     private readonly IReminderBuilder _reminderBuilder = reminderBuilder;
 
-    public override Task Initialize(long userId)
+    public override Task InitializeAsync(long userId)
     {
         var inlineKeyboardMarkup = new InlineKeyboardMarkup()
             .AddButton(InlineKeyboardButton.WithCallbackData("1", "1"))

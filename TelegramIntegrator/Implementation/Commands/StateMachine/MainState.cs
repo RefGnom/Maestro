@@ -18,7 +18,7 @@ public class MainState(
     private readonly ILog<MainState> _log = log;
     private readonly IReplyMarkupFactory _replyMarkupFactory = replyMarkupFactory;
 
-    public override Task Initialize(long userId)
+    public override Task InitializeAsync(long userId)
     {
         var replyMarkup = _replyMarkupFactory.CreateOptionsReplyMarkup();
         return _telegramBotClient.SendMessage(userId, "Доступные опции", replyMarkup: replyMarkup);
@@ -55,7 +55,7 @@ public class MainState(
         var telegramCommandBundle = _telegramCommandMapper.MapCommandBundle(text);
         if (telegramCommandBundle is null)
         {
-            return Initialize(context.UserId);
+            return InitializeAsync(context.UserId);
         }
 
         var commandParseResult = telegramCommandBundle.CommandParser.ParseCommand(text);

@@ -16,7 +16,7 @@ public class EnterScheduleDescriptionState(
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
     private readonly IScheduleBuilder _scheduleBuilder = scheduleBuilder;
 
-    public override Task Initialize(long userId)
+    public override Task InitializeAsync(long userId)
     {
         _scheduleBuilder.CreateSchedule(userId);
         return _telegramBotClient.SendMessage(userId, "Введите текст расписания", replyMarkup: ExitReplyMarkup);

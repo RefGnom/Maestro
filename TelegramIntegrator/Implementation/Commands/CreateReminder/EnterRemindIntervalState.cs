@@ -18,7 +18,7 @@ public class EnterRemindIntervalState(
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
     private readonly IReminderBuilder _reminderBuilder = reminderBuilder;
 
-    public override Task Initialize(long userId)
+    public override Task InitializeAsync(long userId)
     {
         return _telegramBotClient.SendMessage(userId, $"Введите интервал по шаблону\n\n{EnterDataPatterns.TimeSpanPattern}");
     }

@@ -18,7 +18,7 @@ public class EnterScheduleDurationState(
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
     private readonly IScheduleBuilder _scheduleBuilder = scheduleBuilder;
 
-    public override Task Initialize(long userId)
+    public override Task InitializeAsync(long userId)
     {
         return _telegramBotClient.SendMessage(userId, $"Введите продолжительность по шаблону\n\n{EnterDataPatterns.TimeSpanPattern}");
     }
