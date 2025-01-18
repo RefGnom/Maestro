@@ -1,4 +1,5 @@
 ﻿using Maestro.Core.Logging;
+using Maestro.Core.Providers;
 using Maestro.TelegramIntegrator.Implementation.Commands.StateMachine;
 using Maestro.TelegramIntegrator.Implementation.ParsHelpers;
 using Telegram.Bot;
@@ -11,12 +12,14 @@ public class EnterReminderDateTimeState(
     IReminderBuilder reminderBuilder,
     IStateSwitcher stateSwitcher,
     ITelegramBotClient telegramBotClient,
-    IReplyMarkupFactory replyMarkupFactory
+    IReplyMarkupFactory replyMarkupFactory,
+    IDateTimeProvider dateTimeProvider
 ) : BaseState<EnterReminderDateTimeState>(log, stateSwitcher, replyMarkupFactory)
 {
     private readonly IReminderBuilder _reminderBuilder = reminderBuilder;
     private readonly IStateSwitcher _stateSwitcher = stateSwitcher;
     private readonly ITelegramBotClient _telegramBotClient = telegramBotClient;
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
     public override Task Initialize(long userId)
     {
@@ -29,7 +32,8 @@ public class EnterReminderDateTimeState(
     {
         var userId = message.From!.Id;
         var dateTimeMessage = message.Text!;
-        var parseDateTimeResult = ParserHelper.ParseDateTime(dateTimeMessage);
+        var currentDateTime = _dateTimeProvider.GetCurrentDateTime();
+        var parseDateTimeResult = ParserHelper.ParseDateTime(dateTimeMessage, currentDateTime);
         if (!parseDateTimeResult.IsSuccessful)
         {
             await _telegramBotClient.SendMessage(userId, parseDateTimeResult.ParseFailureMessage, replyMarkup: ExitReplyMarkup);
