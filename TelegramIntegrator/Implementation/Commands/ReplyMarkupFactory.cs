@@ -7,7 +7,7 @@ public class ReplyMarkupFactory : IReplyMarkupFactory
     public IReplyMarkup CreateExitToMainMenuReplyMarkup()
     {
         return new InlineKeyboardMarkup()
-            .AddButton(InlineKeyboardButton.WithCallbackData("Отмена", "/exit"));
+            .AddButton(InlineKeyboardButton.WithCallbackData("В главное меню", "/exit"));
     }
 
     public IReplyMarkup CreateOptionsReplyMarkup()
