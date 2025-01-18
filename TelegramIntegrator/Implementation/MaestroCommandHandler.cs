@@ -17,7 +17,7 @@ public class MaestroCommandHandler(
 
     public async Task UpdateHandler(ITelegramBotClient bot, Update update, CancellationToken cancellationToken)
     {
-        var state = await _stateSwitcher.GetStateAsync(update.GetUserId());
+        var state = _stateSwitcher.GetState(update.GetUserId());
         await state.ReceiveUpdateAsync(update);
     }
 

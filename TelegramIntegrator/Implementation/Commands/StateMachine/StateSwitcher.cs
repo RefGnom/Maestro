@@ -19,7 +19,7 @@ public class StateSwitcher(Lazy<IStatesProvider> statesProvider, ILog<StateSwitc
         _log.Info($"Для юзера {userId} установлено состояние {typeof(TState).Name}");
     }
 
-    public async Task<IState> GetStateAsync(long userId)
+    public IState GetState(long userId)
     {
         if (_memoryCache.TryGetValue<IState>(userId, out var state))
         {
@@ -28,7 +28,7 @@ public class StateSwitcher(Lazy<IStatesProvider> statesProvider, ILog<StateSwitc
 
         var mainState = _statesProvider.Value.GetState<MainState>();
         _memoryCache.Set(userId, mainState, CacheExpirationTimeout);
-        await mainState.Initialize(userId);
         return mainState;
+
     }
 }
