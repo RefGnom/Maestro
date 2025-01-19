@@ -42,6 +42,6 @@ public class TelegramIntegratorApplication(
             _receiverOptions
         );
         _log.Info("Telegram client started");
-        //await processRunner.RunAsync();
+        await processRunner.RunAsync();
     }
 }
